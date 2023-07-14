@@ -4,7 +4,6 @@
 
 - Accuracy
 - Saturn's rings
-- The moon
 - Controls
 - Spin
 - Eccentricity

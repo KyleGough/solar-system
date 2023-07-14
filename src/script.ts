@@ -7,7 +7,12 @@ interface Planet {
   distance: number; // (in million kilometers)
   period: number; // (in days)
   daylength: number; // (in hours)
-  texture?: THREE.Texture;
+  texture: THREE.Texture;
+  isSun?: boolean;
+}
+
+interface Moon extends Planet {
+  orbits: THREE.Mesh;
 }
 
 THREE.ColorManagement.enabled = false;
@@ -33,14 +38,16 @@ const saturnTexture = loader.load("/textures/saturn.jpg");
 const uranusTexture = loader.load("/textures/uranus.jpg");
 const neptuneTexture = loader.load("/textures/neptune.jpg");
 
+const moonTexture = loader.load("/textures/moon.jpg");
+
 // Ambient light
-const ambientLight = new THREE.AmbientLight(0xffffff, 0.4);
+const ambientLight = new THREE.AmbientLight(0xffffff, 0.33);
 const ambientFolder = gui.addFolder("Ambient Light");
 ambientFolder.add(ambientLight, "intensity").min(0).max(1).step(0.001);
 scene.add(ambientLight);
 
 // Point Light.
-const pointLight = new THREE.PointLight(0xf4e99b, 0.8);
+const pointLight = new THREE.PointLight(0xf4e99b, 1);
 
 // Point Light Shadow.
 pointLight.castShadow = true;
@@ -54,27 +61,33 @@ const pointLightHelper = new THREE.CameraHelper(pointLight.shadow.camera);
 pointLightHelper.visible = false;
 scene.add(pointLight, pointLightHelper);
 
-// Material
-const material = new THREE.MeshStandardMaterial();
-material.roughness = 0.7;
-const materialFolder = gui.addFolder("Material");
-materialFolder.add(material, "metalness").min(0).max(1).step(0.001);
-materialFolder.add(material, "roughness").min(0).max(1).step(0.001);
-
-const createPlanetMesh = (radius: number, texture?: any) => {
-  const geometry = new THREE.SphereGeometry(Math.sqrt(radius) / 500, 32, 32);
-  const tex = new THREE.MeshBasicMaterial({ map: texture });
-  const sphere = new THREE.Mesh(geometry, texture ? tex : material);
+const createPlanetMesh = (planet: Planet) => {
+  const geometry = new THREE.SphereGeometry(
+    Math.sqrt(planet.radius) / 500,
+    32,
+    32
+  );
+  let material;
+  if (planet.isSun) {
+    material = new THREE.MeshBasicMaterial({ map: planet.texture });
+  } else {
+    material = new THREE.MeshPhongMaterial({ map: planet.texture });
+    material.shininess = 10;
+  }
+  const sphere = new THREE.Mesh(geometry, material);
+  sphere.receiveShadow = true;
   return sphere;
 };
 
+// Planets
 const planets: Planet[] = [
   {
     radius: 432000,
     distance: 0,
     period: 1,
-    daylength: 24,
+    daylength: 24 * 25,
     texture: sunTexture,
+    isSun: true,
   }, // Sun
   {
     radius: 1516,
@@ -134,11 +147,23 @@ const planets: Planet[] = [
   }, // Neptune
 ];
 
-// Mesh creation.
-const meshes = planets.map((planet) =>
-  createPlanetMesh(planet.radius, planet.texture)
-);
-scene.add(...meshes);
+const planetMeshes = planets.map((planet) => createPlanetMesh(planet));
+scene.add(...planetMeshes);
+
+// Moons
+const moons: Moon[] = [
+  {
+    radius: 1737,
+    distance: 0.38,
+    period: 28,
+    daylength: 28,
+    texture: moonTexture,
+    orbits: planetMeshes[3],
+  },
+];
+
+const moonMeshes = moons.map((moon) => createPlanetMesh(moon));
+scene.add(...moonMeshes);
 
 // Sizes
 const sizes = {
@@ -188,7 +213,8 @@ renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 // Animate
 const clock = new THREE.Clock();
 
-const randomStarts = planets.map((_) => Math.random() * 2 * Math.PI);
+const rngStartsPlanets = planets.map((_) => Math.random() * 2 * Math.PI);
+const rngStartsMoons = moons.map((_) => Math.random() * 2 * Math.PI);
 
 const rotationFactor = Math.PI * 2 * 24; // 1 second = 24 hours
 
@@ -198,13 +224,25 @@ const rotationFactor = Math.PI * 2 * 24; // 1 second = 24 hours
   // Update the planets
   for (let i = 0; i < planets.length; i++) {
     const relativeRadius = Math.sqrt(planets[i].distance) / 2;
-    const relativeSpeed = 1000 / planets[i].period;
-    const elapsedDistance = randomStarts[i] + elapsedTime * relativeSpeed;
-    meshes[i].position.x = Math.cos(elapsedDistance) * relativeRadius;
-    meshes[i].position.z = -Math.sin(elapsedDistance) * relativeRadius;
-
-    meshes[i].rotation.y =
+    const relativeSpeed = 100 / planets[i].period;
+    const elapsedDistance = rngStartsPlanets[i] + elapsedTime * relativeSpeed;
+    planetMeshes[i].position.x = Math.cos(elapsedDistance) * relativeRadius;
+    planetMeshes[i].position.z = -Math.sin(elapsedDistance) * relativeRadius;
+    planetMeshes[i].rotation.y =
       (rotationFactor * elapsedTime) / planets[i].daylength;
+  }
+
+  // Update the moons.
+  for (let i = 0; i < moons.length; i++) {
+    const relativeRadius = Math.sqrt(moons[i].distance) / 2;
+    const relativeSpeed = 100 / moons[i].period;
+    const elapsedDistance = rngStartsMoons[i] + elapsedTime * relativeSpeed;
+    moonMeshes[i].position.x =
+      moons[i].orbits.position.x + Math.cos(elapsedDistance) * relativeRadius;
+    moonMeshes[i].position.z =
+      moons[i].orbits.position.z - Math.sin(elapsedDistance) * relativeRadius;
+    moonMeshes[i].rotation.y =
+      (rotationFactor * elapsedTime) / moons[i].daylength;
   }
 
   // Update controls
