@@ -2,10 +2,9 @@
 
 ## Todo
 
-- Textures
+- Accuracy
 - Saturn's rings
 - The moon
-- The sun
 - Controls
 - Spin
 - Eccentricity

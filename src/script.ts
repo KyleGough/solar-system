@@ -6,6 +6,7 @@ interface Planet {
   radius: number; // (in kilometers)
   distance: number; // (in million kilometers)
   period: number; // (in days)
+  daylength: number; // (in hours)
   texture?: THREE.Texture;
 }
 
@@ -22,6 +23,7 @@ const scene = new THREE.Scene();
 
 // Textures
 const loader = new THREE.TextureLoader();
+const sunTexture = loader.load("/textures/sun.jpg");
 const mercuryTexture = loader.load("/textures/mercury.jpg");
 const venusTexture = loader.load("/textures/venus.jpg");
 const earthTexture = loader.load("/textures/earth.jpg");
@@ -67,15 +69,69 @@ const createPlanetMesh = (radius: number, texture?: any) => {
 };
 
 const planets: Planet[] = [
-  { radius: 432000, distance: 0, period: 1 }, // Sun
-  { radius: 1516, distance: 56, period: 88, texture: mercuryTexture }, // Mercury
-  { radius: 3760, distance: 108, period: 224, texture: venusTexture }, // Venus
-  { radius: 3959, distance: 152, period: 365, texture: earthTexture }, // Earth
-  { radius: 2106, distance: 247, period: 686, texture: marsTexture }, // Mars
-  { radius: 43441, distance: 741, period: 4332, texture: jupiterTexture }, // Jupiter
-  { radius: 36184, distance: 1463, period: 10755, texture: saturnTexture }, // Saturn
-  { radius: 15759, distance: 2938, period: 30687, texture: uranusTexture }, // Uranus
-  { radius: 15299, distance: 4474, period: 60190, texture: neptuneTexture }, // Neptune
+  {
+    radius: 432000,
+    distance: 0,
+    period: 1,
+    daylength: 24,
+    texture: sunTexture,
+  }, // Sun
+  {
+    radius: 1516,
+    distance: 56,
+    period: 88,
+    daylength: 4222.6,
+    texture: mercuryTexture,
+  }, // Mercury
+  {
+    radius: 3760,
+    distance: 108,
+    period: 224,
+    daylength: 2802,
+    texture: venusTexture,
+  }, // Venus
+  {
+    radius: 3959,
+    distance: 152,
+    period: 365,
+    daylength: 24,
+    texture: earthTexture,
+  }, // Earth
+  {
+    radius: 2106,
+    distance: 247,
+    period: 686,
+    daylength: 24.7,
+    texture: marsTexture,
+  }, // Mars
+  {
+    radius: 43441,
+    distance: 741,
+    period: 4332,
+    daylength: 9.9,
+    texture: jupiterTexture,
+  }, // Jupiter
+  {
+    radius: 36184,
+    distance: 1463,
+    period: 10755,
+    daylength: 10.7,
+    texture: saturnTexture,
+  }, // Saturn
+  {
+    radius: 15759,
+    distance: 2938,
+    period: 30687,
+    daylength: 17.2,
+    texture: uranusTexture,
+  }, // Uranus
+  {
+    radius: 15299,
+    distance: 4474,
+    period: 60190,
+    daylength: 16.1,
+    texture: neptuneTexture,
+  }, // Neptune
 ];
 
 // Mesh creation.
@@ -83,13 +139,6 @@ const meshes = planets.map((planet) =>
   createPlanetMesh(planet.radius, planet.texture)
 );
 scene.add(...meshes);
-
-// Plane
-const plane = new THREE.Mesh(new THREE.PlaneGeometry(5, 5), material);
-plane.rotation.x = -Math.PI * 0.5;
-plane.position.y = -0.5;
-plane.receiveShadow = true;
-// scene.add(plane);
 
 // Sizes
 const sizes = {
@@ -141,16 +190,21 @@ const clock = new THREE.Clock();
 
 const randomStarts = planets.map((_) => Math.random() * 2 * Math.PI);
 
+const rotationFactor = Math.PI * 2 * 24; // 1 second = 24 hours
+
 (function tick() {
   const elapsedTime = clock.getElapsedTime();
 
   // Update the planets
   for (let i = 0; i < planets.length; i++) {
     const relativeRadius = Math.sqrt(planets[i].distance) / 2;
-    const relativeSpeed = 8 / Math.sqrt(planets[i].period);
+    const relativeSpeed = 1000 / planets[i].period;
     const elapsedDistance = randomStarts[i] + elapsedTime * relativeSpeed;
     meshes[i].position.x = Math.cos(elapsedDistance) * relativeRadius;
     meshes[i].position.z = -Math.sin(elapsedDistance) * relativeRadius;
+
+    meshes[i].rotation.y =
+      (rotationFactor * elapsedTime) / planets[i].daylength;
   }
 
   // Update controls
