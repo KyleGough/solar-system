@@ -22,7 +22,14 @@ const scene = new THREE.Scene();
 
 // Textures
 const loader = new THREE.TextureLoader();
+const mercuryTexture = loader.load("/textures/mercury.jpg");
+const venusTexture = loader.load("/textures/venus.jpg");
+const earthTexture = loader.load("/textures/earth.jpg");
+const marsTexture = loader.load("/textures/mars.jpg");
 const jupiterTexture = loader.load("/textures/jupiter.jpg");
+const saturnTexture = loader.load("/textures/saturn.jpg");
+const uranusTexture = loader.load("/textures/uranus.jpg");
+const neptuneTexture = loader.load("/textures/neptune.jpg");
 
 // Ambient light
 const ambientLight = new THREE.AmbientLight(0xffffff, 0.4);
@@ -59,29 +66,22 @@ const createPlanetMesh = (radius: number, texture?: any) => {
   return sphere;
 };
 
-const meshes: THREE.Mesh[] = [];
 const planets: Planet[] = [
   { radius: 432000, distance: 0, period: 1 }, // Sun
-  { radius: 1516, distance: 56, period: 88 }, // Mercury
-  { radius: 3760, distance: 108, period: 224 }, // Venus
-  { radius: 3959, distance: 152, period: 365 }, // Earth
-  { radius: 2106, distance: 247, period: 686 }, // Mars
-  {
-    radius: 43441,
-    distance: 741,
-    period: 4332,
-    texture: jupiterTexture,
-  }, // Jupiter
-  { radius: 36184, distance: 1463, period: 10755 }, // Saturn
-  { radius: 15759, distance: 2938, period: 30687 }, // Uranus
-  { radius: 15299, distance: 4474, period: 60190 }, // Neptune
+  { radius: 1516, distance: 56, period: 88, texture: mercuryTexture }, // Mercury
+  { radius: 3760, distance: 108, period: 224, texture: venusTexture }, // Venus
+  { radius: 3959, distance: 152, period: 365, texture: earthTexture }, // Earth
+  { radius: 2106, distance: 247, period: 686, texture: marsTexture }, // Mars
+  { radius: 43441, distance: 741, period: 4332, texture: jupiterTexture }, // Jupiter
+  { radius: 36184, distance: 1463, period: 10755, texture: saturnTexture }, // Saturn
+  { radius: 15759, distance: 2938, period: 30687, texture: uranusTexture }, // Uranus
+  { radius: 15299, distance: 4474, period: 60190, texture: neptuneTexture }, // Neptune
 ];
 
 // Mesh creation.
-for (const planet of planets) {
-  meshes.push(createPlanetMesh(planet.radius, planet.texture));
-}
-
+const meshes = planets.map((planet) =>
+  createPlanetMesh(planet.radius, planet.texture)
+);
 scene.add(...meshes);
 
 // Plane
@@ -147,7 +147,7 @@ const randomStarts = planets.map((_) => Math.random() * 2 * Math.PI);
   // Update the planets
   for (let i = 0; i < planets.length; i++) {
     const relativeRadius = Math.sqrt(planets[i].distance) / 2;
-    const relativeSpeed = 100 / Math.sqrt(planets[i].period);
+    const relativeSpeed = 8 / Math.sqrt(planets[i].period);
     const elapsedDistance = randomStarts[i] + elapsedTime * relativeSpeed;
     meshes[i].position.x = Math.cos(elapsedDistance) * relativeRadius;
     meshes[i].position.z = -Math.sin(elapsedDistance) * relativeRadius;
