@@ -1,5 +1,16 @@
 # Three.js Solar System
 
+## Todo
+
+- Textures
+- Saturn's rings
+- The moon
+- The sun
+- Controls
+- Spin
+- Eccentricity
+- Tilt
+
 ## Setup
 
 Download [Node.js](https://nodejs.org/en/download/).
