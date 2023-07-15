@@ -8,6 +8,8 @@
 - Spin
 - Eccentricity
 - Tilt
+- Paths
+- Refactor
 
 ## Setup
 

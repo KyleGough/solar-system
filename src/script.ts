@@ -39,6 +39,7 @@ const uranusTexture = loader.load("/textures/uranus.jpg");
 const neptuneTexture = loader.load("/textures/neptune.jpg");
 
 const moonTexture = loader.load("/textures/moon.jpg");
+const saturnRingTexture = loader.load("/textures/saturn-ring.png");
 
 // Ambient light
 const ambientLight = new THREE.AmbientLight(0xffffff, 0.33);
@@ -165,6 +166,25 @@ const moons: Moon[] = [
 const moonMeshes = moons.map((moon) => createPlanetMesh(moon));
 scene.add(...moonMeshes);
 
+// Saturn's rings
+const ringGeometry = new THREE.RingGeometry(0.2, 2, 64);
+const pos = ringGeometry.attributes.position;
+const v3 = new THREE.Vector3();
+for (let i = 0; i < pos.count; i++) {
+  v3.fromBufferAttribute(pos, i);
+  ringGeometry.attributes.uv.setXY(i, v3.length() < 1 ? 0 : 1, 1);
+}
+const ringMaterial = new THREE.MeshPhongMaterial({
+  map: saturnRingTexture,
+  side: THREE.DoubleSide,
+  transparent: true,
+});
+const saturnsRings = new THREE.Mesh(ringGeometry, ringMaterial);
+saturnsRings.receiveShadow = true;
+saturnsRings.position.y = planetMeshes[6].position.y;
+saturnsRings.rotation.x = Math.PI / 2;
+scene.add(saturnsRings);
+
 // Sizes
 const sizes = {
   width: window.innerWidth,
@@ -218,13 +238,18 @@ const rngStartsMoons = moons.map((_) => Math.random() * 2 * Math.PI);
 
 const rotationFactor = Math.PI * 2 * 24; // 1 second = 24 hours
 
+const getRelativeRadius = (distance: number): number =>
+  Math.pow(distance, 0.4) / 2;
+
+const getRelativeSpeed = (period: number): number => 200 / period;
+
 (function tick() {
   const elapsedTime = clock.getElapsedTime();
 
   // Update the planets
   for (let i = 0; i < planets.length; i++) {
-    const relativeRadius = Math.sqrt(planets[i].distance) / 2;
-    const relativeSpeed = 100 / planets[i].period;
+    const relativeRadius = getRelativeRadius(planets[i].distance);
+    const relativeSpeed = getRelativeSpeed(planets[i].period);
     const elapsedDistance = rngStartsPlanets[i] + elapsedTime * relativeSpeed;
     planetMeshes[i].position.x = Math.cos(elapsedDistance) * relativeRadius;
     planetMeshes[i].position.z = -Math.sin(elapsedDistance) * relativeRadius;
@@ -232,10 +257,10 @@ const rotationFactor = Math.PI * 2 * 24; // 1 second = 24 hours
       (rotationFactor * elapsedTime) / planets[i].daylength;
   }
 
-  // Update the moons.
+  // Update the moons
   for (let i = 0; i < moons.length; i++) {
-    const relativeRadius = Math.sqrt(moons[i].distance) / 2;
-    const relativeSpeed = 100 / moons[i].period;
+    const relativeRadius = getRelativeRadius(moons[i].distance);
+    const relativeSpeed = getRelativeSpeed(moons[i].period);
     const elapsedDistance = rngStartsMoons[i] + elapsedTime * relativeSpeed;
     moonMeshes[i].position.x =
       moons[i].orbits.position.x + Math.cos(elapsedDistance) * relativeRadius;
@@ -244,6 +269,12 @@ const rotationFactor = Math.PI * 2 * 24; // 1 second = 24 hours
     moonMeshes[i].rotation.y =
       (rotationFactor * elapsedTime) / moons[i].daylength;
   }
+
+  // Update Saturn's rings
+  saturnsRings.position.x = planetMeshes[6].position.x;
+  saturnsRings.position.z = planetMeshes[6].position.z;
+  saturnsRings.rotation.z =
+    (rotationFactor * elapsedTime) / planets[6].daylength;
 
   // Update controls
   controls.update();
