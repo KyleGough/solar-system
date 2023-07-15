@@ -1,0 +1,111 @@
+[
+  {
+    "name": "sun",
+    "radius": 432000,
+    "distance": 0,
+    "period": 1,
+    "daylength": 600,
+    "texture": "/textures/sun.jpg",
+    "type": "star"
+  },
+  {
+    "name": "mercury",
+    "radius": 1516,
+    "distance": 56,
+    "period": 88,
+    "daylength": 4222.6,
+    "texture": "/textures/mercury.jpg",
+    "type": "planet",
+    "orbits": "sun"
+  },
+  {
+    "name": "venus",
+    "radius": 3760,
+    "distance": 108,
+    "period": 224,
+    "daylength": 2802,
+    "texture": "/textures/venus.jpg",
+    "type": "planet",
+    "orbits": "sun"
+  },
+  {
+    "name": "earth",
+    "radius": 3959,
+    "distance": 152,
+    "period": 365,
+    "daylength": 24,
+    "texture": "/textures/earth.jpg",
+    "type": "planet",
+    "orbits": "sun"
+  },
+  {
+    "name": "mars",
+    "radius": 2106,
+    "distance": 247,
+    "period": 686,
+    "daylength": 24.7,
+    "texture": "/textures/mars.jpg",
+    "type": "planet",
+    "orbits": "sun"
+  },
+  {
+    "name": "jupiter",
+    "radius": 43441,
+    "distance": 741,
+    "period": 4332,
+    "daylength": 9.9,
+    "texture": "/textures/jupiter.jpg",
+    "type": "planet",
+    "orbits": "sun"
+  },
+  {
+    "name": "saturn",
+    "radius": 36184,
+    "distance": 1463,
+    "period": 10755,
+    "daylength": 10.7,
+    "texture": "/textures/saturn.jpg",
+    "type": "planet",
+    "orbits": "sun"
+  },
+  {
+    "name": "uranus",
+    "radius": 15759,
+    "distance": 2938,
+    "period": 30687,
+    "daylength": 17.2,
+    "texture": "/textures/uranus.jpg",
+    "type": "planet",
+    "orbits": "sun"
+  },
+  {
+    "name": "neptune",
+    "radius": 15299,
+    "distance": 4474,
+    "period": 60190,
+    "daylength": 16.1,
+    "texture": "/textures/neptune.jpg",
+    "type": "planet",
+    "orbits": "sun"
+  },
+  {
+    "name": "Moon",
+    "radius": 1737,
+    "distance": 0.38,
+    "period": 28,
+    "daylength": 28,
+    "texture": "/textures/moon.jpg",
+    "type": "planet",
+    "orbits": "earth"
+  },
+  {
+    "name": "saturn-rings",
+    "radius": 3,
+    "distance": 0,
+    "period": 1,
+    "daylength": 1,
+    "texture": "/textures/saturn-ring.png",
+    "type": "ring",
+    "orbits": "saturn"
+  }
+]

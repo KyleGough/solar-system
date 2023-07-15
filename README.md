@@ -3,13 +3,11 @@
 ## Todo
 
 - Accuracy
-- Saturn's rings
 - Controls
 - Spin
 - Eccentricity
 - Tilt
 - Paths
-- Refactor
 
 ## Setup
 
