@@ -3,6 +3,7 @@ import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
 import * as dat from "lil-gui";
 import planetData from "./planets.json";
 import { PlanetaryObject } from "./planetary-object";
+import { createPath } from "./path";
 
 export type SolarSystem = Record<string, PlanetaryObject>;
 
@@ -52,6 +53,11 @@ for (const planet of planetData) {
     planet.type
   );
   scene.add(solarSystem[name].mesh);
+
+  if (planet.type === "planet") {
+    const path = createPath(solarSystem[name].distance);
+    // scene.add(path);
+  }
 }
 
 // Sizes

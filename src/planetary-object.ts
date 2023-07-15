@@ -34,7 +34,7 @@ export class PlanetaryObject {
     type: string
   ) {
     this.radius = radius;
-    this.distance = distance;
+    this.distance = getRelativeRadius(distance);
     this.period = period;
     this.daylength = daylength;
     this.texture = PlanetaryObject.loader.load(texture);
@@ -67,15 +67,14 @@ export class PlanetaryObject {
   };
 
   tick = (elapsedTime: number, solarSystem: SolarSystem) => {
-    const relativeRadius = getRelativeRadius(this.distance);
     const relativeSpeed = getRelativeSpeed(this.period);
     const elapsedDistance = this.rng + elapsedTime * relativeSpeed;
 
     const orbitX = solarSystem[this.orbits]?.mesh?.position?.x || 0;
     const orbitZ = solarSystem[this.orbits]?.mesh?.position?.z || 0;
 
-    this.mesh.position.x = orbitX + Math.cos(elapsedDistance) * relativeRadius;
-    this.mesh.position.z = orbitZ - Math.sin(elapsedDistance) * relativeRadius;
+    this.mesh.position.x = orbitX + Math.cos(elapsedDistance) * this.distance;
+    this.mesh.position.z = orbitZ - Math.sin(elapsedDistance) * this.distance;
 
     const rotation = (rotationFactor * elapsedTime) / this.daylength;
 

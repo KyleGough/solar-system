@@ -4,7 +4,6 @@
 
 - Accuracy
 - Controls
-- Spin
 - Eccentricity
 - Tilt
 - Paths
