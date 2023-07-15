@@ -19,8 +19,9 @@ export class PlanetaryObject {
   period: number; // in days
   daylength: number; // in hours
   texture: THREE.Texture;
-  type: string;
   orbits: string;
+  type: string;
+  tilt: number; // degrees
   mesh: THREE.Mesh;
   rng: number;
 
@@ -31,22 +32,26 @@ export class PlanetaryObject {
     daylength: number,
     texture: string,
     orbits = "sun",
-    type: string
+    type: string,
+    tilt = 0
   ) {
     this.radius = radius;
     this.distance = getRelativeRadius(distance);
     this.period = period;
     this.daylength = daylength;
     this.texture = PlanetaryObject.loader.load(texture);
-    this.type = type;
     this.orbits = orbits;
+    this.type = type;
+    this.tilt = (Math.PI * tilt) / 180;
     this.rng = Math.random() * 2 * Math.PI;
     this.mesh = this.createMesh();
   }
 
   createMesh = () => {
     if (this.type === "ring") {
-      return createRingMesh(this.texture);
+      const mesh = createRingMesh(this.texture);
+      mesh.rotation.x += this.tilt;
+      return mesh;
     }
 
     const geometry = new THREE.SphereGeometry(
@@ -63,6 +68,7 @@ export class PlanetaryObject {
     }
     const sphere = new THREE.Mesh(geometry, material);
     sphere.receiveShadow = true;
+    sphere.rotation.x = this.tilt;
     return sphere;
   };
 

@@ -16,7 +16,8 @@
     "daylength": 4222.6,
     "texture": "/textures/mercury.jpg",
     "type": "planet",
-    "orbits": "sun"
+    "orbits": "sun",
+    "tilt": 0.03
   },
   {
     "name": "venus",
@@ -26,7 +27,8 @@
     "daylength": 2802,
     "texture": "/textures/venus.jpg",
     "type": "planet",
-    "orbits": "sun"
+    "orbits": "sun",
+    "tilt": 2.64
   },
   {
     "name": "earth",
@@ -36,7 +38,8 @@
     "daylength": 24,
     "texture": "/textures/earth.jpg",
     "type": "planet",
-    "orbits": "sun"
+    "orbits": "sun",
+    "tilt": 23.44
   },
   {
     "name": "mars",
@@ -46,7 +49,8 @@
     "daylength": 24.7,
     "texture": "/textures/mars.jpg",
     "type": "planet",
-    "orbits": "sun"
+    "orbits": "sun",
+    "tilt": 25.19
   },
   {
     "name": "jupiter",
@@ -56,7 +60,8 @@
     "daylength": 9.9,
     "texture": "/textures/jupiter.jpg",
     "type": "planet",
-    "orbits": "sun"
+    "orbits": "sun",
+    "tilt": 3.13
   },
   {
     "name": "saturn",
@@ -66,7 +71,8 @@
     "daylength": 10.7,
     "texture": "/textures/saturn.jpg",
     "type": "planet",
-    "orbits": "sun"
+    "orbits": "sun",
+    "tilt": 26.73
   },
   {
     "name": "uranus",
@@ -76,7 +82,8 @@
     "daylength": 17.2,
     "texture": "/textures/uranus.jpg",
     "type": "planet",
-    "orbits": "sun"
+    "orbits": "sun",
+    "tilt": 82.23
   },
   {
     "name": "neptune",
@@ -86,7 +93,8 @@
     "daylength": 16.1,
     "texture": "/textures/neptune.jpg",
     "type": "planet",
-    "orbits": "sun"
+    "orbits": "sun",
+    "tilt": 28.32
   },
   {
     "name": "Moon",
@@ -106,6 +114,7 @@
     "daylength": 1,
     "texture": "/textures/saturn-ring.png",
     "type": "ring",
-    "orbits": "saturn"
+    "orbits": "saturn",
+    "tilt": 26.73
   }
 ]

@@ -19,7 +19,6 @@ export const createRingMesh = (texture: THREE.Texture): THREE.Mesh => {
   const rings = new THREE.Mesh(ringGeometry, ringMaterial);
   rings.receiveShadow = true;
   rings.rotation.x = -Math.PI / 2;
-  rings.rotation.z = Math.PI / 2;
 
   return rings;
 };

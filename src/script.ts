@@ -50,7 +50,8 @@ for (const planet of planetData) {
     planet.daylength,
     planet.texture,
     planet.orbits,
-    planet.type
+    planet.type,
+    planet.tilt
   );
   scene.add(solarSystem[name].mesh);
 

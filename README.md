@@ -5,8 +5,6 @@
 - Accuracy
 - Controls
 - Eccentricity
-- Tilt
-- Paths
 
 ## Setup
 
