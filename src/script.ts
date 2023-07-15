@@ -167,12 +167,12 @@ const moonMeshes = moons.map((moon) => createPlanetMesh(moon));
 scene.add(...moonMeshes);
 
 // Saturn's rings
-const ringGeometry = new THREE.RingGeometry(0.2, 2, 64);
+const ringGeometry = new THREE.RingGeometry(0.4, 1, 64);
 const pos = ringGeometry.attributes.position;
 const v3 = new THREE.Vector3();
 for (let i = 0; i < pos.count; i++) {
   v3.fromBufferAttribute(pos, i);
-  ringGeometry.attributes.uv.setXY(i, v3.length() < 1 ? 0 : 1, 1);
+  ringGeometry.attributes.uv.setXY(i, v3.length() < 0.9 ? 0 : 1, 1);
 }
 const ringMaterial = new THREE.MeshPhongMaterial({
   map: saturnRingTexture,
