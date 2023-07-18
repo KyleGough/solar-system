@@ -9,7 +9,7 @@ const getRelativeRadius = (distance: number): number => {
 };
 
 const getRelativeSpeed = (period: number): number => {
-  return 500 / period;
+  return 25 / period;
 };
 
 export class PlanetaryObject {
@@ -36,7 +36,7 @@ export class PlanetaryObject {
     tilt = 0
   ) {
     this.radius = radius;
-    this.distance = getRelativeRadius(distance);
+    this.distance = type === "moon" ? distance : getRelativeRadius(distance);
     this.period = period;
     this.daylength = daylength;
     this.texture = PlanetaryObject.loader.load(texture);

@@ -103,7 +103,7 @@
     "period": 28,
     "daylength": 28,
     "texture": "/textures/moon.jpg",
-    "type": "planet",
+    "type": "moon",
     "orbits": "earth"
   },
   {
@@ -116,5 +116,71 @@
     "type": "ring",
     "orbits": "saturn",
     "tilt": 26.73
+  },
+  {
+    "name": "ganymede",
+    "radius": 2634,
+    "distance": 1.07,
+    "period": 7.15,
+    "daylength": 9.9,
+    "texture": "/textures/ganymede.jpg",
+    "type": "moon",
+    "orbits": "jupiter",
+    "tilt": 3.33
+  },
+  {
+    "name": "titan",
+    "radius": 2574,
+    "distance": 1.2,
+    "period": 15.95,
+    "daylength": 10.7,
+    "texture": "/textures/titan.webp",
+    "type": "moon",
+    "orbits": "saturn",
+    "tilt": 27
+  },
+  {
+    "name": "callisto",
+    "radius": 2574,
+    "distance": 1.88,
+    "period": 16.69,
+    "daylength": 9.9,
+    "texture": "/textures/callisto.jpg",
+    "type": "moon",
+    "orbits": "jupiter",
+    "tilt": 0
+  },
+  {
+    "name": "io",
+    "radius": 1821,
+    "distance": 0.42,
+    "period": 1.77,
+    "daylength": 9.9,
+    "texture": "/textures/io.jpg",
+    "type": "moon",
+    "orbits": "jupiter",
+    "tilt": 0.05
+  },
+  {
+    "name": "europa",
+    "radius": 1560,
+    "distance": 0.67,
+    "period": 3.55,
+    "daylength": 9.9,
+    "texture": "/textures/europa.jpg",
+    "type": "moon",
+    "orbits": "jupiter",
+    "tilt": 0.47
+  },
+  {
+    "name": "triton",
+    "radius": 1353,
+    "distance": 0.35,
+    "period": 5.87,
+    "daylength": 16.1,
+    "texture": "/textures/triton.jpg",
+    "type": "moon",
+    "orbits": "neptune",
+    "tilt": 156
   }
 ]

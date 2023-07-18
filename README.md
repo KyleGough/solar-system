@@ -4,7 +4,7 @@
 
 - Accuracy
 - Controls
-- Eccentricity
+- Moon tilts
 
 ## Setup
 
@@ -21,3 +21,13 @@ npm run dev
 # Build for production in the dist/ directory
 npm run build
 ```
+
+## Texture Sources
+
+- [Planets, Sun, The Moon, and Saturn's rings](https://www.solarsystemscope.com/textures/)
+- [Ganymede](https://www.deviantart.com/askaniy/art/Ganymede-Texture-Map-11K-808732114)
+- [Titan](https://planet-texture-maps.fandom.com/wiki/Titan)
+- [Callisto](http://bjj.mmedia.is/data/callisto/)
+- [Io](https://phys.org/news/2014-12-solar-worlds-distant-exoplanets.html)
+- [Europa](https://www.johnstonsarchive.net/spaceart/cylmaps.html)
+- [Triton](https://www.go-astronomy.com/planets/neptune-moon-triton.htm)
