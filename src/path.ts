@@ -10,6 +10,7 @@ export const createPath = (radius: number, thickness = 0.04) => {
   });
 
   const mesh = new THREE.Mesh(geometry, material);
+  mesh.visible = false;
 
   // Align to the ecliptic plane
   mesh.rotation.x = Math.PI / 2;

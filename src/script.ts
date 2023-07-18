@@ -3,7 +3,6 @@ import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
 import * as dat from "lil-gui";
 import planetData from "./planets.json";
 import { PlanetaryObject } from "./planetary-object";
-import { createPath } from "./path";
 
 export type SolarSystem = Record<string, PlanetaryObject>;
 
@@ -21,7 +20,7 @@ const scene = new THREE.Scene();
 // Ambient light
 const ambientLight = new THREE.AmbientLight(0xffffff, 0.33);
 const ambientFolder = gui.addFolder("Ambient Light");
-ambientFolder.add(ambientLight, "intensity").min(0).max(1).step(0.001);
+ambientFolder.add(ambientLight, "intensity", 0, 1, 0.001);
 scene.add(ambientLight);
 
 // Point Light.
@@ -43,7 +42,7 @@ const solarSystem: SolarSystem = {};
 
 for (const planet of planetData) {
   const name = planet.name;
-  solarSystem[name] = new PlanetaryObject(
+  const object = new PlanetaryObject(
     planet.radius,
     planet.distance,
     planet.period,
@@ -53,13 +52,61 @@ for (const planet of planetData) {
     planet.type,
     planet.tilt
   );
-  scene.add(solarSystem[name].mesh);
 
-  if (planet.type === "planet") {
-    const path = createPath(solarSystem[name].distance);
-    // =scene.add(path);
-  }
+  solarSystem[name] = object;
+  scene.add(object.mesh);
+  object.path && scene.add(object.path);
 }
+
+const options = {
+  showPaths: false,
+  showMoons: true,
+  focus: "Sun",
+};
+
+const planetNames = [
+  "Mercury",
+  "Venus",
+  "Earth",
+  "Mars",
+  "Jupiter",
+  "Saturn",
+  "Uranus",
+  "Neptune",
+];
+
+// Toggle planetary paths
+gui
+  .add(options, "showPaths")
+  .name("Show Paths")
+  .onChange((value: boolean) => {
+    for (const name in solarSystem) {
+      const object = solarSystem[name];
+      if (object.path) {
+        object.path.visible = value;
+      }
+    }
+  });
+
+// Toggle moons
+gui
+  .add(options, "showMoons")
+  .name("Show Moons")
+  .onChange((value: boolean) => {
+    for (const name in solarSystem) {
+      const object = solarSystem[name];
+      if (object.type === "moon") {
+        object.mesh.visible = value;
+      }
+    }
+  });
+
+gui
+  .add(options, "focus", ["Sun", ...planetNames])
+  .name("Focus")
+  .onChange((value: string) => {
+    controls.target = solarSystem[value].mesh.position;
+  });
 
 // Sizes
 const sizes = {
@@ -91,7 +138,11 @@ scene.add(camera);
 
 // Controls
 const controls = new OrbitControls(camera, canvas);
+controls.target = solarSystem["Sun"].mesh.position;
 controls.enableDamping = true;
+controls.enablePan = false;
+controls.minDistance = 1.5;
+controls.maxDistance = 50;
 
 // Renderer
 const renderer = new THREE.WebGLRenderer({

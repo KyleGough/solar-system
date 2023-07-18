@@ -1,15 +1,24 @@
 import * as THREE from "three";
 import { SolarSystem } from "./script";
 import { createRingMesh } from "./rings";
+import { createPath } from "./path";
 
 const rotationFactor = Math.PI * 2 * 24; // 1 second = 24 hours
 
-const getRelativeRadius = (distance: number): number => {
+const normaliseRadius = (radius: number): number => {
+  return Math.sqrt(radius) / 500;
+};
+
+const normaliseDistance = (distance: number): number => {
   return Math.pow(distance, 0.4) / 2;
 };
 
 const getRelativeSpeed = (period: number): number => {
   return 25 / period;
+};
+
+const degreesToRadians = (degrees: number): number => {
+  return (Math.PI * degrees) / 180;
 };
 
 export class PlanetaryObject {
@@ -23,6 +32,7 @@ export class PlanetaryObject {
   type: string;
   tilt: number; // degrees
   mesh: THREE.Mesh;
+  path?: THREE.Mesh;
   rng: number;
 
   constructor(
@@ -35,16 +45,20 @@ export class PlanetaryObject {
     type: string,
     tilt = 0
   ) {
-    this.radius = radius;
-    this.distance = type === "moon" ? distance : getRelativeRadius(distance);
+    this.radius = normaliseRadius(radius);
+    this.distance = type === "moon" ? distance : normaliseDistance(distance);
     this.period = period;
     this.daylength = daylength;
     this.texture = PlanetaryObject.loader.load(texture);
     this.orbits = orbits;
     this.type = type;
-    this.tilt = (Math.PI * tilt) / 180;
+    this.tilt = degreesToRadians(tilt);
     this.rng = Math.random() * 2 * Math.PI;
     this.mesh = this.createMesh();
+
+    if (type === "planet") {
+      this.path = createPath(this.distance);
+    }
   }
 
   createMesh = () => {
@@ -54,14 +68,13 @@ export class PlanetaryObject {
       return mesh;
     }
 
-    const geometry = new THREE.SphereGeometry(
-      Math.sqrt(this.radius) / 500,
-      32,
-      32
-    );
+    const geometry = new THREE.SphereGeometry(this.radius, 32, 32);
     let material;
     if (this.type === "star") {
-      material = new THREE.MeshBasicMaterial({ map: this.texture });
+      material = new THREE.MeshBasicMaterial({
+        map: this.texture,
+        lightMapIntensity: 2,
+      });
     } else {
       material = new THREE.MeshPhongMaterial({ map: this.texture });
       material.shininess = 10;

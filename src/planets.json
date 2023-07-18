@@ -1,6 +1,6 @@
 [
   {
-    "name": "sun",
+    "name": "Sun",
     "radius": 432000,
     "distance": 0,
     "period": 1,
@@ -9,7 +9,7 @@
     "type": "star"
   },
   {
-    "name": "mercury",
+    "name": "Mercury",
     "radius": 1516,
     "distance": 56,
     "period": 88,
@@ -20,7 +20,7 @@
     "tilt": 0.03
   },
   {
-    "name": "venus",
+    "name": "Venus",
     "radius": 3760,
     "distance": 108,
     "period": 224,
@@ -31,7 +31,7 @@
     "tilt": 2.64
   },
   {
-    "name": "earth",
+    "name": "Earth",
     "radius": 3959,
     "distance": 152,
     "period": 365,
@@ -42,7 +42,7 @@
     "tilt": 23.44
   },
   {
-    "name": "mars",
+    "name": "Mars",
     "radius": 2106,
     "distance": 247,
     "period": 686,
@@ -53,7 +53,7 @@
     "tilt": 25.19
   },
   {
-    "name": "jupiter",
+    "name": "Jupiter",
     "radius": 43441,
     "distance": 741,
     "period": 4332,
@@ -64,7 +64,7 @@
     "tilt": 3.13
   },
   {
-    "name": "saturn",
+    "name": "Saturn",
     "radius": 36184,
     "distance": 1463,
     "period": 10755,
@@ -75,7 +75,7 @@
     "tilt": 26.73
   },
   {
-    "name": "uranus",
+    "name": "Uranus",
     "radius": 15759,
     "distance": 2938,
     "period": 30687,
@@ -86,7 +86,7 @@
     "tilt": 82.23
   },
   {
-    "name": "neptune",
+    "name": "Neptune",
     "radius": 15299,
     "distance": 4474,
     "period": 60190,
@@ -107,7 +107,7 @@
     "orbits": "earth"
   },
   {
-    "name": "saturn-rings",
+    "name": "Saturn's Rings",
     "radius": 3,
     "distance": 0,
     "period": 1,
@@ -118,7 +118,7 @@
     "tilt": 26.73
   },
   {
-    "name": "ganymede",
+    "name": "Ganymede",
     "radius": 2634,
     "distance": 1.07,
     "period": 7.15,
@@ -129,7 +129,7 @@
     "tilt": 3.33
   },
   {
-    "name": "titan",
+    "name": "Titan",
     "radius": 2574,
     "distance": 1.2,
     "period": 15.95,
@@ -140,7 +140,7 @@
     "tilt": 27
   },
   {
-    "name": "callisto",
+    "name": "Callisto",
     "radius": 2574,
     "distance": 1.88,
     "period": 16.69,
@@ -151,7 +151,7 @@
     "tilt": 0
   },
   {
-    "name": "io",
+    "name": "Io",
     "radius": 1821,
     "distance": 0.42,
     "period": 1.77,
@@ -162,7 +162,7 @@
     "tilt": 0.05
   },
   {
-    "name": "europa",
+    "name": "Europa",
     "radius": 1560,
     "distance": 0.67,
     "period": 3.55,
@@ -173,7 +173,7 @@
     "tilt": 0.47
   },
   {
-    "name": "triton",
+    "name": "Triton",
     "radius": 1353,
     "distance": 0.35,
     "period": 5.87,
