@@ -15,7 +15,7 @@ Run this followed commands:
 # Install dependencies
 npm install
 
-# Run the local server at localhost:8080
+# Run the local server
 npm run dev
 
 # Build for production in the dist/ directory

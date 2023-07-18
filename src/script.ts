@@ -57,7 +57,7 @@ for (const planet of planetData) {
 
   if (planet.type === "planet") {
     const path = createPath(solarSystem[name].distance);
-    // scene.add(path);
+    // =scene.add(path);
   }
 }
 
@@ -86,7 +86,7 @@ const aspect = sizes.width / sizes.height;
 const camera = new THREE.PerspectiveCamera(75, aspect, 0.1, 1000);
 camera.position.x = 0;
 camera.position.y = 2;
-camera.position.z = 2;
+camera.position.z = 8;
 scene.add(camera);
 
 // Controls

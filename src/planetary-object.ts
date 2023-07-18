@@ -67,6 +67,7 @@ export class PlanetaryObject {
       material.shininess = 10;
     }
     const sphere = new THREE.Mesh(geometry, material);
+    sphere.castShadow = true;
     sphere.receiveShadow = true;
     sphere.rotation.x = this.tilt;
     return sphere;
