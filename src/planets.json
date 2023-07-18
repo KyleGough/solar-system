@@ -16,7 +16,7 @@
     "daylength": 4222.6,
     "texture": "/textures/mercury.jpg",
     "type": "planet",
-    "orbits": "sun",
+    "orbits": "Sun",
     "tilt": 0.03
   },
   {
@@ -27,7 +27,7 @@
     "daylength": 2802,
     "texture": "/textures/venus.jpg",
     "type": "planet",
-    "orbits": "sun",
+    "orbits": "Sun",
     "tilt": 2.64
   },
   {
@@ -38,7 +38,7 @@
     "daylength": 24,
     "texture": "/textures/earth.jpg",
     "type": "planet",
-    "orbits": "sun",
+    "orbits": "Sun",
     "tilt": 23.44
   },
   {
@@ -49,7 +49,7 @@
     "daylength": 24.7,
     "texture": "/textures/mars.jpg",
     "type": "planet",
-    "orbits": "sun",
+    "orbits": "Sun",
     "tilt": 25.19
   },
   {
@@ -60,7 +60,7 @@
     "daylength": 9.9,
     "texture": "/textures/jupiter.jpg",
     "type": "planet",
-    "orbits": "sun",
+    "orbits": "Sun",
     "tilt": 3.13
   },
   {
@@ -71,7 +71,7 @@
     "daylength": 10.7,
     "texture": "/textures/saturn.jpg",
     "type": "planet",
-    "orbits": "sun",
+    "orbits": "Sun",
     "tilt": 26.73
   },
   {
@@ -82,7 +82,7 @@
     "daylength": 17.2,
     "texture": "/textures/uranus.jpg",
     "type": "planet",
-    "orbits": "sun",
+    "orbits": "Sun",
     "tilt": 82.23
   },
   {
@@ -93,7 +93,7 @@
     "daylength": 16.1,
     "texture": "/textures/neptune.jpg",
     "type": "planet",
-    "orbits": "sun",
+    "orbits": "Sun",
     "tilt": 28.32
   },
   {
@@ -104,7 +104,7 @@
     "daylength": 28,
     "texture": "/textures/moon.jpg",
     "type": "moon",
-    "orbits": "earth"
+    "orbits": "Earth"
   },
   {
     "name": "Saturn's Rings",
@@ -114,7 +114,7 @@
     "daylength": 1,
     "texture": "/textures/saturn-ring.png",
     "type": "ring",
-    "orbits": "saturn",
+    "orbits": "Saturn",
     "tilt": 26.73
   },
   {
@@ -125,7 +125,7 @@
     "daylength": 9.9,
     "texture": "/textures/ganymede.jpg",
     "type": "moon",
-    "orbits": "jupiter",
+    "orbits": "Jupiter",
     "tilt": 3.33
   },
   {
@@ -136,7 +136,7 @@
     "daylength": 10.7,
     "texture": "/textures/titan.webp",
     "type": "moon",
-    "orbits": "saturn",
+    "orbits": "Saturn",
     "tilt": 27
   },
   {
@@ -147,7 +147,7 @@
     "daylength": 9.9,
     "texture": "/textures/callisto.jpg",
     "type": "moon",
-    "orbits": "jupiter",
+    "orbits": "Jupiter",
     "tilt": 0
   },
   {
@@ -158,7 +158,7 @@
     "daylength": 9.9,
     "texture": "/textures/io.jpg",
     "type": "moon",
-    "orbits": "jupiter",
+    "orbits": "Jupiter",
     "tilt": 0.05
   },
   {
@@ -169,7 +169,7 @@
     "daylength": 9.9,
     "texture": "/textures/europa.jpg",
     "type": "moon",
-    "orbits": "jupiter",
+    "orbits": "Jupiter",
     "tilt": 0.47
   },
   {
@@ -180,7 +180,7 @@
     "daylength": 16.1,
     "texture": "/textures/triton.jpg",
     "type": "moon",
-    "orbits": "neptune",
+    "orbits": "Neptune",
     "tilt": 156
   }
 ]

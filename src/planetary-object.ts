@@ -41,7 +41,7 @@ export class PlanetaryObject {
     period: number,
     daylength: number,
     texture: string,
-    orbits = "sun",
+    orbits = "Sun",
     type: string,
     tilt = 0
   ) {
