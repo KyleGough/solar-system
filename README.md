@@ -5,7 +5,6 @@
 - More rontrols
 - Environment map
 - Earth night time
-- Favicon
 - Information panel
 - Accuracy
 
