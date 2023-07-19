@@ -1,7 +1,12 @@
 import * as THREE from "three";
 
 export const createPath = (radius: number, thickness = 0.04) => {
-  const geometry = new THREE.RingGeometry(radius, radius + thickness, 256);
+  const halfWidth = thickness / 2;
+  const geometry = new THREE.RingGeometry(
+    radius - halfWidth,
+    radius + halfWidth,
+    256
+  );
   const material = new THREE.MeshBasicMaterial({
     color: 0xffffff,
     side: THREE.DoubleSide,
