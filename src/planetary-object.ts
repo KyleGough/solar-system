@@ -28,6 +28,7 @@ export class PlanetaryObject {
   period: number; // in days
   daylength: number; // in hours
   texture: THREE.Texture;
+  bumpMap?: THREE.Texture;
   orbits: string;
   type: string;
   tilt: number; // degrees
@@ -43,7 +44,8 @@ export class PlanetaryObject {
     texture: string,
     orbits = "Sun",
     type: string,
-    tilt = 0
+    tilt = 0,
+    bumpMap?: string
   ) {
     this.radius = normaliseRadius(radius);
     this.distance = type === "moon" ? distance : normaliseDistance(distance);
@@ -54,11 +56,16 @@ export class PlanetaryObject {
     this.type = type;
     this.tilt = degreesToRadians(tilt);
     this.rng = Math.random() * 2 * Math.PI;
-    this.mesh = this.createMesh();
 
     if (type === "planet") {
       this.path = createPath(this.distance);
     }
+
+    if (bumpMap) {
+      this.bumpMap = PlanetaryObject.loader.load(bumpMap);
+    }
+
+    this.mesh = this.createMesh();
   }
 
   createMesh = () => {
@@ -76,8 +83,14 @@ export class PlanetaryObject {
         lightMapIntensity: 2,
       });
     } else {
-      material = new THREE.MeshPhongMaterial({ map: this.texture });
-      material.shininess = 10;
+      material = new THREE.MeshPhongMaterial({
+        map: this.texture,
+        shininess: 10,
+      });
+      if (this.bumpMap) {
+        material.bumpMap = this.bumpMap;
+        material.bumpScale = 0.01;
+      }
     }
     const sphere = new THREE.Mesh(geometry, material);
     sphere.castShadow = true;

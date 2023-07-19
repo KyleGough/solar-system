@@ -48,6 +48,7 @@
     "period": 686,
     "daylength": 24.7,
     "texture": "/textures/mars.jpg",
+    "bumpMap": "/textures/mars-bump.jpg",
     "type": "planet",
     "orbits": "Sun",
     "tilt": 25.19

@@ -50,7 +50,8 @@ for (const planet of planetData) {
     planet.texture,
     planet.orbits,
     planet.type,
-    planet.tilt
+    planet.tilt,
+    planet.bumpMap
   );
 
   solarSystem[name] = object;
@@ -141,7 +142,7 @@ const controls = new OrbitControls(camera, canvas);
 controls.target = solarSystem["Sun"].mesh.position;
 controls.enableDamping = true;
 controls.enablePan = false;
-controls.minDistance = 1.5;
+controls.minDistance = 0.5;
 controls.maxDistance = 50;
 
 // Renderer

@@ -25,6 +25,7 @@ npm run build
 ## Texture Sources
 
 - [Planets, Sun, The Moon, and Saturn's rings](https://www.solarsystemscope.com/textures/)
+- [Mars](https://planetpixelemporium.com/mars5672.html)
 - [Ganymede](https://www.deviantart.com/askaniy/art/Ganymede-Texture-Map-11K-808732114)
 - [Titan](https://planet-texture-maps.fandom.com/wiki/Titan)
 - [Callisto](http://bjj.mmedia.is/data/callisto/)
