@@ -17,6 +17,18 @@ const canvas = document.querySelector("canvas.webgl") as HTMLElement;
 // Scene
 const scene = new THREE.Scene();
 
+// Environment map
+const cubeTextureLoader = new THREE.CubeTextureLoader();
+const environmentMap = cubeTextureLoader.load([
+  "/textures/environment/px.png",
+  "/textures/environment/nx.png",
+  "/textures/environment/py.png",
+  "/textures/environment/ny.png",
+  "/textures/environment/pz.png",
+  "/textures/environment/nz.png",
+]);
+scene.background = environmentMap;
+
 // Ambient light
 const ambientLight = new THREE.AmbientLight(0xffffff, 0.33);
 const ambientFolder = gui.addFolder("Ambient Light");

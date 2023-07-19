@@ -89,11 +89,11 @@ export class PlanetaryObject {
     }
     if (textures.atmosphere) {
       this.atmosphere.map = PlanetaryObject.loader.load(textures.atmosphere);
-      if (textures.atmosphereAlpha) {
-        this.atmosphere.alpha = PlanetaryObject.loader.load(
-          textures.atmosphereAlpha
-        );
-      }
+    }
+    if (textures.atmosphereAlpha) {
+      this.atmosphere.alpha = PlanetaryObject.loader.load(
+        textures.atmosphereAlpha
+      );
     }
   }
 

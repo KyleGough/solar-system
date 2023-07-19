@@ -3,7 +3,6 @@
 ## Todo
 
 - More rontrols
-- Environment map
 - Earth night time
 - Information panel
 - Accuracy
