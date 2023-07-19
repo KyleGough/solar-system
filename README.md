@@ -2,7 +2,7 @@
 
 ## Todo
 
-- More rontrols
+- More controls
 - Earth night time
 - Information panel
 - Accuracy

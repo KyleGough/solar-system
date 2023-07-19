@@ -3,8 +3,7 @@ import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
 import * as dat from "lil-gui";
 import planetData from "./planets.json";
 import { PlanetaryObject } from "./planetary-object";
-
-export type SolarSystem = Record<string, PlanetaryObject>;
+import { SolarSystem, environmentMap } from "./utils";
 
 THREE.ColorManagement.enabled = false;
 
@@ -18,15 +17,6 @@ const canvas = document.querySelector("canvas.webgl") as HTMLElement;
 const scene = new THREE.Scene();
 
 // Environment map
-const cubeTextureLoader = new THREE.CubeTextureLoader();
-const environmentMap = cubeTextureLoader.load([
-  "/textures/environment/px.png",
-  "/textures/environment/nx.png",
-  "/textures/environment/py.png",
-  "/textures/environment/ny.png",
-  "/textures/environment/pz.png",
-  "/textures/environment/nz.png",
-]);
 scene.background = environmentMap;
 
 // Ambient light
@@ -160,6 +150,7 @@ controls.maxDistance = 50;
 // Renderer
 const renderer = new THREE.WebGLRenderer({
   canvas: canvas,
+  antialias: true,
 });
 
 renderer.outputColorSpace = THREE.LinearSRGBColorSpace;

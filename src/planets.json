@@ -50,6 +50,7 @@
     "textures": {
       "map": "/textures/earth.jpg",
       "bump": "/textures/earth-bump.jpg",
+      "specular": "/textures/earth-specular.jpg",
       "atmosphere": "/textures/earth-clouds.jpg",
       "atmosphereAlpha": "/textures/earth-clouds-alpha.jpg"
     }

@@ -1,5 +1,5 @@
 import * as THREE from "three";
-import { SolarSystem } from "./script";
+import { SolarSystem, environmentMap } from "./utils";
 import { createRingMesh } from "./rings";
 import { createPath } from "./path";
 
@@ -8,6 +8,7 @@ interface TexturePaths {
   bump?: string;
   atmosphere?: string;
   atmosphereAlpha?: string;
+  specular?: string;
 }
 
 interface Atmosphere {
@@ -48,6 +49,7 @@ export class PlanetaryObject {
   rng: number;
   map: THREE.Texture;
   bumpMap?: THREE.Texture;
+  specularMap?: THREE.Texture;
   atmosphere: Atmosphere = {};
 
   constructor(
@@ -87,6 +89,9 @@ export class PlanetaryObject {
     if (textures.bump) {
       this.bumpMap = PlanetaryObject.loader.load(textures.bump);
     }
+    if (textures.specular) {
+      this.specularMap = PlanetaryObject.loader.load(textures.specular);
+    }
     if (textures.atmosphere) {
       this.atmosphere.map = PlanetaryObject.loader.load(textures.atmosphere);
     }
@@ -118,6 +123,10 @@ export class PlanetaryObject {
         material.bumpMap = this.bumpMap;
         material.bumpScale =
           this.type === "moon" ? this.radius / 200 : this.radius / 50;
+      }
+      if (this.specularMap) {
+        material.specularMap = this.specularMap;
+        material.environmentMap = environmentMap;
       }
     }
     const sphere = new THREE.Mesh(geometry, material);
