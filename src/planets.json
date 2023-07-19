@@ -37,6 +37,7 @@
     "period": 365,
     "daylength": 24,
     "texture": "/textures/earth.jpg",
+    "bumpMap": "/textures/earth-bump.jpg",
     "type": "planet",
     "orbits": "Sun",
     "tilt": 23.44
