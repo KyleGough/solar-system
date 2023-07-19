@@ -22,7 +22,7 @@ scene.background = environmentMap;
 // Ambient light
 const ambientLight = new THREE.AmbientLight(0xffffff, 0.05);
 const ambientFolder = gui.addFolder("Ambient Light");
-ambientFolder.add(ambientLight, "intensity", 0, 1, 0.001);
+ambientFolder.add(ambientLight, "intensity", 0, 1, 0.001).name("Intensity");
 scene.add(ambientLight);
 
 // Point Light.

@@ -17,7 +17,7 @@ interface Atmosphere {
   alpha?: THREE.Texture;
 }
 
-const rotationFactor = 0; // Math.PI * 2 * 24; // 1 second = 24 hours
+const timeFactor = 8; // 1s real-time => 8h simulation time
 
 const normaliseRadius = (radius: number): number => {
   return Math.sqrt(radius) / 500;
@@ -25,10 +25,6 @@ const normaliseRadius = (radius: number): number => {
 
 const normaliseDistance = (distance: number): number => {
   return Math.pow(distance, 0.4) / 2;
-};
-
-const getRelativeSpeed = (period: number): number => {
-  return 25 / period;
 };
 
 const degreesToRadians = (degrees: number): number => {
@@ -119,20 +115,23 @@ export class PlanetaryObject {
         map: this.map,
         shininess: 10,
       });
+
       if (this.bumpMap) {
         material.bumpMap = this.bumpMap;
         material.bumpScale =
           this.type === "moon" ? this.radius / 200 : this.radius / 50;
       }
+
       if (this.specularMap) {
         material.specularMap = this.specularMap;
         material.environmentMap = environmentMap;
       }
     }
+
     const sphere = new THREE.Mesh(geometry, material);
     sphere.castShadow = true;
     sphere.receiveShadow = true;
-    sphere.rotation.x = this.tilt;
+    sphere.rotation.x += this.tilt;
     return sphere;
   };
 
@@ -159,18 +158,19 @@ export class PlanetaryObject {
     elapsedTime: number,
     solarSystem: SolarSystem
   ) => {
-    const relativeSpeed = getRelativeSpeed(this.period);
-    const elapsedDistance = this.rng + elapsedTime * relativeSpeed;
+    // Convert real-time seconds to rotation.
+    const rotation = (elapsedTime * Math.PI * 2 * timeFactor) / this.daylength;
+    const orbitRotation =
+      (elapsedTime * Math.PI * 2 * timeFactor) / (this.period * 24);
+    const orbit = orbitRotation + this.rng;
 
     // Initially fix position to orbiting object or the origin.
     const orbitX = solarSystem[this.orbits]?.mesh?.position?.x || 0;
     const orbitZ = solarSystem[this.orbits]?.mesh?.position?.z || 0;
 
     // Circular rotation around orbit.
-    mesh.position.x = orbitX + Math.cos(elapsedDistance) * this.distance;
-    mesh.position.z = orbitZ - Math.sin(elapsedDistance) * this.distance;
-
-    const rotation = (rotationFactor * elapsedTime) / this.daylength;
+    mesh.position.x = orbitX + Math.cos(orbit) * this.distance;
+    mesh.position.z = orbitZ - Math.sin(orbit) * this.distance;
 
     if (this.type === "ring") {
       mesh.rotation.z = rotation;

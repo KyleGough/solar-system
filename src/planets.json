@@ -126,7 +126,7 @@
     "radius": 1737,
     "distance": 0.38,
     "period": 28,
-    "daylength": 28,
+    "daylength": 672,
     "type": "moon",
     "orbits": "Earth",
     "tilt": 6.6,
