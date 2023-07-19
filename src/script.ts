@@ -47,15 +47,15 @@ for (const planet of planetData) {
     planet.distance,
     planet.period,
     planet.daylength,
-    planet.texture,
+    planet.textures,
     planet.orbits,
     planet.type,
-    planet.tilt,
-    planet.bumpMap
+    planet.tilt
   );
 
   solarSystem[name] = object;
   scene.add(object.mesh);
+  object.atmosphere.mesh && scene.add(object.atmosphere.mesh);
   object.path && scene.add(object.path);
 }
 

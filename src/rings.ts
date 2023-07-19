@@ -1,6 +1,9 @@
 import * as THREE from "three";
 
-export const createRingMesh = (texture: THREE.Texture): THREE.Mesh => {
+export const createRingMesh = (
+  texture: THREE.Texture,
+  tilt: number
+): THREE.Mesh => {
   const ringGeometry = new THREE.RingGeometry(0.4, 1, 64);
   const pos = ringGeometry.attributes.position;
   const v3 = new THREE.Vector3();
@@ -21,6 +24,8 @@ export const createRingMesh = (texture: THREE.Texture): THREE.Mesh => {
 
   // Align to the ecliptic plane
   rings.rotation.x = -Math.PI / 2;
+
+  rings.rotation.x += tilt;
 
   return rings;
 };
