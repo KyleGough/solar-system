@@ -65,6 +65,8 @@ const options = {
   showPaths: false,
   showMoons: true,
   focus: "Sun",
+  clock: true,
+  speed: 1,
 };
 
 const planetNames = [
@@ -104,12 +106,28 @@ gui
     }
   });
 
+// Follow a planet
 gui
   .add(options, "focus", ["Sun", ...planetNames])
   .name("Focus")
   .onChange((value: string) => {
     controls.target = solarSystem[value].mesh.position;
   });
+
+// Pause the simulation
+gui
+  .add(options, "clock")
+  .name("Run")
+  .onChange((value: boolean) => {
+    if (value) {
+      clock.start();
+    } else {
+      clock.stop();
+    }
+  });
+
+// Control the simulation speed
+gui.add(options, "speed", 0.1, 20, 0.1).name("Speed");
 
 // Sizes
 const sizes = {
@@ -161,9 +179,10 @@ renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 
 // Animate
 const clock = new THREE.Clock();
+let elapsedTime = 0;
 
 (function tick() {
-  const elapsedTime = clock.getElapsedTime();
+  elapsedTime += clock.getDelta() * options.speed;
 
   // Update the solar system objects
   for (const object of Object.values(solarSystem)) {
