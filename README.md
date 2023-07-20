@@ -2,10 +2,12 @@
 
 ## Todo
 
-- More controls
 - Earth night time
 - Information panel
 - Accuracy
+- Bloom/extra lighting on Sun
+- Camera positioning
+- Loading screen
 
 ## Setup
 

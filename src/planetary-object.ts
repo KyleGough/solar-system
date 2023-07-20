@@ -113,7 +113,7 @@ export class PlanetaryObject {
     } else {
       material = new THREE.MeshPhongMaterial({
         map: this.map,
-        shininess: 10,
+        shininess: 5,
       });
 
       if (this.bumpMap) {
@@ -129,9 +129,11 @@ export class PlanetaryObject {
     }
 
     const sphere = new THREE.Mesh(geometry, material);
+    sphere.rotation.x += this.tilt;
+
     sphere.castShadow = true;
     sphere.receiveShadow = true;
-    sphere.rotation.x += this.tilt;
+
     return sphere;
   };
 

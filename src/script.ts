@@ -27,18 +27,13 @@ scene.add(ambientLight);
 
 // Point Light.
 const pointLight = new THREE.PointLight(0xf4e99b, 1);
-
-// Point Light Shadow.
 pointLight.castShadow = true;
-pointLight.shadow.mapSize.width = 1024;
-pointLight.shadow.mapSize.height = 1024;
-pointLight.shadow.camera.near = 0.1;
-pointLight.shadow.camera.far = 50;
-
-// Point Light Helper.
-const pointLightHelper = new THREE.CameraHelper(pointLight.shadow.camera);
-pointLightHelper.visible = false;
-scene.add(pointLight, pointLightHelper);
+pointLight.shadow.mapSize.width = 4096;
+pointLight.shadow.mapSize.height = 4096;
+pointLight.shadow.camera.near = 1.5;
+pointLight.shadow.camera.far = 15;
+pointLight.shadow.radius = 16;
+scene.add(pointLight);
 
 const solarSystem: SolarSystem = {};
 
@@ -174,7 +169,7 @@ const renderer = new THREE.WebGLRenderer({
 renderer.outputColorSpace = THREE.LinearSRGBColorSpace;
 renderer.setSize(sizes.width, sizes.height);
 renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-renderer.shadowMap.enabled = false;
+renderer.shadowMap.enabled = true;
 renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 
 // Animate

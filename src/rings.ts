@@ -22,10 +22,8 @@ export const createRingMesh = (
   const rings = new THREE.Mesh(ringGeometry, ringMaterial);
   rings.receiveShadow = true;
 
-  // Align to the ecliptic plane
-  rings.rotation.x = -Math.PI / 2;
-
-  rings.rotation.x += tilt;
+  // Align to the ecliptic plane then tilt
+  rings.rotation.x = -Math.PI / 2 + tilt;
 
   return rings;
 };
