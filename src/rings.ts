@@ -4,7 +4,7 @@ export const createRingMesh = (
   texture: THREE.Texture,
   tilt: number
 ): THREE.Mesh => {
-  const ringGeometry = new THREE.RingGeometry(0.4, 1, 64);
+  const ringGeometry = new THREE.RingGeometry(0.4, 1, 128);
   const pos = ringGeometry.attributes.position;
   const v3 = new THREE.Vector3();
 
@@ -21,9 +21,7 @@ export const createRingMesh = (
 
   const rings = new THREE.Mesh(ringGeometry, ringMaterial);
   rings.receiveShadow = true;
-
-  // Align to the ecliptic plane then tilt
-  rings.rotation.x = -Math.PI / 2 + tilt;
+  rings.rotation.x = Math.PI / 2;
 
   return rings;
 };

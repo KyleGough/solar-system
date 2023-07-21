@@ -45,23 +45,29 @@ for (const planet of planetData) {
     planet.period,
     planet.daylength,
     planet.textures,
-    planet.orbits,
     planet.type,
-    planet.tilt
+    planet.tilt,
+    planet.orbits
   );
 
   solarSystem[name] = object;
-  scene.add(object.mesh);
-  object.atmosphere.mesh && scene.add(object.atmosphere.mesh);
-  object.path && scene.add(object.path);
+
+  if (object.orbits) {
+    const parentMesh = solarSystem[object.orbits].mesh;
+    parentMesh.add(object.mesh);
+    object.atmosphere.mesh && parentMesh.add(object.atmosphere.mesh);
+    object.path && scene.add(object.path);
+  }
 }
+
+scene.add(solarSystem.Sun.mesh);
 
 const options = {
   showPaths: false,
   showMoons: true,
   focus: "Sun",
   clock: true,
-  speed: 1,
+  speed: 0.125,
 };
 
 const planetNames = [
@@ -76,16 +82,15 @@ const planetNames = [
   "Neptune",
 ];
 
-const changeFocus = (value: string) => {
-  const position = solarSystem[value].mesh.position;
-  const targetRadius = solarSystem[value].radius;
-  const signX = !position.x ? 0 : position.x / Math.abs(position.x);
-  const signZ = !position.z ? 0 : position.z / Math.abs(position.z);
-  controls.target = position;
-  controls.minDistance = solarSystem[value].radius + 0.1;
-  camera.position.x = position.x - signX * targetRadius * 2;
-  camera.position.z = position.z - signZ * targetRadius * 2;
-  (document.querySelector(".caption p") as HTMLElement).innerHTML = value;
+const controlMinDistance = (radius: number): number => {
+  return 1.5 * (radius + 0.1);
+};
+
+const changeFocus = (oldFocus: string, newFocus: string) => {
+  solarSystem[oldFocus].mesh.remove(camera);
+  solarSystem[newFocus].mesh.add(camera);
+  controls.minDistance = controlMinDistance(solarSystem[newFocus].radius);
+  (document.querySelector(".caption p") as HTMLElement).innerHTML = newFocus;
 };
 
 // Toggle planetary paths
@@ -119,11 +124,7 @@ gui
   .add(options, "clock")
   .name("Run")
   .onChange((value: boolean) => {
-    if (value) {
-      clock.start();
-    } else {
-      clock.stop();
-    }
+    value ? clock.start() : clock.stop();
   });
 
 // Control the simulation speed
@@ -154,14 +155,14 @@ document.getElementById("btn-previous")?.addEventListener("click", () => {
   const newIndex = index === 0 ? planetNames.length - 1 : index - 1;
   const focus = planetNames[newIndex];
   options.focus = focus;
-  changeFocus(focus);
+  changeFocus(options.focus, focus);
 });
 
 document.getElementById("btn-next")?.addEventListener("click", () => {
   const index = (planetNames.indexOf(options.focus) + 1) % planetNames.length;
   const focus = planetNames[index];
   options.focus = focus;
-  changeFocus(focus);
+  changeFocus(options.focus, focus);
 });
 
 // Camera
@@ -170,14 +171,15 @@ const camera = new THREE.PerspectiveCamera(75, aspect, 0.1, 1000);
 camera.position.x = 0;
 camera.position.y = 2;
 camera.position.z = 8;
-scene.add(camera);
+solarSystem.Sun.mesh.add(camera);
 
 // Controls
-const controls = new OrbitControls(camera, canvas);
-controls.target = solarSystem["Sun"].mesh.position;
+const fakeCamera = camera.clone();
+const controls = new OrbitControls(fakeCamera, canvas);
+controls.target = solarSystem.Sun.mesh.position;
 controls.enableDamping = true;
 controls.enablePan = false;
-controls.minDistance = solarSystem["Sun"].radius * 1.1;
+controls.minDistance = controlMinDistance(solarSystem.Sun.radius);
 controls.maxDistance = 50;
 
 // Renderer
@@ -201,8 +203,11 @@ let elapsedTime = 0;
 
   // Update the solar system objects
   for (const object of Object.values(solarSystem)) {
-    object.tick(elapsedTime, solarSystem);
+    object.tick(elapsedTime);
   }
+
+  // Update camera
+  camera.copy(fakeCamera);
 
   // Update controls
   controls.update();
