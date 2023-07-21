@@ -1,5 +1,4 @@
 import * as THREE from "three";
-import { SolarSystem, environmentMap } from "./utils";
 import { createRingMesh } from "./rings";
 import { createPath } from "./path";
 
@@ -124,7 +123,6 @@ export class PlanetaryObject {
 
       if (this.specularMap) {
         material.specularMap = this.specularMap;
-        material.environmentMap = environmentMap;
       }
     }
 

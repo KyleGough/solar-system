@@ -1,14 +1,11 @@
 import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
-import * as dat from "lil-gui";
-import planetData from "./planets.json";
-import { PlanetaryObject } from "./planetary-object";
-import { SolarSystem, environmentMap } from "./utils";
+import { createEnvironmentMap } from "./setup/environment-map";
+import { createLights } from "./setup/lights";
+import { createSolarSystem } from "./setup/solar-system";
+import { createGUI, options } from "./setup/gui";
 
 THREE.ColorManagement.enabled = false;
-
-// Debug
-const gui = new dat.GUI();
 
 // Canvas
 const canvas = document.querySelector("canvas.webgl") as HTMLElement;
@@ -17,58 +14,14 @@ const canvas = document.querySelector("canvas.webgl") as HTMLElement;
 const scene = new THREE.Scene();
 
 // Environment map
-scene.background = environmentMap;
+scene.background = createEnvironmentMap("/textures/environment");
 
-// Ambient light
-const ambientLight = new THREE.AmbientLight(0xffffff, 0.05);
-const ambientFolder = gui.addFolder("Ambient Light");
-ambientFolder.add(ambientLight, "intensity", 0, 1, 0.001).name("Intensity");
-scene.add(ambientLight);
+// Lights
+const [ambientLight, pointLight] = createLights();
+scene.add(ambientLight, pointLight);
 
-// Point Light.
-const pointLight = new THREE.PointLight(0xf4e99b, 1);
-pointLight.castShadow = true;
-pointLight.shadow.mapSize.width = 4096;
-pointLight.shadow.mapSize.height = 4096;
-pointLight.shadow.camera.near = 1.5;
-pointLight.shadow.camera.far = 15;
-pointLight.shadow.radius = 16;
-scene.add(pointLight);
-
-const solarSystem: SolarSystem = {};
-
-for (const planet of planetData) {
-  const name = planet.name;
-  const object = new PlanetaryObject(
-    planet.radius,
-    planet.distance,
-    planet.period,
-    planet.daylength,
-    planet.textures,
-    planet.type,
-    planet.tilt,
-    planet.orbits
-  );
-
-  solarSystem[name] = object;
-
-  if (object.orbits) {
-    const parentMesh = solarSystem[object.orbits].mesh;
-    parentMesh.add(object.mesh);
-    object.atmosphere.mesh && parentMesh.add(object.atmosphere.mesh);
-    object.path && scene.add(object.path);
-  }
-}
-
-scene.add(solarSystem.Sun.mesh);
-
-const options = {
-  showPaths: false,
-  showMoons: true,
-  focus: "Sun",
-  clock: true,
-  speed: 0.125,
-};
+// Solar system
+const solarSystem = createSolarSystem(scene);
 
 const planetNames = [
   "Sun",
@@ -92,43 +45,6 @@ const changeFocus = (oldFocus: string, newFocus: string) => {
   controls.minDistance = controlMinDistance(solarSystem[newFocus].radius);
   (document.querySelector(".caption p") as HTMLElement).innerHTML = newFocus;
 };
-
-// Toggle planetary paths
-gui
-  .add(options, "showPaths")
-  .name("Show Paths")
-  .onChange((value: boolean) => {
-    for (const name in solarSystem) {
-      const object = solarSystem[name];
-      if (object.path) {
-        object.path.visible = value;
-      }
-    }
-  });
-
-// Toggle moons
-gui
-  .add(options, "showMoons")
-  .name("Show Moons")
-  .onChange((value: boolean) => {
-    for (const name in solarSystem) {
-      const object = solarSystem[name];
-      if (object.type === "moon") {
-        object.mesh.visible = value;
-      }
-    }
-  });
-
-// Pause the simulation
-gui
-  .add(options, "clock")
-  .name("Run")
-  .onChange((value: boolean) => {
-    value ? clock.start() : clock.stop();
-  });
-
-// Control the simulation speed
-gui.add(options, "speed", 0.1, 20, 0.1).name("Speed");
 
 // Sizes
 const sizes = {
@@ -171,15 +87,15 @@ const camera = new THREE.PerspectiveCamera(75, aspect, 0.1, 1000);
 camera.position.x = 0;
 camera.position.y = 2;
 camera.position.z = 8;
-solarSystem.Sun.mesh.add(camera);
+solarSystem["Sun"].mesh.add(camera);
 
 // Controls
 const fakeCamera = camera.clone();
 const controls = new OrbitControls(fakeCamera, canvas);
-controls.target = solarSystem.Sun.mesh.position;
+controls.target = solarSystem["Sun"].mesh.position;
 controls.enableDamping = true;
 controls.enablePan = false;
-controls.minDistance = controlMinDistance(solarSystem.Sun.radius);
+controls.minDistance = controlMinDistance(solarSystem["Sun"].radius);
 controls.maxDistance = 50;
 
 // Renderer
@@ -197,6 +113,9 @@ renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 // Animate
 const clock = new THREE.Clock();
 let elapsedTime = 0;
+
+// GUI
+createGUI(ambientLight, solarSystem, clock);
 
 (function tick() {
   elapsedTime += clock.getDelta() * options.speed;

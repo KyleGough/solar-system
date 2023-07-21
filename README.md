@@ -9,7 +9,6 @@
 - Loading screen
 - Shadow quality
 - Camera movement
-- Min distance
 - Labels
 
 ## Setup
