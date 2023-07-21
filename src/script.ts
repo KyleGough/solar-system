@@ -1,9 +1,11 @@
 import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
+import { CSS2DRenderer } from "three/examples/jsm/renderers/CSS2DRenderer";
 import { createEnvironmentMap } from "./setup/environment-map";
 import { createLights } from "./setup/lights";
 import { createSolarSystem } from "./setup/solar-system";
 import { createGUI, options } from "./setup/gui";
+import { createLabel, labelVisibility } from "./setup/label";
 
 THREE.ColorManagement.enabled = false;
 
@@ -43,6 +45,8 @@ const changeFocus = (oldFocus: string, newFocus: string) => {
   solarSystem[oldFocus].mesh.remove(camera);
   solarSystem[newFocus].mesh.add(camera);
   controls.minDistance = controlMinDistance(solarSystem[newFocus].radius);
+  solarSystem[oldFocus].hideLabels();
+  solarSystem[newFocus].showLabels();
   (document.querySelector(".caption p") as HTMLElement).innerHTML = newFocus;
 };
 
@@ -61,9 +65,10 @@ window.addEventListener("resize", () => {
   camera.aspect = sizes.width / sizes.height;
   camera.updateProjectionMatrix();
 
-  // Update renderer
+  // Update renderers
   renderer.setSize(sizes.width, sizes.height);
   renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+  labelRenderer.setSize(sizes.width, sizes.height);
 });
 
 document.getElementById("btn-previous")?.addEventListener("click", () => {
@@ -84,10 +89,21 @@ document.getElementById("btn-next")?.addEventListener("click", () => {
 // Camera
 const aspect = sizes.width / sizes.height;
 const camera = new THREE.PerspectiveCamera(75, aspect, 0.1, 1000);
-camera.position.x = 0;
-camera.position.y = 2;
-camera.position.z = 8;
+camera.position.set(0, 2, 8);
 solarSystem["Sun"].mesh.add(camera);
+
+const [label, container] = createLabel(
+  "Olympus Mons",
+  0.59,
+  0.52,
+  solarSystem["Mars"]
+);
+
+solarSystem["Mars"].addLabel(label, container);
+
+const labelRenderer = new CSS2DRenderer();
+labelRenderer.setSize(sizes.width, sizes.height);
+document.body.appendChild(labelRenderer.domElement);
 
 // Controls
 const fakeCamera = camera.clone();
@@ -114,8 +130,10 @@ renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 const clock = new THREE.Clock();
 let elapsedTime = 0;
 
+fakeCamera.layers.enable(2);
+
 // GUI
-createGUI(ambientLight, solarSystem, clock);
+createGUI(ambientLight, solarSystem, clock, fakeCamera);
 
 (function tick() {
   elapsedTime += clock.getDelta() * options.speed;
@@ -131,8 +149,14 @@ createGUI(ambientLight, solarSystem, clock);
   // Update controls
   controls.update();
 
+  // Labels
+  solarSystem[options.focus].labels.forEach((l) => {
+    labelVisibility(fakeCamera, l.label, l.container);
+  });
+
   // Render
   renderer.render(scene, camera);
+  labelRenderer.render(scene, camera);
 
   // Call tick again on the next frame
   window.requestAnimationFrame(tick);

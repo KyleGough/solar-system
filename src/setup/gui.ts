@@ -7,14 +7,29 @@ export const options = {
   focus: "Sun",
   clock: true,
   speed: 0.125,
+  zangle: 0,
+  yangle: 0,
+  showLabels: true,
 };
 
 export const createGUI = (
   ambientLight: THREE.AmbientLight,
   solarSystem: SolarSystem,
-  clock: THREE.Clock
+  clock: THREE.Clock,
+  camera: THREE.Camera
 ) => {
   const gui = new dat.GUI();
+
+  gui
+    .add(options, "showLabels")
+    .name("Show Labels")
+    .onChange(() => {
+      camera.layers.toggle(2);
+    });
+
+  // TODO TEMP
+  gui.add(options, "zangle", -Math.PI, Math.PI, 0.01);
+  gui.add(options, "yangle", -Math.PI, Math.PI, 0.01);
 
   // Adjust ambient light intensity
   gui.add(ambientLight, "intensity", 0, 1, 0.001).name("Ambient Intensity");
