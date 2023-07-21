@@ -8,6 +8,9 @@
 - Bloom/extra lighting on Sun
 - Camera positioning
 - Loading screen
+- Shadow quality
+- Camera movement
+- Min distance
 
 ## Setup
 

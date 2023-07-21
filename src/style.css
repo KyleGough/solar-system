@@ -6,6 +6,7 @@
 html,
 body {
   overflow: hidden;
+  font-family: 'Trispace', sans-serif;
 }
 
 .webgl {
@@ -14,3 +15,35 @@ body {
   left: 0;
   outline: none;
 }
+
+.caption {
+  display: flex;
+  position: absolute;
+  bottom: 0;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  color: white;
+  margin-bottom: 2rem;
+  gap: 2rem;
+}
+
+.caption p {
+  width: 125px;
+  text-align: center;
+}
+
+.caption button {
+  background-color: transparent;
+  color: white;
+  border: none;
+  font-weight: 900;
+  font-size: 1.25rem;
+  cursor: pointer;
+  transition: color 0.1s ease;
+}
+
+.caption button:hover {
+  color: gainsboro;
+}
+

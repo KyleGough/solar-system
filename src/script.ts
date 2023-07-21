@@ -65,6 +65,7 @@ const options = {
 };
 
 const planetNames = [
+  "Sun",
   "Mercury",
   "Venus",
   "Earth",
@@ -74,6 +75,18 @@ const planetNames = [
   "Uranus",
   "Neptune",
 ];
+
+const changeFocus = (value: string) => {
+  const position = solarSystem[value].mesh.position;
+  const targetRadius = solarSystem[value].radius;
+  const signX = !position.x ? 0 : position.x / Math.abs(position.x);
+  const signZ = !position.z ? 0 : position.z / Math.abs(position.z);
+  controls.target = position;
+  controls.minDistance = solarSystem[value].radius + 0.1;
+  camera.position.x = position.x - signX * targetRadius * 2;
+  camera.position.z = position.z - signZ * targetRadius * 2;
+  (document.querySelector(".caption p") as HTMLElement).innerHTML = value;
+};
 
 // Toggle planetary paths
 gui
@@ -99,14 +112,6 @@ gui
         object.mesh.visible = value;
       }
     }
-  });
-
-// Follow a planet
-gui
-  .add(options, "focus", ["Sun", ...planetNames])
-  .name("Focus")
-  .onChange((value: string) => {
-    controls.target = solarSystem[value].mesh.position;
   });
 
 // Pause the simulation
@@ -144,6 +149,21 @@ window.addEventListener("resize", () => {
   renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 });
 
+document.getElementById("btn-previous")?.addEventListener("click", () => {
+  const index = planetNames.indexOf(options.focus);
+  const newIndex = index === 0 ? planetNames.length - 1 : index - 1;
+  const focus = planetNames[newIndex];
+  options.focus = focus;
+  changeFocus(focus);
+});
+
+document.getElementById("btn-next")?.addEventListener("click", () => {
+  const index = (planetNames.indexOf(options.focus) + 1) % planetNames.length;
+  const focus = planetNames[index];
+  options.focus = focus;
+  changeFocus(focus);
+});
+
 // Camera
 const aspect = sizes.width / sizes.height;
 const camera = new THREE.PerspectiveCamera(75, aspect, 0.1, 1000);
@@ -157,7 +177,7 @@ const controls = new OrbitControls(camera, canvas);
 controls.target = solarSystem["Sun"].mesh.position;
 controls.enableDamping = true;
 controls.enablePan = false;
-controls.minDistance = 0.5;
+controls.minDistance = solarSystem["Sun"].radius * 1.1;
 controls.maxDistance = 50;
 
 // Renderer
