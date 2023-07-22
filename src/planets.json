@@ -6,6 +6,7 @@
     "period": 1,
     "daylength": 600,
     "type": "star",
+    "tilt": 0,
     "textures": {
       "map": "/textures/sun.jpg"
     }
@@ -67,7 +68,13 @@
     "textures": {
       "map": "/textures/mars.jpg",
       "bump": "/textures/mars-bump.jpg"
-    }
+    },
+    "labels": [
+      { "name": "Olympus Mons", "y": 0.59, "z": 0.52 },
+      { "name": "Valles Marineris", "y": 1.6, "z": 1.75 },
+      { "name": "Perseverance", "y": -1.96, "z": -0.87 },
+      { "name": "Curiosity", "y": -0.80, "z": -0.10 }
+    ]
   },
   {
     "name": "Jupiter",
@@ -80,7 +87,10 @@
     "tilt": 3.13,
     "textures": {
       "map": "/textures/jupiter.jpg"
-    }
+    },
+    "labels": [
+      { "name": "Great Red Spot", "y": -0.84, "z": -0.41 }
+    ]
   },
   {
     "name": "Saturn",

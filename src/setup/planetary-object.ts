@@ -3,6 +3,25 @@ import { CSS2DObject } from "three/examples/jsm/renderers/CSS2DRenderer";
 import { createRingMesh } from "./rings";
 import { createPath } from "./path";
 
+export interface Body {
+  name: string;
+  radius: number;
+  distance: number;
+  period: number;
+  daylength: number;
+  textures: TexturePaths;
+  type: string;
+  tilt: number;
+  orbits?: string;
+  labels?: PointOfInterest[];
+}
+
+interface PointOfInterest {
+  name: string;
+  y: number;
+  z: number;
+}
+
 interface TexturePaths {
   map: string;
   bump?: string;
@@ -12,7 +31,6 @@ interface TexturePaths {
 }
 
 interface Atmosphere {
-  mesh?: THREE.Mesh;
   map?: THREE.Texture;
   alpha?: THREE.Texture;
 }
@@ -54,16 +72,9 @@ export class PlanetaryObject {
   atmosphere: Atmosphere = {};
   labels: Label[] = [];
 
-  constructor(
-    radius: number,
-    distance: number,
-    period: number,
-    daylength: number,
-    textures: TexturePaths,
-    type: string,
-    tilt = 0,
-    orbits?: string
-  ) {
+  constructor(body: Body) {
+    const { radius, distance, period, daylength, orbits, type, tilt } = body;
+
     this.radius = normaliseRadius(radius);
     this.distance = type === "moon" ? distance : normaliseDistance(distance);
     this.period = period;
@@ -73,7 +84,7 @@ export class PlanetaryObject {
     this.tilt = degreesToRadians(tilt);
     this.rng = Math.random() * 2 * Math.PI;
 
-    this.loadTextures(textures);
+    this.loadTextures(body.textures);
 
     if (type === "planet") {
       this.path = createPath(this.distance);
@@ -82,7 +93,7 @@ export class PlanetaryObject {
     this.mesh = this.createMesh();
 
     if (this.atmosphere.map) {
-      this.atmosphere.mesh = this.createAtmosphereMesh();
+      this.mesh.add(this.createAtmosphereMesh());
     }
   }
 
@@ -143,7 +154,7 @@ export class PlanetaryObject {
   };
 
   createAtmosphereMesh = () => {
-    const geometry = new THREE.SphereGeometry(this.radius + 0.0001, 64, 64);
+    const geometry = new THREE.SphereGeometry(this.radius + 0.0005, 64, 64);
 
     const material = new THREE.MeshPhongMaterial({
       map: this.atmosphere?.map,
@@ -168,35 +179,33 @@ export class PlanetaryObject {
     return (elapsedTime * timeFactor) / (this.period * 24);
   };
 
-  tickMesh = (mesh: THREE.Mesh, elapsedTime: number) => {
+  tick = (elapsedTime: number) => {
     // Convert real-time seconds to rotation.
     const rotation = this.getRotation(elapsedTime);
     const orbitRotation = this.getOrbitRotation(elapsedTime);
     const orbit = orbitRotation + this.rng;
 
     // Circular rotation around orbit.
-    mesh.position.x = Math.cos(orbit) * this.distance;
-    mesh.position.z = Math.sin(orbit) * this.distance;
+    this.mesh.position.x = Math.cos(orbit) * this.distance;
+    this.mesh.position.z = Math.sin(orbit) * this.distance;
 
     if (this.type === "ring") {
-      mesh.rotation.z = rotation;
+      this.mesh.rotation.z = rotation;
     } else {
-      mesh.rotation.y = rotation;
+      this.mesh.rotation.y = rotation;
     }
   };
 
-  tick = (elapsedTime: number) => {
-    this.tickMesh(this.mesh, elapsedTime);
-    this.atmosphere.mesh && this.tickMesh(this.atmosphere.mesh, elapsedTime);
-  };
-
   addLabel = (label: CSS2DObject, container: HTMLElement) => {
+    this.mesh.add(label);
     this.labels.push({ label, container });
   };
 
-  showLabels = () =>
+  showLabels = () => {
     this.labels.forEach((label) => (label.label.visible = true));
+  };
 
-  hideLabels = () =>
+  hideLabels = () => {
     this.labels.forEach((label) => (label.label.visible = false));
+  };
 }

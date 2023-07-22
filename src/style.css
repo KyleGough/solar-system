@@ -41,15 +41,17 @@ body {
   font-size: 1.25rem;
   cursor: pointer;
   transition: color 0.1s ease;
+  fill: white;
 }
 
 .caption button:hover {
-  color: gainsboro;
+  fill: gainsboro;
 }
 
 .label {
   color: white;
   font-weight: 200;
   font-size: 0.9rem;
+  pointer-events: none;
 }
 

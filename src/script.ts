@@ -5,7 +5,7 @@ import { createEnvironmentMap } from "./setup/environment-map";
 import { createLights } from "./setup/lights";
 import { createSolarSystem } from "./setup/solar-system";
 import { createGUI, options } from "./setup/gui";
-import { createLabel, labelVisibility } from "./setup/label";
+import { createLabel, labelVisibility, rotateLabel } from "./setup/label";
 
 THREE.ColorManagement.enabled = false;
 
@@ -75,15 +75,15 @@ document.getElementById("btn-previous")?.addEventListener("click", () => {
   const index = planetNames.indexOf(options.focus);
   const newIndex = index === 0 ? planetNames.length - 1 : index - 1;
   const focus = planetNames[newIndex];
-  options.focus = focus;
   changeFocus(options.focus, focus);
+  options.focus = focus;
 });
 
 document.getElementById("btn-next")?.addEventListener("click", () => {
   const index = (planetNames.indexOf(options.focus) + 1) % planetNames.length;
   const focus = planetNames[index];
-  options.focus = focus;
   changeFocus(options.focus, focus);
+  options.focus = focus;
 });
 
 // Camera
@@ -91,19 +91,6 @@ const aspect = sizes.width / sizes.height;
 const camera = new THREE.PerspectiveCamera(75, aspect, 0.1, 1000);
 camera.position.set(0, 2, 8);
 solarSystem["Sun"].mesh.add(camera);
-
-const [label, container] = createLabel(
-  "Olympus Mons",
-  0.59,
-  0.52,
-  solarSystem["Mars"]
-);
-
-solarSystem["Mars"].addLabel(label, container);
-
-const labelRenderer = new CSS2DRenderer();
-labelRenderer.setSize(sizes.width, sizes.height);
-document.body.appendChild(labelRenderer.domElement);
 
 // Controls
 const fakeCamera = camera.clone();
@@ -113,6 +100,15 @@ controls.enableDamping = true;
 controls.enablePan = false;
 controls.minDistance = controlMinDistance(solarSystem["Sun"].radius);
 controls.maxDistance = 50;
+
+// TODO REMOVE: Testing positioning of new labels
+const parent = solarSystem["Jupiter"];
+const [label, _] = createLabel("Test", 0, 0, parent);
+
+// Label renderer
+const labelRenderer = new CSS2DRenderer();
+labelRenderer.setSize(sizes.width, sizes.height);
+document.body.appendChild(labelRenderer.domElement);
 
 // Renderer
 const renderer = new THREE.WebGLRenderer({
@@ -148,6 +144,14 @@ createGUI(ambientLight, solarSystem, clock, fakeCamera);
 
   // Update controls
   controls.update();
+
+  // TODO REMOVE: Testing positioning of new labels
+  const labelPosition = rotateLabel(
+    parent.radius,
+    options.yangle,
+    options.zangle
+  ).toArray();
+  label.position.set(...labelPosition);
 
   // Labels
   solarSystem[options.focus].labels.forEach((l) => {

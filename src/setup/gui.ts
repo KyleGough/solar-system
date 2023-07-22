@@ -28,8 +28,8 @@ export const createGUI = (
     });
 
   // TODO TEMP
-  gui.add(options, "zangle", -Math.PI, Math.PI, 0.01);
-  gui.add(options, "yangle", -Math.PI, Math.PI, 0.01);
+  gui.add(options, "zangle", -Math.PI, Math.PI, 0.002);
+  gui.add(options, "yangle", -Math.PI, Math.PI, 0.002);
 
   // Adjust ambient light intensity
   gui.add(ambientLight, "intensity", 0, 1, 0.001).name("Ambient Intensity");
