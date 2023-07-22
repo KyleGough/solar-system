@@ -158,11 +158,11 @@ export class PlanetaryObject {
 
     const material = new THREE.MeshPhongMaterial({
       map: this.atmosphere?.map,
+      transparent: true,
     });
 
     if (this.atmosphere.alpha) {
       material.alphaMap = this.atmosphere.alpha;
-      material.transparent = true;
     }
 
     const sphere = new THREE.Mesh(geometry, material);
@@ -172,7 +172,7 @@ export class PlanetaryObject {
   };
 
   getRotation = (elapsedTime: number) => {
-    return (elapsedTime * timeFactor) / this.daylength;
+    return this.daylength ? (elapsedTime * timeFactor) / this.daylength : 0;
   };
 
   getOrbitRotation = (elapsedTime: number) => {

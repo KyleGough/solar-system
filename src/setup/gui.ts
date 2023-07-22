@@ -22,13 +22,6 @@ export const createGUI = (
 
   gui.title("Simulation Controls");
 
-  gui
-    .add(options, "showLabels")
-    .name("Show Labels")
-    .onChange(() => {
-      camera.layers.toggle(2);
-    });
-
   // TODO TEMP
   gui.add(options, "zangle", -Math.PI, Math.PI, 0.002);
   gui.add(options, "yangle", -Math.PI, Math.PI, 0.002);
@@ -73,6 +66,12 @@ export const createGUI = (
   // Control the simulation speed
   gui.add(options, "speed", 0.1, 20, 0.1).name("Speed");
 
+  // Toggle labels
+  document.getElementById("btn-labels")?.addEventListener("click", () => {
+    camera.layers.toggle(2);
+  });
+
+  // Toggle GUI panel
   document.getElementById("btn-settings")?.addEventListener("click", () => {
     gui.show(gui._hidden);
   });
