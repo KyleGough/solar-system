@@ -32,7 +32,7 @@ export const createSolarSystem = (
 
     if (planet.labels) {
       planet.labels.forEach((label) => {
-        createLabel(label.name, label.y, label.z, object);
+        createLabel(label.name, label.y, label.z, object, label.type || "");
       });
     }
 

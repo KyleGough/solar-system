@@ -76,10 +76,11 @@
       "bump": "/textures/moon-bump.jpg"
     },
     "labels": [
-      { "name": "Apollo 11", "y": 0.36, "z": 0.05 },
+      { "name": "Apollo 11", "type": "landing", "y": 0.36, "z": 0.05 },
       { "name": "Sea of Serenity", "y": 0.21, "z": 0.52 },
       { "name": "Sea of Tranquility", "y": 0.59, "z": 0.28 },
-      { "name": "Tycho Crater", "y": -1.88, "z": 1.13 }
+      { "name": "Tycho Crater", "y": -1.88, "z": 1.13 },
+      { "name": "Yutu-2", "type": "rover", "y": 3.06, "z": 0.67 }
     ]
   },
   {
@@ -97,10 +98,10 @@
       "bump": "/textures/mars-bump.jpg"
     },
     "labels": [
-      { "name": "Olympus Mons", "y": 0.59, "z": 0.52 },
+      { "name": "Olympus Mons", "type": "mountain", "y": 0.59, "z": 0.52 },
       { "name": "Valles Marineris", "y": 1.6, "z": 1.75 },
-      { "name": "Perseverance", "y": -1.96, "z": -0.87 },
-      { "name": "Curiosity", "y": -0.80, "z": -0.10 }
+      { "name": "Perseverance", "type": "rover", "y": -1.96, "z": -0.87 },
+      { "name": "Curiosity", "type": "rover", "y": -0.80, "z": -0.10 }
     ]
   },
   {

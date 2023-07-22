@@ -55,6 +55,15 @@ canvas {
   font-weight: 200;
   font-size: 0.9rem;
   pointer-events: none;
+  display: flex;
+  justify-content: center;
+  align-content: center;
+  gap: 6px;
+}
+
+.label img {
+  width: 18px;
+  height: 18px;
 }
 
 .btn-group {

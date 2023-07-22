@@ -22,6 +22,7 @@ interface PointOfInterest {
   name: string;
   y: number;
   z: number;
+  type?: string;
 }
 
 interface TexturePaths {

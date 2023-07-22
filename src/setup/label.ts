@@ -56,11 +56,21 @@ export const createLabel = (
   name: string,
   y: number,
   z: number,
-  parent: PlanetaryObject
+  parent: PlanetaryObject,
+  type = ""
 ): [CSS2DObject, HTMLElement] => {
   const container = document.createElement("div");
   container.className = "label";
-  container.textContent = name;
+
+  if (type) {
+    const img = document.createElement("img");
+    img.src = `/icons/${type}.svg`;
+    container.appendChild(img);
+  }
+
+  const text = document.createElement("p");
+  text.textContent = name;
+  container.appendChild(text);
 
   const label = new CSS2DObject(container);
   label.visible = false;
