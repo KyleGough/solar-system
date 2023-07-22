@@ -5,10 +5,13 @@ import { createLabel } from "./label";
 
 export type SolarSystem = Record<string, PlanetaryObject>;
 
-export const createSolarSystem = (scene: THREE.Scene): SolarSystem => {
+export const createSolarSystem = (
+  scene: THREE.Scene
+): [SolarSystem, string[]] => {
   const solarSystem: SolarSystem = {};
 
   const planets: Body[] = planetData;
+  const traversable: string[] = [];
 
   for (const planet of planets) {
     const name = planet.name;
@@ -27,9 +30,13 @@ export const createSolarSystem = (scene: THREE.Scene): SolarSystem => {
         createLabel(label.name, label.y, label.z, object);
       });
     }
+
+    if (planet.traversable) {
+      traversable.push(planet.name);
+    }
   }
 
   scene.add(solarSystem["Sun"].mesh);
 
-  return solarSystem;
+  return [solarSystem, traversable];
 };

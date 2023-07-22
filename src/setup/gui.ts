@@ -25,6 +25,8 @@ export const createGUI = (
   gui.add(options, "zangle", -Math.PI, Math.PI, 0.002);
   gui.add(options, "yangle", -Math.PI, Math.PI, 0.002);
 
+  gui.add(ambientLight, "intensity", 0, 1, 0.01).name("Ambient Intensity");
+
   // Toggle planetary paths
   gui
     .add(options, "showPaths")
@@ -61,6 +63,8 @@ export const createGUI = (
 
   // Control the simulation speed
   gui.add(options, "speed", 0.1, 20, 0.1).name("Speed");
+
+  gui.hide();
 
   // Toggle ambient lights
   document.getElementById("btn-ambient")?.addEventListener("click", () => {

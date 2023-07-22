@@ -7,6 +7,7 @@
     "daylength": 600,
     "type": "star",
     "tilt": 0,
+    "traversable": true,
     "textures": {
       "map": "/textures/sun.jpg"
     }
@@ -20,6 +21,7 @@
     "type": "planet",
     "orbits": "Sun",
     "tilt": 0.03,
+    "traversable": true,
     "textures": {
       "map": "/textures/mercury.jpg",
       "bump": "/textures/mercury-bump.jpg"
@@ -34,6 +36,7 @@
     "type": "planet",
     "orbits": "Sun",
     "tilt": 2.64,
+    "traversable": true,
     "textures": {
       "map": "/textures/venus.jpg",
       "bump": "/textures/venus-bump.jpg"
@@ -48,6 +51,7 @@
     "type": "planet",
     "orbits": "Sun",
     "tilt": 23.44,
+    "traversable": true,
     "textures": {
       "map": "/textures/earth.jpg",
       "bump": "/textures/earth-bump.jpg",
@@ -55,6 +59,27 @@
       "atmosphere": "/textures/earth-clouds.jpg",
       "atmosphereAlpha": "/textures/earth-clouds-alpha.jpg"
     }
+  },
+  {
+    "name": "Moon",
+    "radius": 1737,
+    "distance": 0.38,
+    "period": 28,
+    "daylength": 672,
+    "type": "moon",
+    "orbits": "Earth",
+    "tilt": 6.6,
+    "traversable": true,
+    "textures": {
+      "map": "/textures/moon.jpg",
+      "bump": "/textures/moon-bump.jpg"
+    },
+    "labels": [
+      { "name": "Apollo 11", "y": 0.36, "z": 0.05 },
+      { "name": "Sea of Serenity", "y": 0.21, "z": 0.52 },
+      { "name": "Sea of Tranquility", "y": 0.59, "z": 0.28 },
+      { "name": "Tycho Crater", "y": -1.88, "z": 1.13 }
+    ]
   },
   {
     "name": "Mars",
@@ -65,6 +90,7 @@
     "type": "planet",
     "orbits": "Sun",
     "tilt": 25.19,
+    "traversable": true,
     "textures": {
       "map": "/textures/mars.jpg",
       "bump": "/textures/mars-bump.jpg"
@@ -85,6 +111,7 @@
     "type": "planet",
     "orbits": "Sun",
     "tilt": 3.13,
+    "traversable": true,
     "textures": {
       "map": "/textures/jupiter.jpg"
     },
@@ -101,9 +128,13 @@
     "type": "planet",
     "orbits": "Sun",
     "tilt": 26.73,
+    "traversable": true,
     "textures": {
       "map": "/textures/saturn.jpg"
-    }
+    },
+    "labels": [
+      { "name": "Saturn's Hexagon", "y": 0, "z": 1.57 }
+    ]
   },
   {
     "name": "Uranus",
@@ -114,6 +145,7 @@
     "type": "planet",
     "orbits": "Sun",
     "tilt": 82.23,
+    "traversable": true,
     "textures": {
       "map": "/textures/uranus.jpg"
     }
@@ -127,23 +159,13 @@
     "type": "planet",
     "orbits": "Sun",
     "tilt": 28.32,
+    "traversable": true,
     "textures": {
       "map": "/textures/neptune.jpg"
-    }
-  },
-  {
-    "name": "Moon",
-    "radius": 1737,
-    "distance": 0.38,
-    "period": 28,
-    "daylength": 672,
-    "type": "moon",
-    "orbits": "Earth",
-    "tilt": 6.6,
-    "textures": {
-      "map": "/textures/moon.jpg",
-      "bump": "/textures/moon-bump.jpg"
-    }
+    },
+    "labels": [
+      { "name": "Great Dark Spot", "y": 0.21, "z": -0.18 }
+    ]
   },
   {
     "name": "Saturn's Rings",
@@ -153,6 +175,7 @@
     "daylength": 1,
     "type": "ring",
     "orbits": "Saturn",
+    "traversable": false,
     "tilt": 26.73,
     "textures": {
       "map": "/textures/saturn-ring.png"
@@ -167,6 +190,7 @@
     "type": "moon",
     "orbits": "Jupiter",
     "tilt": 3.33,
+    "traversable": false,
     "textures": {
       "map": "/textures/ganymede.jpg"
     }
@@ -180,6 +204,7 @@
     "type": "moon",
     "orbits": "Saturn",
     "tilt": 27,
+    "traversable": false,
     "textures": {
       "map": "/textures/titan.webp"
     }
@@ -193,6 +218,7 @@
     "type": "moon",
     "orbits": "Jupiter",
     "tilt": 0,
+    "traversable": false,
     "textures": {
       "map": "/textures/callisto.jpg"
     }
@@ -206,6 +232,7 @@
     "type": "moon",
     "orbits": "Jupiter",
     "tilt": 0.05,
+    "traversable": false,
     "textures": {
       "map": "/textures/io.jpg"
     }
@@ -219,6 +246,7 @@
     "type": "moon",
     "orbits": "Jupiter",
     "tilt": 0.47,
+    "traversable": false,
     "textures": {
       "map": "/textures/europa.jpg"
     }
@@ -232,6 +260,7 @@
     "type": "moon",
     "orbits": "Neptune",
     "tilt": 156,
+    "traversable": false,
     "textures": {
       "map": "/textures/triton.jpg"
     }

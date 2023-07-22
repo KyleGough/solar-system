@@ -23,19 +23,7 @@ const [ambientLight, pointLight] = createLights();
 scene.add(ambientLight, pointLight);
 
 // Solar system
-const solarSystem = createSolarSystem(scene);
-
-const planetNames = [
-  "Sun",
-  "Mercury",
-  "Venus",
-  "Earth",
-  "Mars",
-  "Jupiter",
-  "Saturn",
-  "Uranus",
-  "Neptune",
-];
+const [solarSystem, planetNames] = createSolarSystem(scene);
 
 const controlMinDistance = (radius: number): number => {
   return 1.5 * (radius + 0.1);
@@ -102,7 +90,7 @@ controls.minDistance = controlMinDistance(solarSystem["Sun"].radius);
 controls.maxDistance = 50;
 
 // TODO REMOVE: Testing positioning of new labels
-const parent = solarSystem["Jupiter"];
+const parent = solarSystem["Saturn"];
 const [label, _] = createLabel("Test", 0, 0, parent);
 
 // Label renderer

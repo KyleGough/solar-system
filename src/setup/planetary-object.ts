@@ -14,6 +14,7 @@ export interface Body {
   tilt: number;
   orbits?: string;
   labels?: PointOfInterest[];
+  traversable: boolean;
 }
 
 interface PointOfInterest {
