@@ -187,8 +187,8 @@ export class PlanetaryObject {
     const orbit = orbitRotation + this.rng;
 
     // Circular rotation around orbit.
-    this.mesh.position.x = Math.cos(orbit) * this.distance;
-    this.mesh.position.z = Math.sin(orbit) * this.distance;
+    this.mesh.position.x = Math.sin(orbit) * this.distance;
+    this.mesh.position.z = Math.cos(orbit) * this.distance;
 
     if (this.type === "ring") {
       this.mesh.rotation.z = rotation;
