@@ -15,6 +15,11 @@ export const createSolarSystem = (
 
   for (const planet of planets) {
     const name = planet.name;
+
+    if (planet.period === 0 && planet.orbits) {
+      planet.period = planet.daylength / solarSystem[planet.orbits].daylength;
+    }
+
     const object = new PlanetaryObject(planet);
 
     solarSystem[name] = object;

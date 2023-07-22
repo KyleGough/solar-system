@@ -64,12 +64,13 @@
     "name": "Moon",
     "radius": 1737,
     "distance": 0.38,
-    "period": 28,
-    "daylength": 672,
+    "period": 0,
+    "daylength": -28,
     "type": "moon",
     "orbits": "Earth",
-    "tilt": 6.6,
+    "tilt": 5.8,
     "traversable": true,
+    "offset": 0,
     "textures": {
       "map": "/textures/moon.jpg",
       "bump": "/textures/moon-bump.jpg"

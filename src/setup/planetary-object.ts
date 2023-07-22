@@ -15,6 +15,7 @@ export interface Body {
   orbits?: string;
   labels?: PointOfInterest[];
   traversable: boolean;
+  offset?: number;
 }
 
 interface PointOfInterest {
@@ -83,7 +84,7 @@ export class PlanetaryObject {
     this.orbits = orbits;
     this.type = type;
     this.tilt = degreesToRadians(tilt);
-    this.rng = Math.random() * 2 * Math.PI;
+    this.rng = body.offset ? body.offset : Math.random() * 2 * Math.PI;
 
     this.loadTextures(body.textures);
 
@@ -118,7 +119,7 @@ export class PlanetaryObject {
 
   createMesh = () => {
     if (this.type === "ring") {
-      return createRingMesh(this.map, this.tilt);
+      return createRingMesh(this.map);
     }
 
     const geometry = new THREE.SphereGeometry(this.radius, 64, 64);
@@ -177,7 +178,7 @@ export class PlanetaryObject {
   };
 
   getOrbitRotation = (elapsedTime: number) => {
-    return (elapsedTime * timeFactor) / (this.period * 24);
+    return this.daylength ? (elapsedTime * timeFactor) / (this.period * 24) : 0;
   };
 
   tick = (elapsedTime: number) => {

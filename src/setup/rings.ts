@@ -1,9 +1,6 @@
 import * as THREE from "three";
 
-export const createRingMesh = (
-  texture: THREE.Texture,
-  tilt: number
-): THREE.Mesh => {
+export const createRingMesh = (texture: THREE.Texture): THREE.Mesh => {
   const ringGeometry = new THREE.RingGeometry(0.4, 1, 128);
   const pos = ringGeometry.attributes.position;
   const v3 = new THREE.Vector3();
