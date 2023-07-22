@@ -16,6 +16,10 @@ body {
   outline: none;
 }
 
+canvas {
+  display: block;
+}
+
 .caption {
   display: flex;
   position: absolute;
@@ -52,9 +56,13 @@ body {
   pointer-events: none;
 }
 
-#btn-settings {
+.btn-group {
   position: absolute;
   right: 0;
   margin-right: 2rem;
+  fill: white;
 }
 
+#btn-github {
+  display: inline-block;
+}

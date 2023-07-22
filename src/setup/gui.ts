@@ -74,10 +74,6 @@ export const createGUI = (
   gui.add(options, "speed", 0.1, 20, 0.1).name("Speed");
 
   document.getElementById("btn-settings")?.addEventListener("click", () => {
-    const controls = document.getElementsByClassName(
-      "lil-gui"
-    )[0] as HTMLElement;
-    controls.style.display =
-      controls.style.display === "none" ? "flex" : "none";
+    gui.show(gui._hidden);
   });
 };
