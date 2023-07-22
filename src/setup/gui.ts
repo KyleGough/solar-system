@@ -20,6 +20,8 @@ export const createGUI = (
 ) => {
   const gui = new dat.GUI();
 
+  gui.title("Simulation Controls");
+
   gui
     .add(options, "showLabels")
     .name("Show Labels")
@@ -32,7 +34,7 @@ export const createGUI = (
   gui.add(options, "yangle", -Math.PI, Math.PI, 0.002);
 
   // Adjust ambient light intensity
-  gui.add(ambientLight, "intensity", 0, 1, 0.001).name("Ambient Intensity");
+  gui.add(ambientLight, "intensity", 0, 0.5, 0.001).name("Ambient Intensity");
 
   // Toggle planetary paths
   gui
@@ -70,4 +72,12 @@ export const createGUI = (
 
   // Control the simulation speed
   gui.add(options, "speed", 0.1, 20, 0.1).name("Speed");
+
+  document.getElementById("btn-settings")?.addEventListener("click", () => {
+    const controls = document.getElementsByClassName(
+      "lil-gui"
+    )[0] as HTMLElement;
+    controls.style.display =
+      controls.style.display === "none" ? "flex" : "none";
+  });
 };

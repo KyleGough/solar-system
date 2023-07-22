@@ -52,3 +52,9 @@ body {
   pointer-events: none;
 }
 
+#btn-settings {
+  position: absolute;
+  right: 0;
+  margin-right: 2rem;
+}
+
