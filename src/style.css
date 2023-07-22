@@ -45,7 +45,8 @@ canvas {
   fill: white;
 }
 
-.caption button:hover {
+.caption button:hover,
+.caption a:hover {
   fill: gainsboro;
 }
 
