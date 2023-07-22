@@ -163,8 +163,6 @@ createGUI(ambientLight, solarSystem, clock, fakeCamera);
     ).toString();
   });
 
-  console.log(fakeCamera.position.length());
-
   // Render
   renderer.render(scene, camera);
   labelRenderer.render(scene, camera);

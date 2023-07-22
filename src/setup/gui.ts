@@ -9,7 +9,6 @@ export const options = {
   speed: 0.125,
   zangle: 0,
   yangle: 0,
-  showLabels: true,
 };
 
 export const createGUI = (
@@ -25,9 +24,6 @@ export const createGUI = (
   // TODO TEMP
   gui.add(options, "zangle", -Math.PI, Math.PI, 0.002);
   gui.add(options, "yangle", -Math.PI, Math.PI, 0.002);
-
-  // Adjust ambient light intensity
-  gui.add(ambientLight, "intensity", 0, 0.5, 0.001).name("Ambient Intensity");
 
   // Toggle planetary paths
   gui
@@ -65,6 +61,11 @@ export const createGUI = (
 
   // Control the simulation speed
   gui.add(options, "speed", 0.1, 20, 0.1).name("Speed");
+
+  // Toggle ambient lights
+  document.getElementById("btn-ambient")?.addEventListener("click", () => {
+    ambientLight.intensity = ambientLight.intensity === 0.1 ? 0.5 : 0.1;
+  });
 
   // Toggle labels
   document.getElementById("btn-labels")?.addEventListener("click", () => {

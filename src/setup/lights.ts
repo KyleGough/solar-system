@@ -4,7 +4,7 @@ type Lights = [THREE.AmbientLight, THREE.PointLight];
 
 export const createLights = (): Lights => {
   // Ambient light
-  const ambientLight = new THREE.AmbientLight(0xffffff, 0.05);
+  const ambientLight = new THREE.AmbientLight(0xffffff, 0.1);
 
   // Point Light.
   const pointLight = new THREE.PointLight(0xf4e99b, 1);
