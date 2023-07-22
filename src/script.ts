@@ -5,7 +5,7 @@ import { createEnvironmentMap } from "./setup/environment-map";
 import { createLights } from "./setup/lights";
 import { createSolarSystem } from "./setup/solar-system";
 import { createGUI, options } from "./setup/gui";
-import { createLabel, labelVisibility, rotateLabel } from "./setup/label";
+import { createLabel, getLabelOpacity, rotateLabel } from "./setup/label";
 
 THREE.ColorManagement.enabled = false;
 
@@ -153,10 +153,17 @@ createGUI(ambientLight, solarSystem, clock, fakeCamera);
   ).toArray();
   label.position.set(...labelPosition);
 
-  // Labels
-  solarSystem[options.focus].labels.forEach((l) => {
-    labelVisibility(fakeCamera, l.label, l.container);
+  // Update labels
+  const currentBody = solarSystem[options.focus];
+  currentBody.labels.forEach((l) => {
+    l.container.style.opacity = getLabelOpacity(
+      fakeCamera,
+      l.label,
+      currentBody.radius
+    ).toString();
   });
+
+  console.log(fakeCamera.position.length());
 
   // Render
   renderer.render(scene, camera);

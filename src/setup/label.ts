@@ -2,25 +2,46 @@ import * as THREE from "three";
 import { CSS2DObject } from "three/examples/jsm/renderers/CSS2DRenderer";
 import { PlanetaryObject } from "./planetary-object";
 
-const hideThreshold = 1;
-const fadeThreshold = 0.75;
-
-export const labelVisibility = (
+export const getLabelOpacity = (
   camera: THREE.Camera,
   label: CSS2DObject,
-  container: HTMLElement
+  radius: number
 ) => {
+  const rotationOpacity = getRotationOpacity(camera, label);
+  const distanceOpacity = getDistanceOpacity(camera, radius);
+  return rotationOpacity * distanceOpacity;
+};
+
+const getRotationOpacity = (
+  camera: THREE.Camera,
+  label: CSS2DObject
+): number => {
+  const hideThreshold = 1;
+  const fadeThreshold = 0.75;
   const cameraVector = camera.position.clone().normalize();
   const labelVector = label.position.clone().normalize();
   const delta = Math.acos(cameraVector.dot(labelVector));
 
   if (delta > hideThreshold) {
-    container.style.opacity = "0";
+    return 0;
   } else if (delta > fadeThreshold) {
-    const o = (hideThreshold - delta) / (hideThreshold - fadeThreshold);
-    container.style.opacity = o.toString();
+    return (hideThreshold - delta) / (hideThreshold - fadeThreshold);
   } else {
-    container.style.opacity = "1";
+    return 1;
+  }
+};
+
+const getDistanceOpacity = (camera: THREE.Camera, radius: number): number => {
+  const hideThreshold = radius * 12;
+  const fadeThreshold = radius * 8;
+  const distance = camera.position.length();
+
+  if (distance > hideThreshold) {
+    return 0;
+  } else if (distance > fadeThreshold) {
+    return (hideThreshold - distance) / (hideThreshold - fadeThreshold);
+  } else {
+    return 1;
   }
 };
 
