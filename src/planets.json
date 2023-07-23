@@ -82,9 +82,9 @@
       { "name": "Apollo 15", "type": "landing", "y": 0, "z": 0.52 },
       { "name": "Apollo 16", "type": "landing", "y": 0.21, "z": -0.10 },
       { "name": "Apollo 17", "type": "landing", "y": 0.52, "z": 0.44 },
-      { "name": "Sea of Serenity", "y": 0.21, "z": 0.52 },
-      { "name": "Sea of Tranquility", "y": 0.59, "z": 0.28 },
-      { "name": "Tycho Crater", "y": -1.88, "z": 1.13 },
+      { "name": "Sea of Serenity", "y": 0.23, "z": 0.48 },
+      { "name": "Sea of Tranquility", "y": 0.44, "z": 0.21 },
+      { "name": "Tycho Crater", "y": -0.18, "z": -0.64 },
       { "name": "Yutu-2", "type": "rover", "y": 3.06, "z": 0.67 }
     ]
   },
@@ -176,7 +176,7 @@
     ]
   },
   {
-    "name": "Saturn's Rings",
+    "name": "Rings of Saturn",
     "radius": 3,
     "distance": 0,
     "period": 1,

@@ -8,7 +8,6 @@
 - Bloom/extra lighting on Sun
 - Loading screen
 - Shadow quality
-- Camera movement
 
 ## Setup
 
@@ -28,8 +27,9 @@ npm run build
 
 ## Texture Sources
 
-- [Sun, Gas Giants, Ice Giants, and Saturn's rings](https://www.solarsystemscope.com/textures/)
-- [Mercury, Venus, Earth, Mars, and the Moon](https://planetpixelemporium.com/planets.html)
+- [Sun, Giant Planets](https://www.solarsystemscope.com/textures/)
+- [Terrestrial Planets](https://planetpixelemporium.com/planets.html)
+- [Moon](https://svs.gsfc.nasa.gov/4720)
 - [Ganymede](https://www.deviantart.com/askaniy/art/Ganymede-Texture-Map-11K-808732114)
 - [Titan](https://planet-texture-maps.fandom.com/wiki/Titan)
 - [Callisto](http://bjj.mmedia.is/data/callisto/)

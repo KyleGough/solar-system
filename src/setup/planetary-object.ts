@@ -138,8 +138,7 @@ export class PlanetaryObject {
 
       if (this.bumpMap) {
         material.bumpMap = this.bumpMap;
-        material.bumpScale =
-          this.type === "moon" ? this.radius / 200 : this.radius / 50;
+        material.bumpScale = this.radius / 50;
       }
 
       if (this.specularMap) {

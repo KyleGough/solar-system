@@ -7,7 +7,7 @@ export const createLights = (): Lights => {
   const ambientLight = new THREE.AmbientLight(0xffffff, 0.1);
 
   // Point Light.
-  const pointLight = new THREE.PointLight(0xf4e99b, 1);
+  const pointLight = new THREE.PointLight(0xffffff, 1);
   pointLight.castShadow = true;
   pointLight.shadow.mapSize.width = 4096;
   pointLight.shadow.mapSize.height = 4096;
