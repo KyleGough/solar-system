@@ -65,11 +65,13 @@ canvas {
 .label {
   color: white;
   font-weight: 200;
-  font-size: 0.9rem;
+  font-size: 0.8rem;
+  width: 70px;
+  text-align: center;
   pointer-events: none;
   display: flex;
   justify-content: center;
-  align-content: center;
+  align-items: center;
   gap: 6px;
 }
 
