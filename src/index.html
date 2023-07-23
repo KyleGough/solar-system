@@ -12,6 +12,51 @@
   </head>
   <body>
     <canvas class="webgl"></canvas>
+    <div class="btn-group">
+      <a id="btn-github" href="https://github.com/KyleGough/solar-system" target="_blank">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24">
+          <g>
+            <path d="M12 24a12 12 0 1 1 12-12 12.013 12.013 0 0 1-12 12zm0-22a10 10 0 1 0 10 10A10.011 10.011 0 0 0 12 2z"/>
+            <path d="M9.293 16.707 4.586 12l4.707-4.707 1.414 1.414L7.414 12l3.293 3.293-1.414 1.414zM14.707 16.707l-1.414-1.414L16.586 12l-3.293-3.293 1.414-1.414L19.414 12l-4.707 4.707z"/>
+          </g>
+        </svg>
+      </a>
+      <button id="btn-ambient">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24">
+          <g>
+            <path d="M12 24a12 12 0 1 1 12-12 12.013 12.013 0 0 1-12 12zm0-22a10 10 0 1 0 10 10A10.011 10.011 0 0 0 12 2z"/>
+            <path d="M12 16a4 4 0 1 1 4-4 4 4 0 0 1-4 4zm0-6a2 2 0 1 0 2 2 2 2 0 0 0-2-2zM11 5h2v2h-2zM11 17h2v2h-2zM17 11h2v2h-2zM5 11h2v2H5zM6 7h2v2H6zM16 7h2v2h-2zM6 15h2v2H6zM16 15h2v2h-2z"/>
+          </g>
+        </svg>
+      </button>
+      <button id="btn-labels">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24">
+          <g>
+            <path d="M12 24a12 12 0 1 1 12-12 12.013 12.013 0 0 1-12 12zm0-22a10 10 0 1 0 10 10A10.011 10.011 0 0 0 12 2z"/>
+            <path d="m12 19.414-.707-.707C10.751 18.166 6 13.318 6 10a6 6 0 0 1 12 0c0 3.318-4.751 8.166-5.293 8.707zM12 6a4 4 0 0 0-4 4c0 1.654 2.225 4.622 4 6.553 1.774-1.933 4-4.9 4-6.553a4 4 0 0 0-4-4z"/>
+            <path d="M11 8h2v2h-2z"/>
+          </g>
+        </svg>
+      </button>
+      <button id="btn-paths">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24">
+          <g>
+            <path d="M12 24a12 12 0 1 1 12-12 12.013 12.013 0 0 1-12 12zm0-22a10 10 0 1 0 10 10A10.011 10.011 0 0 0 12 2z"/>
+            <path d="m7.091 16.91 1.964-7.856 7.854-1.964-1.964 7.856zM10.7 10.7l-.864 3.457L13.3 13.3l.864-3.457z"/>
+            <path d="m9.171 10.586 1.414-1.414 4.242 4.242-1.414 1.414z"/>
+          </g>
+        </svg>
+      </button>
+      <button id="btn-settings">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24">
+          <g>
+            <path d="M12 24a12 12 0 1 1 12-12 12.013 12.013 0 0 1-12 12zm0-22a10 10 0 1 0 10 10A10.011 10.011 0 0 0 12 2z"/>
+            <path d="M12 17a5 5 0 1 1 5-5 5.006 5.006 0 0 1-5 5zm0-8a3 3 0 1 0 3 3 3 3 0 0 0-3-3z"/>
+            <path d="M11 5h2v3h-2zM11 16h2v3h-2zM16 11h3v2h-3zM5 11h3v2H5zM14.293 8.293l2-2 1.414 1.414-2 2zM6.293 7.707l1.414-1.414 2 2-1.415 1.414zM6.293 16.293l2-2 1.414 1.414-2 2zM14.293 15.707l1.415-1.414 2 2-1.415 1.414z"/>
+          </g>
+        </svg>
+      </button>
+    </div>
     <div class="caption">
       <button id="btn-previous">
         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20">
@@ -24,42 +69,6 @@
           <path d="M10 20A10 10 0 1 0 0 10a10 10 0 0 0 10 10zM8.711 4.3l5.7 5.766L8.7 15.711l-1.4-1.422 4.289-4.242-4.3-4.347z"/>
         </svg>
       </button>
-      <div class="btn-group">
-        <a id="btn-github" href="https://github.com/KyleGough/solar-system" target="_blank">
-          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24">
-            <g>
-              <path d="M12 24a12 12 0 1 1 12-12 12.013 12.013 0 0 1-12 12zm0-22a10 10 0 1 0 10 10A10.011 10.011 0 0 0 12 2z"/>
-              <path d="M9.293 16.707 4.586 12l4.707-4.707 1.414 1.414L7.414 12l3.293 3.293-1.414 1.414zM14.707 16.707l-1.414-1.414L16.586 12l-3.293-3.293 1.414-1.414L19.414 12l-4.707 4.707z"/>
-            </g>
-          </svg>
-        </a>
-        <button id="btn-ambient">
-          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24">
-            <g>
-              <path d="M12 24a12 12 0 1 1 12-12 12.013 12.013 0 0 1-12 12zm0-22a10 10 0 1 0 10 10A10.011 10.011 0 0 0 12 2z"/>
-              <path d="M12 16a4 4 0 1 1 4-4 4 4 0 0 1-4 4zm0-6a2 2 0 1 0 2 2 2 2 0 0 0-2-2zM11 5h2v2h-2zM11 17h2v2h-2zM17 11h2v2h-2zM5 11h2v2H5zM6 7h2v2H6zM16 7h2v2h-2zM6 15h2v2H6zM16 15h2v2h-2z"/>
-            </g>
-          </svg>
-        </button>
-        <button id="btn-labels">
-          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24">
-            <g>
-              <path d="M12 24a12 12 0 1 1 12-12 12.013 12.013 0 0 1-12 12zm0-22a10 10 0 1 0 10 10A10.011 10.011 0 0 0 12 2z"/>
-              <path d="m12 19.414-.707-.707C10.751 18.166 6 13.318 6 10a6 6 0 0 1 12 0c0 3.318-4.751 8.166-5.293 8.707zM12 6a4 4 0 0 0-4 4c0 1.654 2.225 4.622 4 6.553 1.774-1.933 4-4.9 4-6.553a4 4 0 0 0-4-4z"/>
-              <path d="M11 8h2v2h-2z"/>
-            </g>
-          </svg>
-        </button>
-        <button id="btn-settings">
-          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24">
-            <g>
-              <path d="M12 24a12 12 0 1 1 12-12 12.013 12.013 0 0 1-12 12zm0-22a10 10 0 1 0 10 10A10.011 10.011 0 0 0 12 2z"/>
-              <path d="M12 17a5 5 0 1 1 5-5 5.006 5.006 0 0 1-5 5zm0-8a3 3 0 1 0 3 3 3 3 0 0 0-3-3z"/>
-              <path d="M11 5h2v3h-2zM11 16h2v3h-2zM16 11h3v2h-3zM5 11h3v2H5zM14.293 8.293l2-2 1.414 1.414-2 2zM6.293 7.707l1.414-1.414 2 2-1.415 1.414zM6.293 16.293l2-2 1.414 1.414-2 2zM14.293 15.707l1.415-1.414 2 2-1.415 1.414z"/>
-            </g>
-          </svg>
-        </button>
-      </div>
     </div>
     <script type="module" src="./script.ts"></script>
   </body>

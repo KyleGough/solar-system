@@ -24,11 +24,21 @@ canvas {
   display: flex;
   position: absolute;
   bottom: 0;
+  margin-bottom: 2rem;
   justify-content: center;
   width: 100%;
-  color: white;
-  margin-bottom: 2rem;
   gap: 2rem;
+  color: white;
+}
+
+.btn-group {
+  display: flex;
+  position: absolute;
+  top: 0;
+  margin-top: 2rem;
+  justify-content: center;
+  width: 100%;
+  gap: 0.5rem;
 }
 
 .caption p {
@@ -36,7 +46,8 @@ canvas {
   text-align: center;
 }
 
-.caption button {
+.caption button,
+.btn-group button {
   background-color: transparent;
   color: white;
   border: none;
@@ -46,7 +57,8 @@ canvas {
 }
 
 .caption button:hover,
-.caption a:hover {
+.btn-group button:hover,
+.btn-group a:hover {
   fill: gainsboro;
 }
 
@@ -67,9 +79,6 @@ canvas {
 }
 
 .btn-group {
-  position: absolute;
-  right: 0;
-  margin-right: 2rem;
   fill: white;
 }
 

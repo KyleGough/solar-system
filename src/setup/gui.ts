@@ -30,19 +30,6 @@ export const createGUI = (
 
   gui.add(ambientLight, "intensity", 0, 1, 0.01).name("Ambient Intensity");
 
-  // Toggle planetary paths
-  gui
-    .add(options, "showPaths")
-    .name("Show Paths")
-    .onChange((value: boolean) => {
-      for (const name in solarSystem) {
-        const object = solarSystem[name];
-        if (object.path) {
-          object.path.visible = value;
-        }
-      }
-    });
-
   // Toggle moons
   gui
     .add(options, "showMoons")
@@ -77,6 +64,18 @@ export const createGUI = (
   // Toggle labels
   document.getElementById("btn-labels")?.addEventListener("click", () => {
     camera.layers.toggle(2);
+  });
+
+  // Toggle paths
+  document.getElementById("btn-paths")?.addEventListener("click", () => {
+    options.showPaths = !options.showPaths;
+
+    for (const name in solarSystem) {
+      const object = solarSystem[name];
+      if (object.path) {
+        object.path.visible = options.showPaths;
+      }
+    }
   });
 
   // Toggle GUI panel
