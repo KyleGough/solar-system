@@ -88,7 +88,7 @@ controls.minDistance = solarSystem["Sun"].getMinDistance();
 controls.maxDistance = 50;
 
 // TODO REMOVE: Testing positioning of new labels
-const parent = solarSystem["Moon"];
+const parent = solarSystem["Mars"];
 const [label, _] = createLabel("Test", 0, 0, parent);
 
 // Label renderer

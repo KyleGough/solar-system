@@ -104,6 +104,7 @@
     },
     "labels": [
       { "name": "Olympus Mons", "type": "mountain", "y": 0.59, "z": 0.52 },
+      { "name": "Tharsis Montes", "type": "mountain", "y": 1.13, "z": 0.28 },
       { "name": "Valles Marineris", "y": 1.6, "z": 1.75 },
       { "name": "Perseverance", "type": "rover", "y": -1.96, "z": -0.87 },
       { "name": "Curiosity", "type": "rover", "y": -0.80, "z": -0.10 }
