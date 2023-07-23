@@ -12,7 +12,7 @@ export const createLights = (): Lights => {
   pointLight.shadow.mapSize.width = 4096;
   pointLight.shadow.mapSize.height = 4096;
   pointLight.shadow.camera.near = 1.5;
-  pointLight.shadow.camera.far = 15;
+  pointLight.shadow.camera.far = 30;
   pointLight.shadow.radius = 16;
 
   return [ambientLight, pointLight];

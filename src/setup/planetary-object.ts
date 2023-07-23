@@ -50,7 +50,7 @@ const normaliseRadius = (radius: number): number => {
 };
 
 const normaliseDistance = (distance: number): number => {
-  return Math.pow(distance, 0.4) / 2;
+  return Math.pow(distance, 0.4);
 };
 
 const degreesToRadians = (degrees: number): number => {
@@ -79,13 +79,13 @@ export class PlanetaryObject {
     const { radius, distance, period, daylength, orbits, type, tilt } = body;
 
     this.radius = normaliseRadius(radius);
-    this.distance = type === "moon" ? distance : normaliseDistance(distance);
+    this.distance = normaliseDistance(distance);
     this.period = period;
     this.daylength = daylength;
     this.orbits = orbits;
     this.type = type;
     this.tilt = degreesToRadians(tilt);
-    this.rng = body.offset ? body.offset : Math.random() * 2 * Math.PI;
+    this.rng = body.offset ?? Math.random() * 2 * Math.PI;
 
     this.loadTextures(body.textures);
 

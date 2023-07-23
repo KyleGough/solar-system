@@ -21,9 +21,6 @@ export const createGUI = (
 
   gui.title("Simulation Controls");
 
-  gui.add(solarSystem["Moon"], "period");
-  gui.add(solarSystem["Moon"], "daylength");
-
   // TODO TEMP
   gui.add(options, "zangle", -Math.PI, Math.PI, 0.002);
   gui.add(options, "yangle", -Math.PI, Math.PI, 0.002);

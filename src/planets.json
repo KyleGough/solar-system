@@ -70,7 +70,7 @@
     "orbits": "Earth",
     "tilt": 5.8,
     "traversable": true,
-    "offset": 0,
+    "offset": -1.57,
     "textures": {
       "map": "/textures/moon.jpg",
       "bump": "/textures/moon-bump.jpg"
