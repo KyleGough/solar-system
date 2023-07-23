@@ -211,4 +211,8 @@ export class PlanetaryObject {
   hideLabels = () => {
     this.labels.forEach((label) => (label.label.visible = false));
   };
+
+  getMinDistance = (): number => {
+    return this.radius * 3.5;
+  };
 }

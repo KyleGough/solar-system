@@ -25,14 +25,12 @@ scene.add(ambientLight, pointLight);
 // Solar system
 const [solarSystem, planetNames] = createSolarSystem(scene);
 
-const controlMinDistance = (radius: number): number => {
-  return 1.5 * (radius + 0.1);
-};
-
 const changeFocus = (oldFocus: string, newFocus: string) => {
   solarSystem[oldFocus].mesh.remove(camera);
   solarSystem[newFocus].mesh.add(camera);
-  controls.minDistance = controlMinDistance(solarSystem[newFocus].radius);
+  const minDistance = solarSystem[newFocus].getMinDistance();
+  controls.minDistance = minDistance;
+  fakeCamera.position.set(minDistance, minDistance / 3, 0);
   solarSystem[oldFocus].hideLabels();
   solarSystem[newFocus].showLabels();
   (document.querySelector(".caption p") as HTMLElement).innerHTML = newFocus;
@@ -77,7 +75,7 @@ document.getElementById("btn-next")?.addEventListener("click", () => {
 // Camera
 const aspect = sizes.width / sizes.height;
 const camera = new THREE.PerspectiveCamera(75, aspect, 0.1, 1000);
-camera.position.set(0, 2, 8);
+camera.position.set(0, 20, 0);
 solarSystem["Sun"].mesh.add(camera);
 
 // Controls
@@ -86,7 +84,7 @@ const controls = new OrbitControls(fakeCamera, canvas);
 controls.target = solarSystem["Sun"].mesh.position;
 controls.enableDamping = true;
 controls.enablePan = false;
-controls.minDistance = controlMinDistance(solarSystem["Sun"].radius);
+controls.minDistance = solarSystem["Sun"].getMinDistance();
 controls.maxDistance = 50;
 
 // TODO REMOVE: Testing positioning of new labels
