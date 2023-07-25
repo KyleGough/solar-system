@@ -77,13 +77,6 @@
     },
     "labels": [
       { "name": "Apollo 11", "type": "landing", "y": 0.36, "z": 0.05 },
-      { "name": "Apollo 12", "type": "landing", "y": -0.49, "z": 0.05 },
-      { "name": "Apollo 14", "type": "landing", "y": -0.33, "z": -0.03 },
-      { "name": "Apollo 15", "type": "landing", "y": 0, "z": 0.52 },
-      { "name": "Apollo 16", "type": "landing", "y": 0.21, "z": -0.10 },
-      { "name": "Apollo 17", "type": "landing", "y": 0.52, "z": 0.44 },
-      { "name": "Sea of Serenity", "y": 0.23, "z": 0.48 },
-      { "name": "Sea of Tranquility", "y": 0.44, "z": 0.21 },
       { "name": "Tycho Crater", "y": -0.18, "z": -0.64 },
       { "name": "Yutu-2", "type": "rover", "y": 3.06, "z": 0.67 }
     ]

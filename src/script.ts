@@ -87,10 +87,6 @@ controls.enablePan = false;
 controls.minDistance = solarSystem["Sun"].getMinDistance();
 controls.maxDistance = 50;
 
-// TODO REMOVE: Testing positioning of new labels
-const parent = solarSystem["Moon"];
-const [label, _] = createLabel("Test", 0, 0, parent);
-
 // Label renderer
 const labelRenderer = new CSS2DRenderer();
 labelRenderer.setSize(sizes.width, sizes.height);
@@ -130,14 +126,6 @@ createGUI(ambientLight, solarSystem, clock, fakeCamera);
 
   // Update controls
   controls.update();
-
-  // TODO REMOVE: Testing positioning of new labels
-  const labelPosition = rotateLabel(
-    parent.radius,
-    options.yangle,
-    options.zangle
-  ).toArray();
-  label.position.set(...labelPosition);
 
   // Update labels
   const currentBody = solarSystem[options.focus];

@@ -2,6 +2,7 @@ import * as THREE from "three";
 import { CSS2DObject } from "three/examples/jsm/renderers/CSS2DRenderer";
 import { createRingMesh } from "./rings";
 import { createPath } from "./path";
+import { loadTexture } from "./textures";
 
 export interface Body {
   name: string;
@@ -58,7 +59,6 @@ const degreesToRadians = (degrees: number): number => {
 };
 
 export class PlanetaryObject {
-  static loader = new THREE.TextureLoader();
   radius: number; // in km
   distance: number; // in million km
   period: number; // in days
@@ -101,20 +101,18 @@ export class PlanetaryObject {
   }
 
   loadTextures(textures: TexturePaths) {
-    this.map = PlanetaryObject.loader.load(textures.map);
+    this.map = loadTexture(textures.map);
     if (textures.bump) {
-      this.bumpMap = PlanetaryObject.loader.load(textures.bump);
+      this.bumpMap = loadTexture(textures.bump);
     }
     if (textures.specular) {
-      this.specularMap = PlanetaryObject.loader.load(textures.specular);
+      this.specularMap = loadTexture(textures.specular);
     }
     if (textures.atmosphere) {
-      this.atmosphere.map = PlanetaryObject.loader.load(textures.atmosphere);
+      this.atmosphere.map = loadTexture(textures.atmosphere);
     }
     if (textures.atmosphereAlpha) {
-      this.atmosphere.alpha = PlanetaryObject.loader.load(
-        textures.atmosphereAlpha
-      );
+      this.atmosphere.alpha = loadTexture(textures.atmosphereAlpha);
     }
   }
 

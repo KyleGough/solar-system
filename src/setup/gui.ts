@@ -21,10 +21,6 @@ export const createGUI = (
 
   gui.title("Simulation Controls");
 
-  // TODO TEMP
-  gui.add(options, "zangle", -Math.PI, Math.PI, 0.002);
-  gui.add(options, "yangle", -Math.PI, Math.PI, 0.002);
-
   gui.add(ambientLight, "intensity", 0, 1, 0.01).name("Ambient Intensity");
 
   // Toggle moons
