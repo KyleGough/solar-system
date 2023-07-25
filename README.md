@@ -6,7 +6,6 @@
 - Information panel
 - Accuracy
 - Bloom/extra lighting on Sun
-- Loading screen
 - Shadow quality
 
 ## Setup
