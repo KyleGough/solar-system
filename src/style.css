@@ -132,7 +132,8 @@ canvas {
 }
 
 .caption button,
-.btn-group button {
+.btn-group button,
+.btn-group a {
   background-color: transparent;
   color: white;
   border: none;
