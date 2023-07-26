@@ -1,11 +1,14 @@
 import * as THREE from "three";
-import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
+import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 import { CSS2DRenderer } from "three/examples/jsm/renderers/CSS2DRenderer";
 import { createEnvironmentMap } from "./setup/environment-map";
 import { createLights } from "./setup/lights";
 import { createSolarSystem } from "./setup/solar-system";
 import { createGUI, options } from "./setup/gui";
-import { createLabel, getLabelOpacity, rotateLabel } from "./setup/label";
+import { getLabelOpacity } from "./setup/label";
+import { EffectComposer } from "three/examples/jsm/postprocessing/EffectComposer";
+import { RenderPass } from "three/examples/jsm/postprocessing/RenderPass";
+import { UnrealBloomPass } from "three/examples/jsm/postprocessing/UnrealBloomPass";
 
 THREE.ColorManagement.enabled = false;
 
@@ -54,6 +57,7 @@ window.addEventListener("resize", () => {
   // Update renderers
   renderer.setSize(sizes.width, sizes.height);
   renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+  bloomComposer.setSize(sizes.width, sizes.height);
   labelRenderer.setSize(sizes.width, sizes.height);
 });
 
@@ -104,6 +108,20 @@ renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 renderer.shadowMap.enabled = true;
 renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 
+const renderScene = new RenderPass(scene, camera);
+const bloomPass = new UnrealBloomPass(
+  new THREE.Vector2(sizes.width, sizes.height),
+  0.75,
+  0,
+  1
+);
+
+const bloomComposer = new EffectComposer(renderer);
+bloomComposer.setSize(sizes.width, sizes.height);
+bloomComposer.renderToScreen = true;
+bloomComposer.addPass(renderScene);
+bloomComposer.addPass(bloomPass);
+
 // Animate
 const clock = new THREE.Clock();
 let elapsedTime = 0;
@@ -138,7 +156,7 @@ createGUI(ambientLight, solarSystem, clock, fakeCamera);
   });
 
   // Render
-  renderer.render(scene, camera);
+  bloomComposer.render();
   labelRenderer.render(scene, camera);
 
   // Call tick again on the next frame

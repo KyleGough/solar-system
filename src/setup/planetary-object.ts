@@ -127,11 +127,14 @@ export class PlanetaryObject {
       material = new THREE.MeshBasicMaterial({
         map: this.map,
         lightMapIntensity: 2,
+        toneMapped: false,
+        color: new THREE.Color(2.5, 2.5, 2.5),
       });
     } else {
       material = new THREE.MeshPhongMaterial({
         map: this.map,
         shininess: 5,
+        toneMapped: true,
       });
 
       if (this.bumpMap) {
