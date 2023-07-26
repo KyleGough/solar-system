@@ -1,7 +1,9 @@
 # Solar System Model
-3D model of the solar system allowing traversal of all the planets. Provides labels showcasing points of interest on certain planets such as *Olympus Mons* on Mars. This model was created using Three.js and is currently serving as a tool to enhance my learning whilst progressing through Three.js journey.
+
+3D model of the solar system allowing traversal of all the planets. Provides labels showcasing points of interest on certain planets such as _Olympus Mons_ on Mars. This model was created using Three.js and is currently serving as a tool to enhance my learning whilst progressing through Three.js journey.
 
 ## Current features
+
 - Orbits
 - Textures
 - Loading screen
@@ -11,12 +13,13 @@
 - POI labels
 - Custom controls
 - Orbit paths
+- Sun bloom effect
 
 ## Planned changes
+
 - [ ] Earth night time texture
 - [ ] Planet information panel
 - [ ] Accuracy of distances
-- [ ] Bloom/extra lighting effect on the Sun
 - [ ] Improve shadow quality
 
 ## Setup
