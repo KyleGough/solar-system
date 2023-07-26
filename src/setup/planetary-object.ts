@@ -67,7 +67,7 @@ export class PlanetaryObject {
   type: string;
   tilt: number; // degrees
   mesh: THREE.Mesh;
-  path?: THREE.Mesh;
+  path?: THREE.Line;
   rng: number;
   map: THREE.Texture;
   bumpMap?: THREE.Texture;

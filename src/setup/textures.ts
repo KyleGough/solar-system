@@ -13,7 +13,6 @@ export const loadTexture = (path: string) => {
     texturesLoaded++;
 
     if (texturesLoaded === textureCount) {
-      console.log(path);
       handleTexturesLoaded();
     }
   });
@@ -37,6 +36,5 @@ const handleTexturesLoaded = () => {
 };
 
 export const setTextureCount = (n: number) => {
-  console.log("set", n);
   textureCount = n;
 };
