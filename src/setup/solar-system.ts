@@ -31,7 +31,7 @@ export const createSolarSystem = (
     if (object.orbits) {
       const parentMesh = solarSystem[object.orbits].mesh;
       parentMesh.add(object.mesh);
-      object.path && scene.add(object.path);
+      object.path && parentMesh.add(object.path);
     }
 
     if (planet.labels) {

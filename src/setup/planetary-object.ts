@@ -89,11 +89,11 @@ export class PlanetaryObject {
 
     this.loadTextures(body.textures);
 
-    if (type === "planet") {
+    this.mesh = this.createMesh();
+
+    if (this.orbits) {
       this.path = createPath(this.distance);
     }
-
-    this.mesh = this.createMesh();
 
     if (this.atmosphere.map) {
       this.mesh.add(this.createAtmosphereMesh());
@@ -148,8 +148,7 @@ export class PlanetaryObject {
     }
 
     const sphere = new THREE.Mesh(geometry, material);
-    sphere.rotation.x += this.tilt;
-
+    sphere.rotation.x = this.tilt;
     sphere.castShadow = true;
     sphere.receiveShadow = true;
 
