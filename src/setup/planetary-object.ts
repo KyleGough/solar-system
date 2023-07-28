@@ -37,6 +37,7 @@ interface TexturePaths {
 interface Atmosphere {
   map?: THREE.Texture;
   alpha?: THREE.Texture;
+  mesh?: THREE.Mesh;
 }
 
 interface Label {
@@ -96,7 +97,9 @@ export class PlanetaryObject {
     }
 
     if (this.atmosphere.map) {
-      this.mesh.add(this.createAtmosphereMesh());
+      const atmosphere = this.createAtmosphereMesh();
+      this.atmosphere.mesh = atmosphere;
+      console.log(this.atmosphere);
     }
   }
 
@@ -121,8 +124,8 @@ export class PlanetaryObject {
       return createRingMesh(this.map);
     }
 
-    const geometry = new THREE.SphereGeometry(this.radius, 64, 64);
     let material;
+
     if (this.type === "star") {
       material = new THREE.MeshBasicMaterial({
         map: this.map,
@@ -147,6 +150,7 @@ export class PlanetaryObject {
       }
     }
 
+    const geometry = new THREE.SphereGeometry(this.radius, 64, 64);
     const sphere = new THREE.Mesh(geometry, material);
     sphere.rotation.x = this.tilt;
     sphere.castShadow = true;
@@ -188,8 +192,17 @@ export class PlanetaryObject {
     const orbit = orbitRotation + this.rng;
 
     // Circular rotation around orbit.
-    this.mesh.position.x = Math.sin(orbit) * this.distance;
-    this.mesh.position.z = Math.cos(orbit) * this.distance;
+    const x = Math.sin(orbit) * this.distance;
+    const z = Math.cos(orbit) * this.distance;
+
+    this.mesh.position.x = x;
+    this.mesh.position.z = z;
+
+    if (this.atmosphere.mesh) {
+      this.atmosphere.mesh.position.x = x;
+      this.atmosphere.mesh.position.z = z;
+      this.atmosphere.mesh.rotation.y = rotation * 1.05;
+    }
 
     if (this.type === "ring") {
       this.mesh.rotation.z = rotation;
