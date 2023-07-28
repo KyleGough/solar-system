@@ -1,0 +1,25 @@
+@use "./styles/animation.scss";
+@use "./styles/label.scss";
+@use "./styles//loading-screen.scss";
+
+* {
+  margin: 0;
+  padding: 0;
+}
+
+html,
+body {
+  overflow: hidden;
+  font-family: "Trispace", sans-serif;
+}
+
+.webgl {
+  position: fixed;
+  top: 0;
+  left: 0;
+  outline: none;
+}
+
+canvas {
+  display: block;
+}

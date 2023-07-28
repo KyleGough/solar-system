@@ -1,0 +1,19 @@
+$label-img-size: 15px;
+
+.label {
+  color: white;
+  font-weight: 200;
+  font-size: 0.8rem;
+  width: 70px;
+  text-align: center;
+  pointer-events: none;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 6px;
+
+  img {
+    width: $label-img-size;
+    height: $label-img-size;
+  }
+}

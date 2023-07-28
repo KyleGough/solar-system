@@ -1,0 +1,45 @@
+.caption {
+  display: flex;
+  position: absolute;
+  bottom: 0;
+  margin-bottom: 2rem;
+  justify-content: center;
+  width: 100%;
+  gap: 2rem;
+  color: white;
+
+  p {
+    width: 125px;
+    text-align: center;
+  }
+}
+
+.btn-group {
+  display: flex;
+  position: absolute;
+  top: 0;
+  margin-top: 2rem;
+  justify-content: center;
+  width: 100%;
+  gap: 0.5rem;
+  fill: white;
+}
+
+.caption button,
+.btn-group button,
+.btn-group a {
+  background-color: transparent;
+  color: white;
+  border: none;
+  cursor: pointer;
+  transition: color 0.1s ease;
+  fill: white;
+
+  &:hover {
+    fill: gainsboro;
+  }
+}
+
+#btn-github {
+  display: inline-block;
+}

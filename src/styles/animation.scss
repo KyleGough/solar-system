@@ -1,0 +1,23 @@
+@keyframes fadeIn {
+  0% {
+    opacity: 0;
+  }
+
+  100% {
+    opacity: 1;
+  }
+}
+
+@keyframes loading {
+  0% {
+    transform: scale(1.62) rotate(0deg);
+  }
+
+  50% {
+    transform: scale(3.5) rotate(720deg);
+  }
+
+  100% {
+    transform: scale(1.62) rotate(-180deg);
+  }
+}

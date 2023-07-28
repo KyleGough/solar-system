@@ -100,7 +100,7 @@
       { "name": "Tharsis Montes", "type": "mountain", "y": 1.13, "z": 0.28 },
       { "name": "Valles Marineris", "y": 1.6, "z": 1.75 },
       { "name": "Perseverance", "type": "rover", "y": -1.96, "z": -0.87 },
-      { "name": "Curiosity", "type": "rover", "y": -0.80, "z": -0.10 }
+      { "name": "Curiosity", "type": "rover", "y": -0.8, "z": -0.1 }
     ]
   },
   {
@@ -116,9 +116,7 @@
     "textures": {
       "map": "./textures/jupiter.jpg"
     },
-    "labels": [
-      { "name": "Great Red Spot", "y": -0.84, "z": -0.41 }
-    ]
+    "labels": [{ "name": "Great Red Spot", "y": -0.84, "z": -0.41 }]
   },
   {
     "name": "Saturn",
@@ -133,9 +131,7 @@
     "textures": {
       "map": "./textures/saturn.jpg"
     },
-    "labels": [
-      { "name": "Saturn's Hexagon", "y": 0, "z": 1.57 }
-    ]
+    "labels": [{ "name": "Saturn's Hexagon", "y": 0, "z": 1.57 }]
   },
   {
     "name": "Uranus",
@@ -164,9 +160,7 @@
     "textures": {
       "map": "./textures/neptune.jpg"
     },
-    "labels": [
-      { "name": "Great Dark Spot", "y": 0.21, "z": -0.18 }
-    ]
+    "labels": [{ "name": "Great Dark Spot", "y": 0.21, "z": -0.18 }]
   },
   {
     "name": "Rings of Saturn",
