@@ -1,4 +1,4 @@
-$loader-size: 50px;
+$loader-size: 75px;
 
 #loading {
   position: fixed;
@@ -47,18 +47,21 @@ $loader-size: 50px;
     animation: fadeIn 2s ease-in-out 2.75s 1 forwards;
 
     svg {
-      transform: scale(1.62);
+      transform: scale(3.5);
       animation: loading 2s ease-in-out 4.75s infinite;
     }
   }
 }
 
-#loader-text {
-  margin-top: 1rem;
+#loader-progress {
   display: flex;
-  justify-content: center;
+  justify-content: space-between;
+  margin-top: 1rem;
   font-weight: 100;
   font-size: 0.8rem;
-  opacity: 0;
-  animation: fadeIn 2s ease-in-out 3.5s 1 forwards;
+
+  div {
+    opacity: 0;
+    animation: fadeIn 2s ease-in-out 3.5s 1 forwards;
+  }
 }
