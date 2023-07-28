@@ -9,7 +9,7 @@
     "tilt": 0,
     "traversable": true,
     "textures": {
-      "map": "/textures/sun.jpg"
+      "map": "./textures/sun.jpg"
     }
   },
   {
@@ -23,8 +23,8 @@
     "tilt": 0.03,
     "traversable": true,
     "textures": {
-      "map": "/textures/mercury.jpg",
-      "bump": "/textures/mercury-bump.jpg"
+      "map": "./textures/mercury.jpg",
+      "bump": "./textures/mercury-bump.jpg"
     }
   },
   {
@@ -38,8 +38,8 @@
     "tilt": 2.64,
     "traversable": true,
     "textures": {
-      "map": "/textures/venus.jpg",
-      "bump": "/textures/venus-bump.jpg"
+      "map": "./textures/venus.jpg",
+      "bump": "./textures/venus-bump.jpg"
     }
   },
   {
@@ -53,11 +53,11 @@
     "tilt": 23.44,
     "traversable": true,
     "textures": {
-      "map": "/textures/earth.jpg",
-      "bump": "/textures/earth-bump.jpg",
-      "specular": "/textures/earth-specular.jpg",
-      "atmosphere": "/textures/earth-clouds.jpg",
-      "atmosphereAlpha": "/textures/earth-clouds-alpha.jpg"
+      "map": "./textures/earth.jpg",
+      "bump": "./textures/earth-bump.jpg",
+      "specular": "./textures/earth-specular.jpg",
+      "atmosphere": "./textures/earth-clouds.jpg",
+      "atmosphereAlpha": "./textures/earth-clouds-alpha.jpg"
     }
   },
   {
@@ -72,8 +72,8 @@
     "traversable": true,
     "offset": -1.57,
     "textures": {
-      "map": "/textures/moon.jpg",
-      "bump": "/textures/moon-bump.jpg"
+      "map": "./textures/moon.jpg",
+      "bump": "./textures/moon-bump.jpg"
     },
     "labels": [
       { "name": "Apollo 11", "type": "landing", "y": 0.36, "z": 0.05 },
@@ -92,8 +92,8 @@
     "tilt": 25.19,
     "traversable": true,
     "textures": {
-      "map": "/textures/mars.jpg",
-      "bump": "/textures/mars-bump.jpg"
+      "map": "./textures/mars.jpg",
+      "bump": "./textures/mars-bump.jpg"
     },
     "labels": [
       { "name": "Olympus Mons", "type": "mountain", "y": 0.59, "z": 0.52 },
@@ -114,7 +114,7 @@
     "tilt": 3.13,
     "traversable": true,
     "textures": {
-      "map": "/textures/jupiter.jpg"
+      "map": "./textures/jupiter.jpg"
     },
     "labels": [
       { "name": "Great Red Spot", "y": -0.84, "z": -0.41 }
@@ -131,7 +131,7 @@
     "tilt": 26.73,
     "traversable": true,
     "textures": {
-      "map": "/textures/saturn.jpg"
+      "map": "./textures/saturn.jpg"
     },
     "labels": [
       { "name": "Saturn's Hexagon", "y": 0, "z": 1.57 }
@@ -148,7 +148,7 @@
     "tilt": 82.23,
     "traversable": true,
     "textures": {
-      "map": "/textures/uranus.jpg"
+      "map": "./textures/uranus.jpg"
     }
   },
   {
@@ -162,7 +162,7 @@
     "tilt": 28.32,
     "traversable": true,
     "textures": {
-      "map": "/textures/neptune.jpg"
+      "map": "./textures/neptune.jpg"
     },
     "labels": [
       { "name": "Great Dark Spot", "y": 0.21, "z": -0.18 }
@@ -179,7 +179,7 @@
     "traversable": false,
     "tilt": 26.73,
     "textures": {
-      "map": "/textures/saturn-ring.png"
+      "map": "./textures/saturn-ring.png"
     }
   },
   {
@@ -193,7 +193,7 @@
     "tilt": 3.33,
     "traversable": false,
     "textures": {
-      "map": "/textures/ganymede.jpg"
+      "map": "./textures/ganymede.jpg"
     }
   },
   {
@@ -207,7 +207,7 @@
     "tilt": 27,
     "traversable": false,
     "textures": {
-      "map": "/textures/titan.webp"
+      "map": "./textures/titan.webp"
     }
   },
   {
@@ -221,7 +221,7 @@
     "tilt": 0,
     "traversable": false,
     "textures": {
-      "map": "/textures/callisto.jpg"
+      "map": "./textures/callisto.jpg"
     }
   },
   {
@@ -235,7 +235,7 @@
     "tilt": 0.05,
     "traversable": false,
     "textures": {
-      "map": "/textures/io.jpg"
+      "map": "./textures/io.jpg"
     }
   },
   {
@@ -249,7 +249,7 @@
     "tilt": 0.47,
     "traversable": false,
     "textures": {
-      "map": "/textures/europa.jpg"
+      "map": "./textures/europa.jpg"
     }
   },
   {
@@ -263,7 +263,7 @@
     "tilt": 156,
     "traversable": false,
     "textures": {
-      "map": "/textures/triton.jpg"
+      "map": "./textures/triton.jpg"
     }
   }
 ]

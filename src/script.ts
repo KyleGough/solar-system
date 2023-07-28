@@ -19,7 +19,7 @@ const canvas = document.querySelector("canvas.webgl") as HTMLElement;
 const scene = new THREE.Scene();
 
 // Environment map
-scene.background = createEnvironmentMap("/textures/environment");
+scene.background = createEnvironmentMap("./textures/environment");
 
 // Lights
 const [ambientLight, pointLight] = createLights();
