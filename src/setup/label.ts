@@ -64,7 +64,7 @@ export const createLabel = (
 
   if (type) {
     const img = document.createElement("img");
-    img.src = `/icons/${type}.svg`;
+    img.src = `./icons/${type}.svg`;
     container.appendChild(img);
   }
 
