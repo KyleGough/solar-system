@@ -40,6 +40,7 @@ npm run build
 
 ## Screenshots
 
+![sun](https://github.com/KyleGough/solar-system/assets/24881448/194f78d5-b35b-4661-bdae-85fd06f7a94f)
 ![earth](https://github.com/KyleGough/solar-system/assets/24881448/ca9ca06e-36a7-46f8-91cc-5942df1e3906)
 ![moon](https://github.com/KyleGough/solar-system/assets/24881448/d22fcdad-d7bc-4bf1-b026-9967317b1a69)
 ![mars](https://github.com/KyleGough/solar-system/assets/24881448/7b6806d4-d8ff-400e-8405-afb8f189acbc)
