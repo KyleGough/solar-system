@@ -29,6 +29,18 @@ export const onLoaded = () => {
   loadContainer.style.cursor = "pointer";
 
   loadContainer.addEventListener("click", () => {
-    loadContainer.style.display = "none";
+    loadContainer.style.pointerEvents = "none";
+    const animation = loadContainer.animate(
+      { opacity: [1, 0], transform: ["scale(1)", "scale(0.75)"] },
+      {
+        duration: 750,
+        easing: "ease",
+        fill: "forwards",
+      }
+    );
+
+    animation.onfinish = () => {
+      loadContainer.style.display = "none";
+    };
   });
 };
