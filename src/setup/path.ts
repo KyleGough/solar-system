@@ -17,7 +17,6 @@ export const createPath = (radius: number) => {
     color: "white",
     transparent: true,
     opacity: 0.25,
-    linewidth: 2,
   });
 
   const geometry = new THREE.BufferGeometry().setFromPoints(points);
