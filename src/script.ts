@@ -5,7 +5,6 @@ import { createEnvironmentMap } from "./setup/environment-map";
 import { createLights } from "./setup/lights";
 import { createSolarSystem } from "./setup/solar-system";
 import { createGUI, options } from "./setup/gui";
-import { getLabelOpacity } from "./setup/label";
 import { EffectComposer } from "three/examples/jsm/postprocessing/EffectComposer";
 import { RenderPass } from "three/examples/jsm/postprocessing/RenderPass";
 import { UnrealBloomPass } from "three/examples/jsm/postprocessing/UnrealBloomPass";
@@ -34,8 +33,8 @@ const changeFocus = (oldFocus: string, newFocus: string) => {
   const minDistance = solarSystem[newFocus].getMinDistance();
   controls.minDistance = minDistance;
   fakeCamera.position.set(minDistance, minDistance / 3, 0);
-  solarSystem[oldFocus].hideLabels();
-  solarSystem[newFocus].showLabels();
+  solarSystem[oldFocus].labels.hideAll();
+  solarSystem[newFocus].labels.showAll();
   (document.querySelector(".caption p") as HTMLElement).innerHTML = newFocus;
 };
 
@@ -147,13 +146,7 @@ createGUI(ambientLight, solarSystem, clock, fakeCamera);
 
   // Update labels
   const currentBody = solarSystem[options.focus];
-  currentBody.labels.forEach((l) => {
-    l.container.style.opacity = getLabelOpacity(
-      fakeCamera,
-      l.label,
-      currentBody.radius
-    ).toString();
-  });
+  currentBody.labels.update(fakeCamera);
 
   // Render
   bloomComposer.render();

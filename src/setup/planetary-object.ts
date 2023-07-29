@@ -1,8 +1,9 @@
 import * as THREE from "three";
-import { CSS2DObject } from "three/examples/jsm/renderers/CSS2DRenderer";
 import { createRingMesh } from "./rings";
 import { createPath } from "./path";
 import { loadTexture } from "./textures";
+import { Label } from "./label";
+import { PointOfInterest } from "./label";
 
 export interface Body {
   name: string;
@@ -19,13 +20,6 @@ export interface Body {
   offset?: number;
 }
 
-interface PointOfInterest {
-  name: string;
-  y: number;
-  z: number;
-  type?: string;
-}
-
 interface TexturePaths {
   map: string;
   bump?: string;
@@ -37,11 +31,6 @@ interface TexturePaths {
 interface Atmosphere {
   map?: THREE.Texture;
   alpha?: THREE.Texture;
-}
-
-interface Label {
-  label: CSS2DObject;
-  container: HTMLElement;
 }
 
 const timeFactor = 8 * Math.PI * 2; // 1s real-time => 8h simulation time
@@ -73,7 +62,7 @@ export class PlanetaryObject {
   bumpMap?: THREE.Texture;
   specularMap?: THREE.Texture;
   atmosphere: Atmosphere = {};
-  labels: Label[] = [];
+  labels: Label;
 
   constructor(body: Body) {
     const { radius, distance, period, daylength, orbits, type, tilt } = body;
@@ -98,7 +87,18 @@ export class PlanetaryObject {
     if (this.atmosphere.map) {
       this.mesh.add(this.createAtmosphereMesh());
     }
+
+    this.initLabels(body.labels);
   }
+
+  initLabels = (labels?: PointOfInterest[]) => {
+    this.labels = new Label(this.mesh, this.radius);
+    if (labels) {
+      labels.forEach((poi) => {
+        this.labels.createPOILabel(poi);
+      });
+    }
+  };
 
   loadTextures(textures: TexturePaths) {
     this.map = loadTexture(textures.map);
@@ -196,19 +196,6 @@ export class PlanetaryObject {
     } else {
       this.mesh.rotation.y = rotation;
     }
-  };
-
-  addLabel = (label: CSS2DObject, container: HTMLElement) => {
-    this.mesh.add(label);
-    this.labels.push({ label, container });
-  };
-
-  showLabels = () => {
-    this.labels.forEach((label) => (label.label.visible = true));
-  };
-
-  hideLabels = () => {
-    this.labels.forEach((label) => (label.label.visible = false));
   };
 
   getMinDistance = (): number => {
