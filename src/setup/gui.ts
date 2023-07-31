@@ -1,5 +1,6 @@
 import * as dat from "lil-gui";
 import { SolarSystem } from "./solar-system";
+import { LAYERS } from "../constants";
 
 export const options = {
   showPaths: false,
@@ -56,7 +57,7 @@ export const createGUI = (
 
   // Toggle labels
   document.getElementById("btn-labels")?.addEventListener("click", () => {
-    camera.layers.toggle(2);
+    camera.layers.toggle(LAYERS.POILabel);
   });
 
   // Toggle paths

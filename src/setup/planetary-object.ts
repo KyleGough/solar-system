@@ -88,13 +88,14 @@ export class PlanetaryObject {
       this.mesh.add(this.createAtmosphereMesh());
     }
 
-    this.initLabels(body.labels);
+    this.initLabels(body);
   }
 
-  initLabels = (labels?: PointOfInterest[]) => {
+  initLabels = (body: Body) => {
     this.labels = new Label(this.mesh, this.radius);
-    if (labels) {
-      labels.forEach((poi) => {
+
+    if (body.labels) {
+      body.labels.forEach((poi) => {
         this.labels.createPOILabel(poi);
       });
     }

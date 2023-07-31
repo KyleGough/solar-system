@@ -1,5 +1,6 @@
 import * as THREE from "three";
 import { CSS2DObject } from "three/examples/jsm/renderers/CSS2DRenderer";
+import { LAYERS } from "../constants";
 
 export interface PointOfInterest {
   name: string;
@@ -34,9 +35,9 @@ export class Label {
     container.appendChild(text);
 
     const label = new CSS2DObject(container);
-    label.visible = false;
     label.center.set(0, 0);
-    label.layers.set(2);
+    label.layers.set(LAYERS.POILabel);
+    label.layers.disable(LAYERS.POILabel);
 
     const labelPosition = this.rotateLabel(poi.y, poi.z).toArray();
     label.position.set(...labelPosition);
@@ -45,12 +46,16 @@ export class Label {
     this.elements.push(label);
   };
 
-  showAll = () => {
-    this.elements.forEach((label) => (label.visible = true));
+  showPOI = () => {
+    this.elements.forEach((label) => {
+      label.layers.enable(LAYERS.POILabel);
+    });
   };
 
-  hideAll = () => {
-    this.elements.forEach((label) => (label.visible = false));
+  hidePOI = () => {
+    this.elements.forEach((label) => {
+      label.layers.disable(LAYERS.POILabel);
+    });
   };
 
   update = (camera: THREE.Camera) => {
