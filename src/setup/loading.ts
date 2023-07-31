@@ -1,3 +1,4 @@
+// List of prompts to display whilst loading textures.
 const loadingPrompts = [
   "Detecting neutrinos",
   "Forming event horizons",
@@ -10,14 +11,18 @@ const loadingPrompts = [
   "Increasing entropy",
 ];
 
-const loadingTextInterval = setInterval(() => {
+// Switch loading screen text every 2 seconds.
+const switchLoadText = setInterval(() => {
   const index = Math.floor(Math.random() * loadingPrompts.length);
   const loadText = document.getElementById("loader-text") as HTMLDivElement;
   loadText.textContent = `${loadingPrompts[index]}...`;
 }, 2000);
 
+/**
+ * Updates the loading screen once textures are loaded.
+ */
 export const onLoaded = () => {
-  clearInterval(loadingTextInterval);
+  clearInterval(switchLoadText);
   const loadText = document.getElementById("loader-text") as HTMLDivElement;
   loadText.textContent = "Click to continue...";
 

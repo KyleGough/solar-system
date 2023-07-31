@@ -88,20 +88,28 @@ export class PlanetaryObject {
       this.mesh.add(this.createAtmosphereMesh());
     }
 
-    this.initLabels(body);
+    this.initLabels(body.labels);
   }
 
-  initLabels = (body: Body) => {
+  /**
+   * Creates label objects for each point-of-interest.
+   * @param labels - List of labels to display.
+   */
+  private initLabels = (labels?: PointOfInterest[]) => {
     this.labels = new Label(this.mesh, this.radius);
 
-    if (body.labels) {
-      body.labels.forEach((poi) => {
+    if (labels) {
+      labels.forEach((poi) => {
         this.labels.createPOILabel(poi);
       });
     }
   };
 
-  loadTextures(textures: TexturePaths) {
+  /**
+   * Prepare and load textures.
+   * @param textures - Object of texture paths to load.
+   */
+  private loadTextures(textures: TexturePaths) {
     this.map = loadTexture(textures.map);
     if (textures.bump) {
       this.bumpMap = loadTexture(textures.bump);
@@ -117,7 +125,11 @@ export class PlanetaryObject {
     }
   }
 
-  createMesh = () => {
+  /**
+   * Creates the main mesh object with textures.
+   * @returns celestial body mesh.
+   */
+  private createMesh = () => {
     if (this.type === "ring") {
       return createRingMesh(this.map);
     }
@@ -156,7 +168,11 @@ export class PlanetaryObject {
     return sphere;
   };
 
-  createAtmosphereMesh = () => {
+  /**
+   * Creates the atmosphere mesh object with textures.
+   * @returns atmosphere mesh.
+   */
+  private createAtmosphereMesh = () => {
     const geometry = new THREE.SphereGeometry(this.radius + 0.0005, 64, 64);
 
     const material = new THREE.MeshPhongMaterial({
@@ -174,14 +190,18 @@ export class PlanetaryObject {
     return sphere;
   };
 
-  getRotation = (elapsedTime: number) => {
+  private getRotation = (elapsedTime: number) => {
     return this.daylength ? (elapsedTime * timeFactor) / this.daylength : 0;
   };
 
-  getOrbitRotation = (elapsedTime: number) => {
+  private getOrbitRotation = (elapsedTime: number) => {
     return this.daylength ? (elapsedTime * timeFactor) / (this.period * 24) : 0;
   };
 
+  /**
+   * Updates orbital position and rotation.
+   * @param elapsedTime - number of seconds elapsed.
+   */
   tick = (elapsedTime: number) => {
     // Convert real-time seconds to rotation.
     const rotation = this.getRotation(elapsedTime);
@@ -199,6 +219,9 @@ export class PlanetaryObject {
     }
   };
 
+  /**
+   * @returns the minimum orbital control camera distance allowed.
+   */
   getMinDistance = (): number => {
     return this.radius * 3.5;
   };
