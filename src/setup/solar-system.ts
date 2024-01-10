@@ -30,6 +30,7 @@ export const createSolarSystem = (
     if (object.orbits) {
       const parentMesh = solarSystem[object.orbits].mesh;
       parentMesh.add(object.mesh);
+      object.atmosphere.mesh && parentMesh.add(object.atmosphere.mesh);
       object.path && parentMesh.add(object.path);
     }
 
