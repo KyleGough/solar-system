@@ -1,7 +1,7 @@
 export default {
   root: "src/",
   publicDir: "../static/",
-  base: "/solar-system/",
+  base: "/",
   server: {
     host: true,
     open: false,
