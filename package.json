@@ -10,7 +10,7 @@
   "devDependencies": {
     "@types/three": "^0.154.0",
     "sass": "^1.64.1",
-    "vite": "^4.5.2"
+    "vite": "^4.5.5"
   },
   "dependencies": {
     "lil-gui": "^0.18.1",
