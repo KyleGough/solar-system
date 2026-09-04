@@ -10,6 +10,7 @@ import {
 import { createStarfield } from "./setup/starfield";
 import { createSolarSystem } from "./setup/solar-system";
 import { createGUI, options } from "./setup/gui";
+import { createPoiProbe } from "./setup/poi-probe";
 import { isIntroActive, onIntroDismiss } from "./setup/loading";
 import { updateIdentity } from "./setup/identity";
 import { createBodyInfo, updateBodyInfo, updatePoiInfo } from "./setup/body-info";
@@ -118,6 +119,8 @@ const focusTransition = new FocusTransition(
 
 const picker = createBodyPicker(camera, canvas, solarSystem);
 
+let poiProbe: ReturnType<typeof createPoiProbe>;
+
 const swapFocusUi = (from: string, to: string) => {
   releasePoiSpin();
   solarSystem[from].labels.hidePOI();
@@ -126,6 +129,7 @@ const swapFocusUi = (from: string, to: string) => {
   solarSystem[to].labels.setActive(null);
   updateIdentity(to);
   updateBodyInfo(to);
+  poiProbe?.sync();
 };
 
 const setUiOpacity = (opacity: number) => {
@@ -202,11 +206,16 @@ const requestFocus = (name: string) => {
 
 orbitNav = createOrbitalNav(orbitNavEl, requestFocus);
 orbitNav.setFocus(options.focus);
-createBodyInfo(canvas, orbitNavEl, (bodyName, poi) => {
-  const localPos = solarSystem[bodyName].labels.positionOf(poi.name);
-  if (!localPos) return;
-  selectPoi(bodyName, poi, localPos);
-});
+createBodyInfo(
+  canvas,
+  orbitNavEl,
+  (bodyName, poi) => {
+    const localPos = solarSystem[bodyName].labels.positionOf(poi.name);
+    if (!localPos) return;
+    selectPoi(bodyName, poi, localPos);
+  },
+  () => restoreBodyHud(options.focus)
+);
 
 for (const [name, object] of Object.entries(solarSystem)) {
   object.tick(0);
@@ -236,6 +245,11 @@ const onHoverPick = (clientX: number, clientY: number) => {
   if (isIntroActive()) return;
   if (focusTransition.isActive()) {
     canvas.style.cursor = "default";
+    return;
+  }
+
+  if (poiProbe?.isHovering(clientX, clientY)) {
+    canvas.style.cursor = "crosshair";
     return;
   }
 
@@ -292,10 +306,12 @@ fakeCamera.layers.enable(LAYERS.POILabel);
 fakeCamera.layers.enable(LAYERS.SUN_SPOT);
 
 // GUI
-createGUI(clock, fakeCamera, (ride) => {
+const gui = createGUI(clock, fakeCamera, (ride) => {
   poiForcedSpin = false;
   focusTransition.setRideSpin(ride, options.focus);
 });
+poiProbe = createPoiProbe(gui, camera, canvas, solarSystem, () => options.focus);
+poiProbe.sync();
 
 (function tick() {
   const wall = performance.now();
@@ -372,6 +388,8 @@ createGUI(clock, fakeCamera, (ride) => {
     labelBody.mesh.worldToLocal(labelLocalPos);
     labelBody.labels.update(labelLocalPos);
   }
+
+  poiProbe.update(camera);
 
   // Render
   selectiveBloom.render(solarSystem["Sun"].mesh);

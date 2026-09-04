@@ -63,4 +63,6 @@ export const createGUI = (
     gui.show(gui._hidden);
     setToggle(settingsButton, !gui._hidden);
   });
+
+  return gui;
 };

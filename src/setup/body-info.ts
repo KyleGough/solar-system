@@ -27,6 +27,7 @@ let minimised = false;
 let pipBodyName = "";
 let pipList: PointOfInterest[] = [];
 let onPoiPick: ((bodyName: string, poi: PointOfInterest) => void) | null = null;
+let onPoiClose: (() => void) | null = null;
 
 const isEditableTarget = (target: EventTarget | null): boolean => {
   if (!(target instanceof HTMLElement)) return false;
@@ -59,25 +60,36 @@ const syncPanelDock = () => {
   panel.style.setProperty("--body-info-nav-offset", `${offset}px`);
 };
 
-const setMinimised = (next: boolean, moveFocus = false) => {
-  minimised = next;
+const syncToolbar = (moveFocus = false) => {
   const panel = panelEl();
   if (!panel) return;
-  panel.classList.toggle("is-minimised", minimised);
+  const isPoi = panel.classList.contains("is-poi");
 
   const restore = document.getElementById("body-info-restore");
   const minimise = document.getElementById("body-info-minimise");
+  const close = document.getElementById("body-info-close");
   const maximise = document.getElementById("body-info-maximise");
   restore?.toggleAttribute("hidden", !minimised);
-  minimise?.toggleAttribute("hidden", minimised);
+  minimise?.toggleAttribute("hidden", minimised || isPoi);
+  close?.toggleAttribute("hidden", minimised || !isPoi);
   maximise?.toggleAttribute("hidden", !minimised);
 
   if (!moveFocus) return;
   if (minimised) {
     maximise?.focus();
+  } else if (isPoi) {
+    close?.focus();
   } else {
     minimise?.focus();
   }
+};
+
+const setMinimised = (next: boolean, moveFocus = false) => {
+  minimised = next;
+  const panel = panelEl();
+  if (!panel) return;
+  panel.classList.toggle("is-minimised", minimised);
+  syncToolbar(moveFocus);
 };
 
 const setOpen = (open: boolean) => {
@@ -232,17 +244,26 @@ export const updatePoiInfo = (bodyName: string, poi: PointOfInterest): void => {
 export const createBodyInfo = (
   canvas: HTMLElement,
   orbitNav: HTMLElement,
-  onPick?: (bodyName: string, poi: PointOfInterest) => void
+  onPick?: (bodyName: string, poi: PointOfInterest) => void,
+  onClose?: () => void
 ): void => {
   canvasEl = canvas;
   orbitNavEl = orbitNav;
   onPoiPick = onPick ?? null;
+  onPoiClose = onClose ?? null;
   canvas.setAttribute("tabindex", "-1");
 
   const minimise = document.getElementById("body-info-minimise");
   minimise?.addEventListener("click", () => {
     if (isIntroActive()) return;
     setMinimised(true, true);
+  });
+
+  const close = document.getElementById("body-info-close");
+  close?.addEventListener("click", () => {
+    if (isIntroActive()) return;
+    onPoiClose?.();
+    syncToolbar(true);
   });
 
   const expand = () => {

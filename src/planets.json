@@ -98,16 +98,16 @@
     },
     "labels": [
       {
-        "name": "Apollo 11",
+        "name": "Sea of Tranquility",
         "type": "landing",
         "y": 0.36,
         "z": 0.05,
-        "fact": "First crewed landing, 20 July 1969, in Mare Tranquillitatis."
+        "fact": "Site of the first crewed landing by NASA astronauts Neil Armstrong and Buzz Aldrin on 20 July 1969."
       },
       {
         "name": "Tycho Crater",
-        "y": -0.18,
-        "z": -0.64,
+        "y": -0.14,
+        "z": -0.77,
         "fact": "Young rayed crater; its ejecta streaks are visible from Earth."
       },
       {
@@ -139,21 +139,21 @@
       {
         "name": "Olympus Mons",
         "type": "mountain",
-        "y": 0.59,
-        "z": 0.52,
+        "y": 0.75,
+        "z": 0.45,
         "fact": "Tallest volcano in the Solar System, about 22 km high."
       },
       {
         "name": "Tharsis Montes",
         "type": "mountain",
-        "y": 1.13,
-        "z": 0.28,
+        "y": 1.23,
+        "z": -0.06,
         "fact": "Three shield volcanoes on the Tharsis rise, west of Valles Marineris."
       },
       {
         "name": "Valles Marineris",
-        "y": 1.6,
-        "z": 1.75,
+        "y": 1.29,
+        "z": -2.75,
         "fact": "Canyon system about 4,000 km long, a fifth of the way around Mars."
       },
       {

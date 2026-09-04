@@ -10,6 +10,33 @@ export interface PointOfInterest {
   fact?: string;
 }
 
+const AXIS_Y = new THREE.Vector3(0, 1, 0);
+const AXIS_Z = new THREE.Vector3(0, 0, 1);
+
+/** Surface point from the `y` / `z` angles used in planets.json. */
+export const poiLocalPosition = (
+  radius: number,
+  y: number,
+  z: number,
+  target = new THREE.Vector3()
+): THREE.Vector3 => {
+  return target
+    .set(radius, 0, 0)
+    .applyAxisAngle(AXIS_Y, y)
+    .applyAxisAngle(AXIS_Z, z);
+};
+
+/** Inverse of `poiLocalPosition`. `y` is in [-π/2, π/2], `z` in [-π, π]. */
+export const poiAnglesFromLocal = (
+  local: THREE.Vector3
+): { y: number; z: number } => {
+  const hypot = Math.hypot(local.x, local.y);
+  return {
+    y: Math.atan2(-local.z, hypot),
+    z: hypot < 1e-10 ? 0 : Math.atan2(local.y, local.x),
+  };
+};
+
 export class Label {
   parent: THREE.Object3D;
   radius: number;
@@ -59,8 +86,7 @@ export class Label {
     label.layers.disable(LAYERS.POILabel);
     label.userData.poi = poi;
 
-    const labelPosition = this.rotateLabel(poi.y, poi.z);
-    label.position.copy(labelPosition);
+    poiLocalPosition(this.radius, poi.y, poi.z, label.position);
 
     button.addEventListener("click", (event) => {
       event.preventDefault();
@@ -145,13 +171,6 @@ export class Label {
         }
       }
     });
-  };
-
-  private rotateLabel = (y: number, z: number) => {
-    const vector = new THREE.Vector3(this.radius, 0, 0);
-    vector.applyAxisAngle(new THREE.Vector3(0, 1, 0), y);
-    vector.applyAxisAngle(new THREE.Vector3(0, 0, 1), z);
-    return vector;
   };
 
   private getRotationOpacity = (

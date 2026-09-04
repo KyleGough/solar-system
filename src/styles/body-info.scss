@@ -36,6 +36,7 @@
 }
 
 .body-info-minimise,
+.body-info-close,
 .body-info-maximise {
   display: grid;
   place-items: center;
@@ -52,6 +53,7 @@
 }
 
 .body-info-minimise[hidden],
+.body-info-close[hidden],
 .body-info-maximise[hidden] {
   display: none;
 }
@@ -71,18 +73,21 @@
 }
 
 .body-info-minimise:hover,
+.body-info-close:hover,
 .body-info-maximise:hover,
 .body-info-restore:hover {
   color: var(--brass);
 }
 
 .body-info-minimise:focus,
+.body-info-close:focus,
 .body-info-maximise:focus,
 .body-info-restore:focus {
   outline: none;
 }
 
 .body-info-minimise:focus-visible,
+.body-info-close:focus-visible,
 .body-info-maximise:focus-visible,
 .body-info-restore:focus-visible {
   color: var(--brass);
