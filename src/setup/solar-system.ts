@@ -22,6 +22,12 @@ export const createSolarSystem = (
     }
 
     const object = new PlanetaryObject(planet);
+    object.mesh.name = name;
+    object.mesh.userData.bodyName = name;
+    object.mesh.userData.traversable = planet.traversable;
+    if (object.path) {
+      object.path.userData.ignorePick = true;
+    }
 
     solarSystem[name] = object;
 

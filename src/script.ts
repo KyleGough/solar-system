@@ -8,12 +8,16 @@ import { createSolarSystem } from "./setup/solar-system";
 import { createGUI, options } from "./setup/gui";
 import { updateIdentity } from "./setup/identity";
 import { createSelectiveBloom } from "./setup/bloom";
+import { FocusTransition } from "./setup/focus-transition";
+import { createBodyPicker } from "./setup/body-pick";
 import { LAYERS } from "./constants";
 
 THREE.ColorManagement.enabled = false;
 
 // Canvas
 const canvas = document.querySelector("canvas.webgl") as HTMLElement;
+const identityEl = document.querySelector(".identity") as HTMLElement;
+const captionNameEl = document.querySelector(".caption p") as HTMLElement;
 
 // Scene
 const scene = new THREE.Scene();
@@ -22,6 +26,8 @@ scene.background = createEnvironmentMap("./textures/environment");
 const starfield = createStarfield();
 scene.add(starfield);
 const starfieldCenter = new THREE.Vector3();
+const labelWorldPos = new THREE.Vector3();
+const labelLocalPos = new THREE.Vector3();
 
 // Lights
 const [ambientLight, pointLight] = createLights();
@@ -49,42 +55,15 @@ window.addEventListener("resize", () => {
   labelRenderer.setSize(sizes.width, sizes.height);
 });
 
-document.getElementById("btn-previous")?.addEventListener("click", () => {
-  const index = planetNames.indexOf(options.focus);
-  const newIndex = index === 0 ? planetNames.length - 1 : index - 1;
-  const focus = planetNames[newIndex];
-  changeFocus(options.focus, focus);
-  options.focus = focus;
-});
-
-document.getElementById("btn-next")?.addEventListener("click", () => {
-  const index = (planetNames.indexOf(options.focus) + 1) % planetNames.length;
-  const focus = planetNames[index];
-  changeFocus(options.focus, focus);
-  options.focus = focus;
-});
-
 // Solar system
 const [solarSystem, planetNames] = createSolarSystem(scene);
 updateIdentity(options.focus);
-
-const changeFocus = (oldFocus: string, newFocus: string) => {
-  solarSystem[oldFocus].mesh.remove(camera);
-  solarSystem[newFocus].mesh.add(camera);
-  const body = solarSystem[newFocus];
-  controls.minDistance = body.getMinDistance();
-  const startDistance = body.getFocusDistance();
-  fakeCamera.position.set(startDistance, startDistance / 3, 0);
-  solarSystem[oldFocus].labels.hidePOI();
-  solarSystem[newFocus].labels.showPOI();
-  (document.querySelector(".caption p") as HTMLElement).innerHTML = newFocus;
-  updateIdentity(newFocus);
-};
 
 // Camera
 const aspect = sizes.width / sizes.height;
 const camera = new THREE.PerspectiveCamera(75, aspect, 0.008, 1000);
 camera.position.set(0, 20, 0);
+camera.layers.enable(LAYERS.POILabel);
 solarSystem["Sun"].mesh.add(camera);
 
 // Controls
@@ -96,9 +75,88 @@ controls.enablePan = false;
 controls.minDistance = solarSystem["Sun"].getMinDistance();
 controls.maxDistance = 50;
 
+const focusTransition = new FocusTransition(
+  scene,
+  camera,
+  fakeCamera,
+  controls,
+  solarSystem
+);
+
+const picker = createBodyPicker(camera, canvas, solarSystem);
+
+const swapFocusUi = (from: string, to: string) => {
+  solarSystem[from].labels.hidePOI();
+  solarSystem[to].labels.showPOI();
+  updateIdentity(to);
+  captionNameEl.textContent = to;
+};
+
+const setUiOpacity = (opacity: number) => {
+  identityEl.style.opacity = String(opacity);
+  captionNameEl.style.opacity = String(opacity);
+};
+
+const requestFocus = (name: string) => {
+  if (name === options.focus && !focusTransition.isActive()) {
+    return;
+  }
+  if (focusTransition.destination() === name) {
+    return;
+  }
+
+  const started = focusTransition.begin(options.focus, name);
+  if (!started) {
+    return;
+  }
+
+  options.focus = name;
+  canvas.style.cursor = "default";
+};
+
+document.getElementById("btn-previous")?.addEventListener("click", () => {
+  const index = planetNames.indexOf(options.focus);
+  const newIndex = index === 0 ? planetNames.length - 1 : index - 1;
+  requestFocus(planetNames[newIndex]);
+});
+
+document.getElementById("btn-next")?.addEventListener("click", () => {
+  const index = (planetNames.indexOf(options.focus) + 1) % planetNames.length;
+  requestFocus(planetNames[index]);
+});
+
+const onHoverPick = (clientX: number, clientY: number) => {
+  if (focusTransition.isActive()) {
+    canvas.style.cursor = "default";
+    return;
+  }
+
+  const name = picker.pick(clientX, clientY);
+  canvas.style.cursor = name ? "pointer" : "default";
+};
+
+canvas.addEventListener("pointermove", (event) => {
+  onHoverPick(event.clientX, event.clientY);
+});
+
+canvas.addEventListener("pointerleave", () => {
+  canvas.style.cursor = "default";
+});
+
+canvas.addEventListener("dblclick", (event) => {
+  const name = picker.pick(event.clientX, event.clientY);
+  if (name) {
+    requestFocus(name);
+  }
+});
+
 // Label renderer
 const labelRenderer = new CSS2DRenderer();
 labelRenderer.setSize(sizes.width, sizes.height);
+labelRenderer.domElement.style.position = "absolute";
+labelRenderer.domElement.style.top = "0";
+labelRenderer.domElement.style.left = "0";
+labelRenderer.domElement.style.pointerEvents = "none";
 document.body.appendChild(labelRenderer.domElement);
 
 // Renderer
@@ -118,6 +176,7 @@ const selectiveBloom = createSelectiveBloom(renderer, scene, camera, sizes);
 // Animate
 const clock = new THREE.Clock();
 let elapsedTime = 0;
+let lastWall = performance.now();
 
 fakeCamera.layers.enable(LAYERS.POILabel);
 
@@ -125,6 +184,10 @@ fakeCamera.layers.enable(LAYERS.POILabel);
 createGUI(ambientLight, solarSystem, clock, fakeCamera);
 
 (function tick() {
+  const wall = performance.now();
+  const wallDt = Math.min(0.05, (wall - lastWall) / 1000);
+  lastWall = wall;
+
   elapsedTime += clock.getDelta() * options.speed;
 
   // Update the solar system objects
@@ -132,23 +195,55 @@ createGUI(ambientLight, solarSystem, clock, fakeCamera);
     object.tick(elapsedTime);
   }
 
-  // Update camera
-  camera.copy(fakeCamera);
+  const wasFlying = focusTransition.isActive();
+  const frame = wasFlying
+    ? focusTransition.update(wallDt)
+    : {
+        active: false,
+        progress: 1,
+        from: "",
+        to: "",
+        justCrossedMidpoint: false,
+        justFinished: false,
+      };
 
-  // Update controls
+  if (!focusTransition.isActive()) {
+    camera.copy(fakeCamera);
+  }
+  // Keep updating while flying so leftover orbit damping decays instead of
+  // applying as a snap when control is restored.
   controls.update();
 
   camera.updateMatrixWorld();
   starfield.position.copy(camera.getWorldPosition(starfieldCenter));
 
-  // Update labels
-  const currentBody = solarSystem[options.focus];
-  currentBody.labels.update(fakeCamera);
+  if (frame.justCrossedMidpoint || frame.justFinished) {
+    swapFocusUi(frame.from, frame.to);
+  }
+
+  if (frame.active && !frame.justFinished) {
+    const fade =
+      frame.progress < 0.5
+        ? 1 - frame.progress / 0.5
+        : (frame.progress - 0.5) / 0.5;
+    setUiOpacity(fade);
+
+    const labelBodyName = frame.progress < 0.5 ? frame.from : frame.to;
+    const labelBody = solarSystem[labelBodyName];
+    camera.getWorldPosition(labelWorldPos);
+    labelLocalPos.copy(labelWorldPos);
+    labelBody.mesh.worldToLocal(labelLocalPos);
+    labelBody.labels.update(labelLocalPos, fade);
+  } else {
+    if (frame.justFinished) {
+      setUiOpacity(1);
+    }
+    solarSystem[options.focus].labels.update(fakeCamera.position);
+  }
 
   // Render
   selectiveBloom.render(solarSystem["Sun"].mesh);
   labelRenderer.render(scene, camera);
 
-  // Call tick again on the next frame
   window.requestAnimationFrame(tick);
 })();
