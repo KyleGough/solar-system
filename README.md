@@ -17,9 +17,6 @@
 
 ## Planned changes
 
-- [ ] Earth night time texture
-- [ ] Planet information panel
-- [ ] Accuracy of distances
 - [ ] Improve shadow quality
 
 ## Setup

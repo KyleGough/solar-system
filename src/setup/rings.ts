@@ -2,7 +2,7 @@ import * as THREE from "three";
 
 /** D-ring inner and A-ring outer, as multiples of the parent planet’s mesh radius. */
 const RING_INNER = 1.11;
-const RING_OUTER = 2.27;
+export const RING_OUTER = 2.27;
 
 /**
  * Saturn’s ring disk, sized from the parent planet’s scaled mesh radius so the

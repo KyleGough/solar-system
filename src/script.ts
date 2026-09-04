@@ -2,7 +2,11 @@ import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 import { CSS2DRenderer } from "three/examples/jsm/renderers/CSS2DRenderer";
 import { createEnvironmentMap } from "./setup/environment-map";
-import { createLights } from "./setup/lights";
+import {
+  applyShadowCasters,
+  createLights,
+  updateSunShadows,
+} from "./setup/lights";
 import { createStarfield } from "./setup/starfield";
 import { createSolarSystem } from "./setup/solar-system";
 import { createGUI, options } from "./setup/gui";
@@ -38,8 +42,13 @@ const labelWorldPos = new THREE.Vector3();
 const labelLocalPos = new THREE.Vector3();
 
 // Lights
-const [ambientLight, pointLight] = createLights();
-scene.add(ambientLight, pointLight);
+const lights = createLights();
+scene.add(
+  lights.ambientLight,
+  lights.pointLight,
+  lights.spotLight,
+  lights.shadowTarget
+);
 
 // Sizes
 const sizes = {
@@ -65,6 +74,7 @@ window.addEventListener("resize", () => {
 
 // Solar system
 const solarSystem = createSolarSystem(scene);
+applyShadowCasters(solarSystem);
 const urlFocus = readFocusFromUrl();
 if (urlFocus) {
   options.focus = urlFocus;
@@ -77,6 +87,7 @@ const aspect = sizes.width / sizes.height;
 const camera = new THREE.PerspectiveCamera(75, aspect, 0.008, 1000);
 camera.position.set(0, 20, 0);
 camera.layers.enable(LAYERS.POILabel);
+camera.layers.enable(LAYERS.SUN_SPOT);
 scene.add(camera);
 
 // Controls
@@ -210,7 +221,7 @@ renderer.outputColorSpace = THREE.LinearSRGBColorSpace;
 renderer.setSize(sizes.width, sizes.height);
 renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 renderer.shadowMap.enabled = true;
-renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+renderer.shadowMap.type = THREE.VSMShadowMap;
 
 const selectiveBloom = createSelectiveBloom(renderer, scene, camera, sizes);
 
@@ -220,9 +231,10 @@ let elapsedTime = 0;
 let lastWall = performance.now();
 
 fakeCamera.layers.enable(LAYERS.POILabel);
+fakeCamera.layers.enable(LAYERS.SUN_SPOT);
 
 // GUI
-createGUI(ambientLight, solarSystem, clock, fakeCamera, (ride) => {
+createGUI(lights.ambientLight, solarSystem, clock, fakeCamera, (ride) => {
   focusTransition.setRideSpin(ride, options.focus);
 });
 
@@ -259,6 +271,7 @@ createGUI(ambientLight, solarSystem, clock, fakeCamera, (ride) => {
   controls.update();
 
   camera.updateMatrixWorld();
+  updateSunShadows(lights, solarSystem, options.focus, camera);
   starfield.position.copy(camera.getWorldPosition(starfieldCenter));
 
   if (frame.justCrossedMidpoint || frame.justFinished) {
