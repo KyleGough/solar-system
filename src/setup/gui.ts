@@ -1,5 +1,6 @@
 import * as dat from "lil-gui";
 import { LAYERS } from "../constants";
+import type { Lights } from "./lights";
 import { isIntroActive } from "./loading";
 
 export const options = {
@@ -12,6 +13,7 @@ export const options = {
 export const createGUI = (
   clock: THREE.Clock,
   camera: THREE.Camera,
+  lights: Lights,
   onRideSpin?: (ride: boolean) => void
 ) => {
   const gui = new dat.GUI();
@@ -28,6 +30,10 @@ export const createGUI = (
 
   // Control the simulation speed
   gui.add(options, "speed", 0, 5, 0.01).name("Speed");
+
+  gui
+    .add(lights.ambientLight, "intensity", 0, 1, 0.01)
+    .name("Ambient");
 
   gui.hide();
 
