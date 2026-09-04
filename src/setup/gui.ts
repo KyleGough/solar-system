@@ -35,14 +35,23 @@ export const createGUI = (
 
   gui.hide();
 
-  document.getElementById("btn-labels")?.addEventListener("click", () => {
+  const setToggle = (button: HTMLElement, on: boolean) => {
+    button.setAttribute("aria-pressed", String(on));
+    button.classList.toggle("is-active", on);
+  };
+
+  const labelsButton = document.getElementById("btn-labels");
+  labelsButton?.addEventListener("click", () => {
     if (isIntroActive()) return;
     camera.layers.toggle(LAYERS.POILabel);
+    setToggle(labelsButton, camera.layers.isEnabled(LAYERS.POILabel));
   });
 
-  document.getElementById("btn-paths")?.addEventListener("click", () => {
+  const pathsButton = document.getElementById("btn-paths");
+  pathsButton?.addEventListener("click", () => {
     if (isIntroActive()) return;
     options.showPaths = !options.showPaths;
+    setToggle(pathsButton, options.showPaths);
 
     for (const name in solarSystem) {
       const object = solarSystem[name];
@@ -53,19 +62,17 @@ export const createGUI = (
   });
 
   const spinButton = document.getElementById("btn-spin");
-  if (spinButton) {
-    spinButton.addEventListener("click", () => {
-      if (isIntroActive()) return;
-      const ride = spinButton.getAttribute("aria-pressed") !== "true";
-      spinButton.setAttribute("aria-pressed", String(ride));
-      spinButton.classList.toggle("is-active", ride);
-      onRideSpin?.(ride);
-    });
-  }
+  spinButton?.addEventListener("click", () => {
+    if (isIntroActive()) return;
+    const ride = spinButton.getAttribute("aria-pressed") !== "true";
+    setToggle(spinButton, ride);
+    onRideSpin?.(ride);
+  });
 
-  // Toggle GUI panel
-  document.getElementById("btn-settings")?.addEventListener("click", () => {
+  const settingsButton = document.getElementById("btn-settings");
+  settingsButton?.addEventListener("click", () => {
     if (isIntroActive()) return;
     gui.show(gui._hidden);
+    setToggle(settingsButton, !gui._hidden);
   });
 };
