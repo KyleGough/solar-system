@@ -98,6 +98,18 @@
 
 .intro.is-ready .intro-hint {
   visibility: visible;
+  animation: intro-hint-pulse 3.2s cubic-bezier(0.45, 0, 0.55, 1) infinite;
+}
+
+@keyframes intro-hint-pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: 0.42;
+  }
 }
 
 body.intro-open {
@@ -113,6 +125,10 @@ body.intro-open {
 @media (prefers-reduced-motion: reduce) {
   .intro-bar-fill {
     transition: none;
+  }
+
+  .intro.is-ready .intro-hint {
+    animation: none;
   }
 }
 
