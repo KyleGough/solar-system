@@ -1,7 +1,7 @@
 [
   {
     "name": "Sun",
-    "radius": 432000,
+    "radius": 695700,
     "distance": 0,
     "period": 1,
     "daylength": 600,
@@ -14,7 +14,7 @@
   },
   {
     "name": "Mercury",
-    "radius": 1516,
+    "radius": 2439.4,
     "distance": 56,
     "period": 88,
     "daylength": 4222.6,
@@ -29,7 +29,7 @@
   },
   {
     "name": "Venus",
-    "radius": 3760,
+    "radius": 6051.8,
     "distance": 108,
     "period": 224,
     "daylength": 2802,
@@ -44,7 +44,7 @@
   },
   {
     "name": "Earth",
-    "radius": 3959,
+    "radius": 6371.0,
     "distance": 152,
     "period": 365,
     "daylength": 24,
@@ -76,14 +76,28 @@
       "bump": "./textures/moon-bump.jpg"
     },
     "labels": [
-      { "name": "Apollo 11", "type": "landing", "y": 0.36, "z": 0.05 },
-      { "name": "Tycho Crater", "y": -0.18, "z": -0.64 },
-      { "name": "Yutu-2", "type": "rover", "y": 3.06, "z": 0.67 }
+      {
+        "name": "Apollo 11",
+        "type": "landing",
+        "y": 0.36,
+        "z": 0.05
+      },
+      {
+        "name": "Tycho Crater",
+        "y": -0.18,
+        "z": -0.64
+      },
+      {
+        "name": "Yutu-2",
+        "type": "rover",
+        "y": 3.06,
+        "z": 0.67
+      }
     ]
   },
   {
     "name": "Mars",
-    "radius": 2106,
+    "radius": 3389.5,
     "distance": 247,
     "period": 686,
     "daylength": 24.7,
@@ -96,16 +110,40 @@
       "bump": "./textures/mars-bump.jpg"
     },
     "labels": [
-      { "name": "Olympus Mons", "type": "mountain", "y": 0.59, "z": 0.52 },
-      { "name": "Tharsis Montes", "type": "mountain", "y": 1.13, "z": 0.28 },
-      { "name": "Valles Marineris", "y": 1.6, "z": 1.75 },
-      { "name": "Perseverance", "type": "rover", "y": -1.96, "z": -0.87 },
-      { "name": "Curiosity", "type": "rover", "y": -0.8, "z": -0.1 }
+      {
+        "name": "Olympus Mons",
+        "type": "mountain",
+        "y": 0.59,
+        "z": 0.52
+      },
+      {
+        "name": "Tharsis Montes",
+        "type": "mountain",
+        "y": 1.13,
+        "z": 0.28
+      },
+      {
+        "name": "Valles Marineris",
+        "y": 1.6,
+        "z": 1.75
+      },
+      {
+        "name": "Perseverance",
+        "type": "rover",
+        "y": -1.96,
+        "z": -0.87
+      },
+      {
+        "name": "Curiosity",
+        "type": "rover",
+        "y": -0.8,
+        "z": -0.1
+      }
     ]
   },
   {
     "name": "Jupiter",
-    "radius": 43441,
+    "radius": 69911,
     "distance": 741,
     "period": 4332,
     "daylength": 9.9,
@@ -116,11 +154,17 @@
     "textures": {
       "map": "./textures/jupiter.jpg"
     },
-    "labels": [{ "name": "Great Red Spot", "y": -0.84, "z": -0.41 }]
+    "labels": [
+      {
+        "name": "Great Red Spot",
+        "y": -0.84,
+        "z": -0.41
+      }
+    ]
   },
   {
     "name": "Saturn",
-    "radius": 36184,
+    "radius": 58232,
     "distance": 1463,
     "period": 10755,
     "daylength": 10.7,
@@ -131,11 +175,17 @@
     "textures": {
       "map": "./textures/saturn.jpg"
     },
-    "labels": [{ "name": "Saturn's Hexagon", "y": 0, "z": 1.57 }]
+    "labels": [
+      {
+        "name": "Saturn's Hexagon",
+        "y": 0,
+        "z": 1.57
+      }
+    ]
   },
   {
     "name": "Uranus",
-    "radius": 15759,
+    "radius": 25362,
     "distance": 2938,
     "period": 30687,
     "daylength": 17.2,
@@ -149,7 +199,7 @@
   },
   {
     "name": "Neptune",
-    "radius": 15299,
+    "radius": 24622,
     "distance": 4474,
     "period": 60190,
     "daylength": 16.1,
@@ -160,7 +210,13 @@
     "textures": {
       "map": "./textures/neptune.jpg"
     },
-    "labels": [{ "name": "Great Dark Spot", "y": 0.21, "z": -0.18 }]
+    "labels": [
+      {
+        "name": "Great Dark Spot",
+        "y": 0.21,
+        "z": -0.18
+      }
+    ]
   },
   {
     "name": "Rings of Saturn",
@@ -250,7 +306,7 @@
     "name": "Triton",
     "radius": 1353,
     "distance": 0.35,
-    "period": 5.87,
+    "period": -5.87,
     "daylength": 16.1,
     "type": "moon",
     "orbits": "Neptune",
