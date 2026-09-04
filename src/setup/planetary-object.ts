@@ -59,11 +59,11 @@ export class PlanetaryObject {
   mesh: THREE.Mesh;
   path?: THREE.Line;
   rng: number;
-  map: THREE.Texture;
+  map!: THREE.Texture;
   bumpMap?: THREE.Texture;
   specularMap?: THREE.Texture;
   atmosphere: Atmosphere = {};
-  labels: Label;
+  labels!: Label;
 
   constructor(body: Body) {
     const { radius, distance, period, daylength, orbits, type, tilt } = body;
