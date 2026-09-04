@@ -6,6 +6,7 @@ import { RenderPass } from "three/examples/jsm/postprocessing/RenderPass";
 import { UnrealBloomPass } from "three/examples/jsm/postprocessing/UnrealBloomPass";
 import { createEnvironmentMap } from "./setup/environment-map";
 import { createLights } from "./setup/lights";
+import { createStarfield } from "./setup/starfield";
 import { createSolarSystem } from "./setup/solar-system";
 import { createGUI, options } from "./setup/gui";
 import { LAYERS } from "./constants";
@@ -18,8 +19,10 @@ const canvas = document.querySelector("canvas.webgl") as HTMLElement;
 // Scene
 const scene = new THREE.Scene();
 
-// Environment map
 scene.background = createEnvironmentMap("./textures/environment");
+const starfield = createStarfield();
+scene.add(starfield);
+const starfieldCenter = new THREE.Vector3();
 
 // Lights
 const [ambientLight, pointLight] = createLights();
@@ -144,6 +147,9 @@ createGUI(ambientLight, solarSystem, clock, fakeCamera);
 
   // Update controls
   controls.update();
+
+  camera.updateMatrixWorld();
+  starfield.position.copy(camera.getWorldPosition(starfieldCenter));
 
   // Update labels
   const currentBody = solarSystem[options.focus];
