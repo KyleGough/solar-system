@@ -7,9 +7,9 @@
 
   position: absolute;
   left: 50%;
-  bottom: 20px;
+  bottom: 24px;
   z-index: 3;
-  width: min(52rem, calc(100vw - 32px));
+  width: min(56rem, calc(100vw - 32px));
   transform: translateX(-50%);
   font-family: "IBM Plex Sans", ui-sans-serif, system-ui, sans-serif;
   -webkit-font-smoothing: antialiased;
@@ -28,7 +28,7 @@
   position: absolute;
   left: 6%;
   right: 6%;
-  top: 24px;
+  top: 28px;
   height: 1px;
   background: var(--nav-line);
   pointer-events: none;
@@ -57,8 +57,8 @@
   align-items: center;
   justify-content: center;
   width: 100%;
-  min-height: 44px;
-  padding: 12px 0 8px;
+  min-height: 52px;
+  padding: 14px 0 10px;
   background: transparent;
   border: none;
   cursor: pointer;
@@ -78,8 +78,8 @@
 .orbit-nav-disc {
   position: relative;
   display: block;
-  width: var(--disc-size, 10px);
-  height: var(--disc-size, 10px);
+  width: var(--disc-size, 12px);
+  height: var(--disc-size, 12px);
   border-radius: 50%;
   background: var(--disc);
   transform: scale(1);
@@ -128,9 +128,9 @@
 .orbit-nav-label {
   position: absolute;
   left: 50%;
-  bottom: calc(100% - 10px);
+  bottom: calc(100% - 12px);
   transform: translateX(-50%);
-  font-size: 0.625rem;
+  font-size: 0.6875rem;
   font-weight: 500;
   letter-spacing: 0.08em;
   text-transform: uppercase;
@@ -156,7 +156,7 @@
   align-items: flex-start;
   justify-content: center;
   gap: 2px;
-  min-height: 32px;
+  min-height: 40px;
   margin-top: -4px;
   opacity: 0;
   visibility: hidden;
@@ -176,13 +176,13 @@
 }
 
 .orbit-nav-body.is-moon {
-  min-height: 32px;
+  min-height: 40px;
   width: auto;
-  padding: 8px 6px 4px;
+  padding: 10px 8px 6px;
 }
 
 .orbit-nav-body.is-moon .orbit-nav-label {
-  font-size: 0.5625rem;
+  font-size: 0.625rem;
   letter-spacing: 0.06em;
 }
 
@@ -193,12 +193,12 @@
   }
 
   .orbit-nav-body {
-    min-height: 40px;
-    padding: 10px 0 6px;
+    min-height: 44px;
+    padding: 12px 0 8px;
   }
 
   .orbit-nav-label {
-    font-size: 0.5625rem;
+    font-size: 0.625rem;
     letter-spacing: 0.04em;
   }
 
