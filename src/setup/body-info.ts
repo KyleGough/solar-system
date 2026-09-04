@@ -61,12 +61,14 @@ const setMinimised = (next: boolean, moveFocus = false) => {
 
   const restore = document.getElementById("body-info-restore");
   const minimise = document.getElementById("body-info-minimise");
+  const maximise = document.getElementById("body-info-maximise");
   restore?.toggleAttribute("hidden", !minimised);
   minimise?.toggleAttribute("hidden", minimised);
+  maximise?.toggleAttribute("hidden", !minimised);
 
   if (!moveFocus) return;
   if (minimised) {
-    restore?.focus();
+    maximise?.focus();
   } else {
     minimise?.focus();
   }
@@ -146,23 +148,22 @@ export const createBodyInfo = (
   orbitNavEl = orbitNav;
   canvas.setAttribute("tabindex", "-1");
 
-  const close = document.getElementById("body-info-close");
-  close?.addEventListener("click", () => {
-    if (isIntroActive()) return;
-    closePanel();
-  });
-
   const minimise = document.getElementById("body-info-minimise");
   minimise?.addEventListener("click", () => {
     if (isIntroActive()) return;
     setMinimised(true, true);
   });
 
-  const restore = document.getElementById("body-info-restore");
-  restore?.addEventListener("click", () => {
+  const expand = () => {
     if (isIntroActive()) return;
     setMinimised(false, true);
-  });
+  };
+
+  const restore = document.getElementById("body-info-restore");
+  restore?.addEventListener("click", expand);
+
+  const maximise = document.getElementById("body-info-maximise");
+  maximise?.addEventListener("click", expand);
 
   window.addEventListener("keydown", (event) => {
     if (isIntroActive()) return;
