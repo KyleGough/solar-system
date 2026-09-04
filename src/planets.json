@@ -215,7 +215,9 @@
         "name": "Saturn's Hexagon",
         "y": 0,
         "z": 1.57,
-        "fact": "Six-sided jet stream at the north pole, wider than two Earths."
+        "fact": "Persistent hexagonal cloud pattern around the north pole, wider than two Earths.",
+        "image": "./images/saturn-hexagon.jpg",
+        "imageAlt": "Saturn's north-polar hexagon, a teal six-sided storm with a dark central vortex"
       }
     ],
     "description": "Saturn is a gas giant known for its broad, icy ring system. Low density and a hexagonal storm at the north pole set it apart from the other giants."

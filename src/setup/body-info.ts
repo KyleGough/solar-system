@@ -167,15 +167,6 @@ const statsFor = (body: Body): Array<[string, string | Node]> => {
   return rows;
 };
 
-const clearPips = () => {
-  const pips = pipsEl();
-  if (!pips) return;
-  pips.replaceChildren();
-  pips.hidden = true;
-  pipBodyName = "";
-  pipList = [];
-};
-
 const clearPoiImage = () => {
   const figure = figureEl();
   const image = imageEl();
@@ -204,7 +195,7 @@ const fillPoiImage = (poi: PointOfInterest) => {
 const fillPips = (
   bodyName: string,
   pois: PointOfInterest[],
-  activeName: string
+  activeName = ""
 ) => {
   const pips = pipsEl();
   if (!pips) return;
@@ -213,6 +204,7 @@ const fillPips = (
   pipList = pois;
   pips.replaceChildren();
   pips.hidden = pois.length === 0;
+  panelEl()?.classList.toggle("has-pips", pois.length > 0);
 
   for (const poi of pois) {
     const button = document.createElement("button");
@@ -244,7 +236,7 @@ export const updateBodyInfo = (name: string): void => {
     fillStats(body, stats);
   }
   clearPoiImage();
-  clearPips();
+  fillPips(name, body.labels ?? []);
   panelEl()?.classList.remove("is-poi");
 
   setOpen(true);
