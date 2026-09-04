@@ -1,67 +1,123 @@
-$loader-size: 75px;
+.intro {
+  --bg-deep: oklch(0.09 0.014 48);
+  --line: oklch(0.34 0.03 48);
+  --text: oklch(0.92 0.025 85);
+  --text-dim: oklch(0.7 0.03 70);
+  --brass: oklch(0.78 0.11 85);
+  --sans: "IBM Plex Sans", ui-sans-serif, system-ui, sans-serif;
+  --mono: "IBM Plex Mono", ui-monospace, monospace;
+  --ease: cubic-bezier(0.25, 1, 0.5, 1);
 
-#loading {
   position: fixed;
-  display: flex;
-  width: 100%;
-  height: 100%;
-  color: white;
-  justify-content: center;
-  align-items: center;
-  top: 0;
-  left: 0;
-  background-color: black;
-  z-index: 10;
+  inset: 0;
+  z-index: 20;
+  cursor: default;
+  background: oklch(0.08 0.012 48 / 0.62);
+  -webkit-font-smoothing: antialiased;
 }
 
-#welcome {
-  h1 {
-    opacity: 0;
-    animation: fadeIn 2s ease-in-out 0.5s 1 forwards;
-  }
-
-  p #createdBy {
-    opacity: 0;
-    font-weight: 100;
-    animation: fadeIn 2s ease-in-out 1.25s 1 forwards;
-  }
-
-  p #name {
-    opacity: 0;
-    animation: fadeIn 2s ease-in-out 2s 1 forwards;
-  }
+.intro-panel {
+  box-sizing: border-box;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: min(30rem, calc(100vw - 40px));
+  padding: 3rem;
+  background: color-mix(in oklch, var(--bg-deep) 88%, transparent);
+  border: 1px solid var(--line);
+  font-family: var(--sans);
+  color: var(--text);
 }
 
-#loader {
-  margin-top: 4rem;
-  display: flex;
-  justify-content: center;
-
-  #loader-circle {
-    border-radius: 50%;
-    width: $loader-size;
-    height: $loader-size;
-    overflow: hidden;
-    border: 0;
-    opacity: 0;
-    animation: fadeIn 2s ease-in-out 2.75s 1 forwards;
-
-    svg {
-      transform: scale(3.5);
-      animation: loading 2s ease-in-out 4.75s infinite;
-    }
-  }
+.intro-kicker,
+.intro-hint,
+.intro-load-row {
+  font-size: 0.6875rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-dim);
 }
 
-#loader-progress {
+.intro-panel h1 {
+  margin-top: 6px;
+  font-size: 1.25rem;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  line-height: 1.2;
+}
+
+.intro-body {
+  margin-top: 10px;
+  font-size: 0.875rem;
+  line-height: 1.45;
+  letter-spacing: 0.01em;
+  max-width: 42ch;
+}
+
+.intro-load {
+  margin-top: 14px;
+}
+
+.intro-load-row {
   display: flex;
   justify-content: space-between;
-  margin-top: 1rem;
-  font-weight: 100;
-  font-size: 0.8rem;
+  align-items: baseline;
+  gap: 12px;
+  text-transform: none;
+  letter-spacing: 0.02em;
+}
 
-  div {
-    opacity: 0;
-    animation: fadeIn 2s ease-in-out 3.5s 1 forwards;
+#loader-percentage {
+  font-family: var(--mono);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.04em;
+  color: var(--brass);
+}
+
+.intro-bar {
+  margin-top: 8px;
+  height: 2px;
+  background: var(--line);
+}
+
+.intro-bar-fill {
+  width: 0%;
+  height: 100%;
+  background: var(--brass);
+  transition: width 180ms var(--ease);
+}
+
+.intro-hint {
+  margin-top: 12px;
+  min-height: 1.45em;
+  text-transform: none;
+  letter-spacing: 0.02em;
+  visibility: hidden;
+}
+
+.intro.is-ready .intro-hint {
+  visibility: visible;
+}
+
+body.intro-open {
+
+  .webgl,
+  .identity,
+  .btn-group,
+  .caption {
+    pointer-events: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .intro-bar-fill {
+    transition: none;
+  }
+}
+
+@media (max-width: 560px) {
+  .intro-panel h1 {
+    font-size: 1.05rem;
   }
 }

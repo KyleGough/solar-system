@@ -6,6 +6,7 @@ import { createLights } from "./setup/lights";
 import { createStarfield } from "./setup/starfield";
 import { createSolarSystem } from "./setup/solar-system";
 import { createGUI, options } from "./setup/gui";
+import { isIntroActive, onIntroDismiss } from "./setup/loading";
 import { updateIdentity } from "./setup/identity";
 import { createSelectiveBloom } from "./setup/bloom";
 import { FocusTransition } from "./setup/focus-transition";
@@ -72,6 +73,10 @@ const controls = new OrbitControls(fakeCamera, canvas);
 controls.target = solarSystem["Sun"].mesh.position;
 controls.enableDamping = true;
 controls.enablePan = false;
+controls.enabled = false;
+onIntroDismiss(() => {
+  controls.enabled = true;
+});
 controls.minDistance = solarSystem["Sun"].getMinDistance();
 controls.maxDistance = 50;
 
@@ -115,17 +120,20 @@ const requestFocus = (name: string) => {
 };
 
 document.getElementById("btn-previous")?.addEventListener("click", () => {
+  if (isIntroActive()) return;
   const index = planetNames.indexOf(options.focus);
   const newIndex = index === 0 ? planetNames.length - 1 : index - 1;
   requestFocus(planetNames[newIndex]);
 });
 
 document.getElementById("btn-next")?.addEventListener("click", () => {
+  if (isIntroActive()) return;
   const index = (planetNames.indexOf(options.focus) + 1) % planetNames.length;
   requestFocus(planetNames[index]);
 });
 
 const onHoverPick = (clientX: number, clientY: number) => {
+  if (isIntroActive()) return;
   if (focusTransition.isActive()) {
     canvas.style.cursor = "default";
     return;
@@ -144,6 +152,7 @@ canvas.addEventListener("pointerleave", () => {
 });
 
 canvas.addEventListener("dblclick", (event) => {
+  if (isIntroActive()) return;
   const name = picker.pick(event.clientX, event.clientY);
   if (name) {
     requestFocus(name);

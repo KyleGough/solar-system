@@ -1,6 +1,7 @@
 import * as dat from "lil-gui";
 import { SolarSystem } from "./solar-system";
 import { LAYERS } from "../constants";
+import { isIntroActive } from "./loading";
 
 export const options = {
   showPaths: false,
@@ -52,16 +53,17 @@ export const createGUI = (
 
   // Toggle ambient lights
   document.getElementById("btn-ambient")?.addEventListener("click", () => {
+    if (isIntroActive()) return;
     ambientLight.intensity = ambientLight.intensity === 0.1 ? 0.5 : 0.1;
   });
 
-  // Toggle labels
   document.getElementById("btn-labels")?.addEventListener("click", () => {
+    if (isIntroActive()) return;
     camera.layers.toggle(LAYERS.POILabel);
   });
 
-  // Toggle paths
   document.getElementById("btn-paths")?.addEventListener("click", () => {
+    if (isIntroActive()) return;
     options.showPaths = !options.showPaths;
 
     for (const name in solarSystem) {
@@ -74,6 +76,7 @@ export const createGUI = (
 
   // Toggle GUI panel
   document.getElementById("btn-settings")?.addEventListener("click", () => {
+    if (isIntroActive()) return;
     gui.show(gui._hidden);
   });
 };
