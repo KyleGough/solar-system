@@ -5,9 +5,12 @@ const OUTGOING_LIGHT =
 
 // Mix the night map over Phong lighting as N·L goes negative (the dark
 // hemisphere). Twilight is a soft band around the terminator so city lights
-// fade in rather than popping on.
+// fade in rather than popping on. A luma gate boosts only the urban texels;
+// land and ocean stay at the darkened map values.
 const NIGHT_OUTGOING_LIGHT = /* glsl */ `
 vec3 dayLight = reflectedLight.directDiffuse + reflectedLight.indirectDiffuse + reflectedLight.directSpecular + reflectedLight.indirectSpecular;
+float nightLuma = max(totalEmissiveRadiance.r, max(totalEmissiveRadiance.g, totalEmissiveRadiance.b));
+totalEmissiveRadiance *= 1.0 + 1.0 * smoothstep(0.05, 0.25, nightLuma);
 #if ( NUM_POINT_LIGHTS > 0 )
 	vec3 nightLightDir = normalize(pointLights[0].position - geometry.position);
 	float nightFactor = 1.0 - smoothstep(-0.15, 0.22, dot(geometry.normal, nightLightDir));
