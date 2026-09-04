@@ -280,7 +280,6 @@ createGUI(lights.ambientLight, solarSystem, clock, fakeCamera, (ride) => {
 
   updateOrbitTrails(solarSystem, wallDt, {
     showAll: options.showPaths,
-    focus: options.focus,
     flying: frame.active && !frame.justFinished,
     from: frame.from,
     to: frame.to,

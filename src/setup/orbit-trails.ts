@@ -40,7 +40,6 @@ export const updateOrbitTrails = (
   dt: number,
   state: {
     showAll: boolean;
-    focus: string;
     flying: boolean;
     from: string;
     to: string;
@@ -70,7 +69,6 @@ export const updateOrbitTrails = (
     }
   }
 
-  const focusSystem = hostOf(state.focus, solarSystem);
   const snap = reducedMotion.matches;
 
   for (const [name, object] of Object.entries(solarSystem)) {
@@ -82,11 +80,7 @@ export const updateOrbitTrails = (
     if (state.showAll && object.type === "planet") {
       target = TOGGLE_PLANET;
     }
-    if (
-      state.showAll &&
-      object.type === "moon" &&
-      object.orbits === focusSystem
-    ) {
+    if (state.showAll && object.type === "moon") {
       target = TOGGLE_MOON;
     }
     if (lit.has(name)) {
