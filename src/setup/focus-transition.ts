@@ -19,11 +19,14 @@ const durationFromDistance = (distance: number): number => {
   return MIN_DURATION + t * (MAX_DURATION - MIN_DURATION);
 };
 
+type FlightMode = "travel" | "pan";
+
 type FocusFlightFrame = {
   active: boolean;
   progress: number;
   from: string;
   to: string;
+  mode: FlightMode;
   justCrossedMidpoint: boolean;
   justFinished: boolean;
 };
@@ -34,7 +37,18 @@ type Flight = {
   elapsed: number;
   duration: number;
   swapped: boolean;
+  mode: FlightMode;
 };
+
+const idleFrame = (): FocusFlightFrame => ({
+  active: false,
+  progress: 1,
+  from: "",
+  to: "",
+  mode: "travel",
+  justCrossedMidpoint: false,
+  justFinished: false,
+});
 
 const writeFocusOffset = (
   body: { getFocusDistance: () => number },
@@ -80,6 +94,12 @@ export class FocusTransition {
   private readonly worldTarget = new THREE.Vector3();
   private readonly prevTarget = new THREE.Vector3();
   private readonly targetDelta = new THREE.Vector3();
+  private readonly panStartDir = new THREE.Vector3();
+  private readonly panLocalDir = new THREE.Vector3();
+  private readonly panQuatEnd = new THREE.Quaternion();
+  private readonly panQuat = new THREE.Quaternion();
+  private readonly identityQuat = new THREE.Quaternion();
+  private panRadius = 0;
 
   constructor(
     private readonly scene: THREE.Scene,
@@ -90,6 +110,8 @@ export class FocusTransition {
   ) {}
 
   isActive = (): boolean => this.flight !== null;
+
+  isTraveling = (): boolean => this.flight?.mode === "travel";
 
   destination = (): string | null => this.flight?.to ?? null;
 
@@ -173,6 +195,7 @@ export class FocusTransition {
       elapsed: 0,
       duration: durationFromDistance(distance),
       swapped: false,
+      mode: "travel",
     };
 
     this.controls.enabled = false;
@@ -193,16 +216,79 @@ export class FocusTransition {
     return true;
   };
 
+  /**
+   * Orbit around the focused body so a surface point faces the camera.
+   * Keeps the current distance; slerps on the sphere so the path does not
+   * cut through the globe.
+   */
+  panTo = (bodyName: string, localPoint: THREE.Vector3): boolean => {
+    if (this.flight?.mode === "travel") {
+      return false;
+    }
+
+    const body = this.solarSystem[bodyName];
+    body.mesh.updateWorldMatrix(true, false);
+
+    this.camera.updateWorldMatrix(true, false);
+    this.camera.getWorldPosition(this.startPos);
+    this.startUp
+      .set(0, 1, 0)
+      .transformDirection(this.camera.matrixWorld)
+      .normalize();
+    body.mesh.getWorldPosition(this.startLookAt);
+
+    if (this.camera.parent !== this.scene) {
+      this.detachToWorld();
+    }
+
+    this.panStartDir.copy(this.startPos);
+    body.mesh.worldToLocal(this.panStartDir);
+    this.panRadius = Math.max(this.panStartDir.length(), body.getMinDistance());
+    if (this.panStartDir.lengthSq() < 1e-10) {
+      this.panStartDir.set(1, 0, 0);
+    } else {
+      this.panStartDir.normalize();
+    }
+
+    this.panLocalDir.copy(localPoint);
+    if (this.panLocalDir.lengthSq() < 1e-10) {
+      this.panLocalDir.set(1, 0, 0);
+    } else {
+      this.panLocalDir.normalize();
+    }
+
+    this.panQuatEnd.setFromUnitVectors(this.panStartDir, this.panLocalDir);
+
+    const angle = Math.acos(
+      Math.min(1, Math.max(-1, this.panStartDir.dot(this.panLocalDir)))
+    );
+    const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const duration = reduced ? 0.01 : 0.28 + (angle / Math.PI) * 0.72;
+
+    this.flight = {
+      from: bodyName,
+      to: bodyName,
+      elapsed: 0,
+      duration,
+      swapped: true,
+      mode: "pan",
+    };
+
+    this.controls.enabled = false;
+    this.currentLookAt.copy(this.startLookAt);
+    this.camera.lookAt(this.currentLookAt);
+    this.startQuat.copy(this.camera.quaternion);
+
+    return true;
+  };
+
   update = (dt: number): FocusFlightFrame => {
     if (!this.flight) {
-      return {
-        active: false,
-        progress: 1,
-        from: "",
-        to: "",
-        justCrossedMidpoint: false,
-        justFinished: false,
-      };
+      return idleFrame();
+    }
+
+    if (this.flight.mode === "pan") {
+      return this.updatePan(dt);
     }
 
     const toBody = this.solarSystem[this.flight.to];
@@ -247,7 +333,57 @@ export class FocusTransition {
       progress,
       from: this.flight.from,
       to: this.flight.to,
+      mode: this.flight.mode,
       justCrossedMidpoint,
+      justFinished,
+    };
+
+    if (justFinished) {
+      this.complete();
+    }
+
+    return frame;
+  };
+
+  private updatePan = (dt: number): FocusFlightFrame => {
+    const flight = this.flight;
+    if (!flight) {
+      return idleFrame();
+    }
+
+    const body = this.solarSystem[flight.to];
+    body.mesh.updateWorldMatrix(true, false);
+    body.mesh.getWorldPosition(this.destLookAt);
+    this.destUp
+      .set(0, 1, 0)
+      .transformDirection(body.mesh.matrixWorld)
+      .normalize();
+
+    flight.elapsed += dt;
+    const progress = Math.min(1, flight.elapsed / flight.duration);
+    const eased = easeInOut(progress);
+
+    this.panQuat.slerpQuaternions(this.identityQuat, this.panQuatEnd, eased);
+    this.offset
+      .copy(this.panStartDir)
+      .applyQuaternion(this.panQuat)
+      .multiplyScalar(this.panRadius);
+    this.destPos.copy(this.offset);
+    body.mesh.localToWorld(this.destPos);
+
+    this.camera.position.copy(this.destPos);
+    this.currentLookAt.copy(this.destLookAt);
+    this.camera.up.lerpVectors(this.startUp, this.destUp, eased).normalize();
+    this.camera.lookAt(this.currentLookAt);
+
+    const justFinished = progress >= 1;
+    const frame: FocusFlightFrame = {
+      active: true,
+      progress,
+      from: flight.from,
+      to: flight.to,
+      mode: "pan",
+      justCrossedMidpoint: false,
       justFinished,
     };
 

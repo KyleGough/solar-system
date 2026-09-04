@@ -1,4 +1,5 @@
 import type { Body } from "./planetary-object";
+import type { PointOfInterest } from "./label";
 import planetData from "../planets.json";
 import { isIntroActive } from "./loading";
 import {
@@ -18,10 +19,14 @@ const panelEl = () => document.getElementById("body-info");
 const kickerEl = () => document.getElementById("body-info-kicker");
 const blurbEl = () => document.getElementById("body-info-blurb");
 const statsEl = () => document.getElementById("body-info-stats");
+const pipsEl = () => document.getElementById("body-info-pips");
 
 let canvasEl: HTMLElement | null = null;
 let orbitNavEl: HTMLElement | null = null;
 let minimised = false;
+let pipBodyName = "";
+let pipList: PointOfInterest[] = [];
+let onPoiPick: ((bodyName: string, poi: PointOfInterest) => void) | null = null;
 
 const isEditableTarget = (target: EventTarget | null): boolean => {
   if (!(target instanceof HTMLElement)) return false;
@@ -147,6 +152,43 @@ const statsFor = (body: Body): Array<[string, string | Node]> => {
   return rows;
 };
 
+const clearPips = () => {
+  const pips = pipsEl();
+  if (!pips) return;
+  pips.replaceChildren();
+  pips.hidden = true;
+  pipBodyName = "";
+  pipList = [];
+};
+
+const fillPips = (
+  bodyName: string,
+  pois: PointOfInterest[],
+  activeName: string
+) => {
+  const pips = pipsEl();
+  if (!pips) return;
+
+  pipBodyName = bodyName;
+  pipList = pois;
+  pips.replaceChildren();
+  pips.hidden = pois.length === 0;
+
+  for (const poi of pois) {
+    const button = document.createElement("button");
+    button.type = "button";
+    button.className = "body-info-pip";
+    button.dataset.poi = poi.name;
+    button.setAttribute("aria-label", poi.name);
+    const current = poi.name === activeName;
+    button.classList.toggle("is-current", current);
+    if (current) {
+      button.setAttribute("aria-current", "true");
+    }
+    pips.append(button);
+  }
+};
+
 export const updateBodyInfo = (name: string): void => {
   const body = bodies.find((entry) => entry.name === name);
   if (!body || !body.traversable) return;
@@ -157,17 +199,44 @@ export const updateBodyInfo = (name: string): void => {
   if (kicker) kicker.textContent = body.type;
   if (blurb) blurb.textContent = body.description ?? "";
   if (blurb) blurb.hidden = !body.description;
-  if (stats) fillStats(body, stats);
+  if (stats) {
+    stats.hidden = false;
+    fillStats(body, stats);
+  }
+  clearPips();
+  panelEl()?.classList.remove("is-poi");
 
+  setOpen(true);
+};
+
+export const updatePoiInfo = (bodyName: string, poi: PointOfInterest): void => {
+  const body = bodies.find((entry) => entry.name === bodyName);
+  if (!body || !body.traversable) return;
+
+  const kicker = kickerEl();
+  const blurb = blurbEl();
+  const stats = statsEl();
+  if (kicker) kicker.textContent = poi.name;
+  if (blurb) {
+    blurb.textContent = poi.fact ?? "";
+    blurb.hidden = !poi.fact;
+  }
+  if (stats) stats.hidden = true;
+  fillPips(bodyName, body.labels ?? [], poi.name);
+  panelEl()?.classList.add("is-poi");
+
+  setMinimised(false);
   setOpen(true);
 };
 
 export const createBodyInfo = (
   canvas: HTMLElement,
-  orbitNav: HTMLElement
+  orbitNav: HTMLElement,
+  onPick?: (bodyName: string, poi: PointOfInterest) => void
 ): void => {
   canvasEl = canvas;
   orbitNavEl = orbitNav;
+  onPoiPick = onPick ?? null;
   canvas.setAttribute("tabindex", "-1");
 
   const minimise = document.getElementById("body-info-minimise");
@@ -186,6 +255,19 @@ export const createBodyInfo = (
 
   const maximise = document.getElementById("body-info-maximise");
   maximise?.addEventListener("click", expand);
+
+  pipsEl()?.addEventListener("click", (event) => {
+    if (isIntroActive()) return;
+    const target = event.target;
+    if (!(target instanceof Element)) return;
+    const button = target.closest("button[data-poi]");
+    if (!(button instanceof HTMLButtonElement)) return;
+    const name = button.dataset.poi;
+    if (!name || button.classList.contains("is-current")) return;
+    const poi = pipList.find((entry) => entry.name === name);
+    if (!poi || !pipBodyName) return;
+    onPoiPick?.(pipBodyName, poi);
+  });
 
   window.addEventListener("keydown", (event) => {
     if (isIntroActive()) return;

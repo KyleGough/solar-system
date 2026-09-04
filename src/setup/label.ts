@@ -7,12 +7,19 @@ export interface PointOfInterest {
   y: number;
   z: number;
   type?: string;
+  fact?: string;
 }
 
 export class Label {
   parent: THREE.Object3D;
   radius: number;
   elements: CSS2DObject[];
+  onSelect: ((poi: PointOfInterest, localPosition: THREE.Vector3) => void) | null =
+    null;
+
+  private readonly toCamera = new THREE.Vector3();
+  private readonly viewRight = new THREE.Vector3();
+  private readonly localUp = new THREE.Vector3(0, 1, 0);
 
   /**
    * Represents a collection of labels for a celestial body.
@@ -27,26 +34,39 @@ export class Label {
   }
 
   createPOILabel = (poi: PointOfInterest) => {
-    const container = document.createElement("div");
-    container.className = "label";
+    const button = document.createElement("button");
+    button.type = "button";
+    button.className = "poi";
+    button.setAttribute("aria-pressed", "false");
 
-    if (poi.type) {
-      const img = document.createElement("img");
-      img.src = `./icons/${poi.type}.svg`;
-      container.appendChild(img);
-    }
+    const mark = document.createElement("span");
+    mark.className = "poi-mark";
+    mark.setAttribute("aria-hidden", "true");
 
-    const text = document.createElement("p");
+    const tick = document.createElement("span");
+    tick.className = "poi-tick";
+    tick.setAttribute("aria-hidden", "true");
+
+    const text = document.createElement("span");
+    text.className = "poi-name";
     text.textContent = poi.name;
-    container.appendChild(text);
 
-    const label = new CSS2DObject(container);
-    label.center.set(0, 0);
+    button.append(mark, tick, text);
+
+    const label = new CSS2DObject(button);
+    label.center.set(0, 0.5);
     label.layers.set(LAYERS.POILabel);
     label.layers.disable(LAYERS.POILabel);
+    label.userData.poi = poi;
 
-    const labelPosition = this.rotateLabel(poi.y, poi.z).toArray();
-    label.position.set(...labelPosition);
+    const labelPosition = this.rotateLabel(poi.y, poi.z);
+    label.position.copy(labelPosition);
+
+    button.addEventListener("click", (event) => {
+      event.preventDefault();
+      event.stopPropagation();
+      this.onSelect?.(poi, label.position);
+    });
 
     this.parent.add(label);
     this.elements.push(label);
@@ -70,12 +90,36 @@ export class Label {
     });
   };
 
+  setActive = (name: string | null) => {
+    this.elements.forEach((label) => {
+      const poi = label.userData.poi as PointOfInterest | undefined;
+      const active = Boolean(name && poi?.name === name);
+      label.element.classList.toggle("is-active", active);
+      label.element.setAttribute("aria-pressed", String(active));
+    });
+  };
+
+  positionOf = (name: string): THREE.Vector3 | null => {
+    const label = this.elements.find((entry) => {
+      const poi = entry.userData.poi as PointOfInterest | undefined;
+      return poi?.name === name;
+    });
+    return label?.position ?? null;
+  };
+
   /**
    * Update label opacities depending on camera position and direction.
    * @param localCameraPosition - Camera position in the parent body's local space.
    * @param fadeMultiplier - Extra 0–1 fade applied on top of geometric opacity.
    */
   update = (localCameraPosition: THREE.Vector3, fadeMultiplier = 1) => {
+    this.toCamera.copy(localCameraPosition).normalize();
+    this.viewRight.crossVectors(this.localUp, this.toCamera);
+    const canFlip = this.viewRight.lengthSq() > 0.04;
+    if (canFlip) {
+      this.viewRight.normalize();
+    }
+
     this.elements.forEach((label) => {
       const rotationOpacity = this.getRotationOpacity(
         localCameraPosition,
@@ -83,7 +127,23 @@ export class Label {
       );
       const distanceOpacity = this.getDistanceOpacity(localCameraPosition);
       const opacity = rotationOpacity * distanceOpacity * fadeMultiplier;
-      label.element.style.opacity = opacity.toString();
+      const element = label.element;
+      element.style.opacity = opacity.toString();
+      element.style.pointerEvents = opacity > 0.2 ? "auto" : "none";
+      if (opacity > 0.2) {
+        element.removeAttribute("tabindex");
+      } else {
+        element.setAttribute("tabindex", "-1");
+      }
+
+      if (canFlip) {
+        const side = label.position.dot(this.viewRight);
+        if (Math.abs(side) > 0.12) {
+          const flipped = side < 0;
+          element.classList.toggle("is-flip", flipped);
+          label.center.set(flipped ? 1 : 0, 0.5);
+        }
+      }
     });
   };
 
