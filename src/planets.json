@@ -102,13 +102,17 @@
         "type": "landing",
         "y": 0.36,
         "z": 0.05,
-        "fact": "Site of the first crewed landing by NASA astronauts Neil Armstrong and Buzz Aldrin on 20 July 1969."
+        "fact": "Site of the first crewed landing by NASA astronauts Neil Armstrong and Buzz Aldrin on 20 July 1969.",
+        "image": "./images/apollo-11-landing.jpg",
+        "imageAlt": "Apollo 11 landing site at the Sea of Tranquility"
       },
       {
         "name": "Tycho Crater",
         "y": -0.14,
         "z": -0.77,
-        "fact": "Young rayed crater; its ejecta streaks are visible from Earth."
+        "fact": "108 million year old crater with a diameter of 85km discovered by Tycho Brahe.",
+        "image": "./images/tycho-crater.jpg",
+        "imageAlt": "Overhead view of Tycho Crater"
       },
       {
         "name": "Yutu-2",

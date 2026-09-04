@@ -141,6 +141,26 @@
   min-height: calc(0.875rem * 1.45 * 2);
 }
 
+.body-info-figure {
+  display: flex;
+  justify-content: center;
+  margin: 1rem auto 0;
+  max-width: 200px;
+}
+
+.body-info-figure[hidden] {
+  display: none;
+}
+
+.body-info-image {
+  display: block;
+  width: auto;
+  height: auto;
+  max-width: 200px;
+  max-height: 200px;
+  object-fit: contain;
+}
+
 .body-info-stats {
   display: grid;
   grid-template-columns: auto 1fr;

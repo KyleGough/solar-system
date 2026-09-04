@@ -8,6 +8,8 @@ export interface PointOfInterest {
   z: number;
   type?: string;
   fact?: string;
+  image?: string;
+  imageAlt?: string;
 }
 
 const AXIS_Y = new THREE.Vector3(0, 1, 0);

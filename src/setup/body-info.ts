@@ -18,6 +18,9 @@ const NAV_GAP = 12;
 const panelEl = () => document.getElementById("body-info");
 const kickerEl = () => document.getElementById("body-info-kicker");
 const blurbEl = () => document.getElementById("body-info-blurb");
+const figureEl = () => document.getElementById("body-info-figure");
+const imageEl = () =>
+  document.getElementById("body-info-image") as HTMLImageElement | null;
 const statsEl = () => document.getElementById("body-info-stats");
 const pipsEl = () => document.getElementById("body-info-pips");
 
@@ -173,6 +176,31 @@ const clearPips = () => {
   pipList = [];
 };
 
+const clearPoiImage = () => {
+  const figure = figureEl();
+  const image = imageEl();
+  if (image) {
+    image.removeAttribute("src");
+    image.alt = "";
+  }
+  if (figure) figure.hidden = true;
+};
+
+const fillPoiImage = (poi: PointOfInterest) => {
+  const figure = figureEl();
+  const image = imageEl();
+  if (!figure || !image) return;
+
+  if (!poi.image) {
+    clearPoiImage();
+    return;
+  }
+
+  image.src = poi.image;
+  image.alt = poi.imageAlt ?? "";
+  figure.hidden = false;
+};
+
 const fillPips = (
   bodyName: string,
   pois: PointOfInterest[],
@@ -215,6 +243,7 @@ export const updateBodyInfo = (name: string): void => {
     stats.hidden = false;
     fillStats(body, stats);
   }
+  clearPoiImage();
   clearPips();
   panelEl()?.classList.remove("is-poi");
 
@@ -233,6 +262,7 @@ export const updatePoiInfo = (bodyName: string, poi: PointOfInterest): void => {
     blurb.textContent = poi.fact ?? "";
     blurb.hidden = !poi.fact;
   }
+  fillPoiImage(poi);
   if (stats) stats.hidden = true;
   fillPips(bodyName, body.labels ?? [], poi.name);
   panelEl()?.classList.add("is-poi");
