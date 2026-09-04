@@ -4,7 +4,7 @@ import { LAYERS } from "../constants";
 import { isIntroActive } from "./loading";
 
 export const options = {
-  showPaths: false,
+  showPaths: true,
   showMoons: true,
   focus: "Sun",
   clock: true,
