@@ -11,6 +11,16 @@
     "textures": {
       "map": "./textures/sun.jpg"
     },
+    "stats": [
+      [
+        "Galactic period",
+        "250 million years"
+      ],
+      [
+        "Absolute magnitude",
+        "4.83"
+      ]
+    ],
     "description": "The Sun is a G-type main-sequence star at the centre of the Solar System. It holds 99.8% of the system's mass and governs the orbits of every planet, moon, and small body."
   },
   {

@@ -116,11 +116,17 @@ const statsFor = (body: Body): Array<[string, string]> => {
     rows.push(["Orbital period", formatPeriodDuration(body.period)]);
   }
 
-  if (body.type !== "moon") {
+  if (body.type !== "moon" && body.type !== "star") {
     rows.push(["Day length", formatHours(body.daylength)]);
   }
 
-  rows.push(["Axial tilt", formatTilt(body.tilt)]);
+  if (body.type !== "star") {
+    rows.push(["Axial tilt", formatTilt(body.tilt)]);
+  }
+
+  if (body.stats) {
+    rows.push(...body.stats);
+  }
 
   return rows;
 };

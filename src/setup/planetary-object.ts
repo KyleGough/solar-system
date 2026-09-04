@@ -23,6 +23,7 @@ export interface Body {
   description?: string;
   traversable: boolean;
   offset?: number;
+  stats?: Array<[string, string]>;
 }
 
 interface TexturePaths {
