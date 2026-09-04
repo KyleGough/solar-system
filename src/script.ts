@@ -12,6 +12,11 @@ import { createSelectiveBloom } from "./setup/bloom";
 import { FocusTransition } from "./setup/focus-transition";
 import { createBodyPicker } from "./setup/body-pick";
 import { createOrbitalNav } from "./setup/orbital-nav";
+import {
+  onFocusUrlChange,
+  readFocusFromUrl,
+  writeFocusToUrl,
+} from "./setup/focus-url";
 import { LAYERS } from "./constants";
 
 THREE.ColorManagement.enabled = false;
@@ -59,6 +64,10 @@ window.addEventListener("resize", () => {
 
 // Solar system
 const solarSystem = createSolarSystem(scene);
+const urlFocus = readFocusFromUrl();
+if (urlFocus) {
+  options.focus = urlFocus;
+}
 updateIdentity(options.focus);
 
 // Camera
@@ -104,6 +113,9 @@ const setUiOpacity = (opacity: number) => {
 let orbitNav: ReturnType<typeof createOrbitalNav>;
 
 const requestFocus = (name: string) => {
+  if (!solarSystem[name]) {
+    return;
+  }
   if (name === options.focus && !focusTransition.isActive()) {
     return;
   }
@@ -119,10 +131,34 @@ const requestFocus = (name: string) => {
   options.focus = name;
   canvas.style.cursor = "default";
   orbitNav.setFocus(name);
+  writeFocusToUrl(name);
 };
 
 orbitNav = createOrbitalNav(orbitNavEl, requestFocus);
 orbitNav.setFocus(options.focus);
+
+for (const object of Object.values(solarSystem)) {
+  object.tick(0);
+}
+
+if (urlFocus) {
+  focusTransition.snapTo(urlFocus);
+  writeFocusToUrl(urlFocus);
+}
+
+solarSystem[options.focus].labels.showPOI();
+
+onFocusUrlChange((name) => {
+  if (isIntroActive()) return;
+  requestFocus(name);
+});
+
+onIntroDismiss(() => {
+  const pending = readFocusFromUrl();
+  if (pending && pending !== options.focus) {
+    requestFocus(pending);
+  }
+});
 
 const onHoverPick = (clientX: number, clientY: number) => {
   if (isIntroActive()) return;

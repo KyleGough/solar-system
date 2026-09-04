@@ -219,6 +219,25 @@ export class FocusTransition {
   };
 
   /**
+   * Instantly place the camera at the default viewing pose for a body.
+   * Used when restoring focus from the URL on load.
+   */
+  snapTo = (name: string): void => {
+    const body = this.solarSystem[name];
+    body.mesh.updateWorldMatrix(true, false);
+    writeFocusOffset(body, this.offset);
+    body.mesh.localToWorld(this.camera.position.copy(this.offset));
+    body.mesh.getWorldPosition(this.worldTarget);
+    this.camera.up
+      .set(0, 1, 0)
+      .transformDirection(body.mesh.matrixWorld)
+      .normalize();
+    this.camera.lookAt(this.worldTarget);
+    this.controls.minDistance = body.getMinDistance();
+    this.applyRig(name);
+  };
+
+  /**
    * Snap the camera rig to the current ride/inertial mode without changing
    * the world viewpoint.
    */
