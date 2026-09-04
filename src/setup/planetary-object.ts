@@ -220,9 +220,16 @@ export class PlanetaryObject {
   };
 
   /**
+   * Camera distance used when this body becomes the focus.
+   */
+  getFocusDistance = (): number => {
+    return this.radius * 3.5;
+  };
+
+  /**
    * @returns the minimum orbital control camera distance allowed.
    */
   getMinDistance = (): number => {
-    return this.radius * 3.5;
+    return this.radius * 1.2;
   };
 }

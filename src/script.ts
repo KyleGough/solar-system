@@ -73,9 +73,10 @@ updateIdentity(options.focus);
 const changeFocus = (oldFocus: string, newFocus: string) => {
   solarSystem[oldFocus].mesh.remove(camera);
   solarSystem[newFocus].mesh.add(camera);
-  const minDistance = solarSystem[newFocus].getMinDistance();
-  controls.minDistance = minDistance;
-  fakeCamera.position.set(minDistance, minDistance / 3, 0);
+  const body = solarSystem[newFocus];
+  controls.minDistance = body.getMinDistance();
+  const startDistance = body.getFocusDistance();
+  fakeCamera.position.set(startDistance, startDistance / 3, 0);
   solarSystem[oldFocus].labels.hidePOI();
   solarSystem[newFocus].labels.showPOI();
   (document.querySelector(".caption p") as HTMLElement).innerHTML = newFocus;
@@ -84,7 +85,7 @@ const changeFocus = (oldFocus: string, newFocus: string) => {
 
 // Camera
 const aspect = sizes.width / sizes.height;
-const camera = new THREE.PerspectiveCamera(75, aspect, 0.1, 1000);
+const camera = new THREE.PerspectiveCamera(75, aspect, 0.008, 1000);
 camera.position.set(0, 20, 0);
 solarSystem["Sun"].mesh.add(camera);
 
