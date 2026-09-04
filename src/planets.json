@@ -25,7 +25,7 @@
     "traversable": true,
     "textures": {
       "map": "./textures/mercury.jpg",
-      "bump": "./textures/mercury-bump.jpg"
+      "normal": "./textures/mercury-normal.png"
     },
     "description": "Mercury is the smallest planet and the closest to the Sun. A cratered, airless world, it completes an 88-day orbit with days longer than its year."
   },

@@ -28,6 +28,7 @@ export interface Body {
 interface TexturePaths {
   map: string;
   bump?: string;
+  normal?: string;
   atmosphere?: string;
   atmosphereAlpha?: string;
   specular?: string;
@@ -68,6 +69,7 @@ export class PlanetaryObject {
   rng: number;
   map!: THREE.Texture;
   bumpMap?: THREE.Texture;
+  normalMap?: THREE.Texture;
   specularMap?: THREE.Texture;
   nightMap?: THREE.Texture;
   atmosphere: Atmosphere = {};
@@ -130,6 +132,9 @@ export class PlanetaryObject {
     if (textures.bump) {
       this.bumpMap = loadTexture(textures.bump);
     }
+    if (textures.normal) {
+      this.normalMap = loadTexture(textures.normal);
+    }
     if (textures.specular) {
       this.specularMap = loadTexture(textures.specular);
     }
@@ -171,6 +176,11 @@ export class PlanetaryObject {
       if (this.bumpMap) {
         material.bumpMap = this.bumpMap;
         material.bumpScale = this.radius / 50;
+      }
+
+      if (this.normalMap) {
+        material.normalMap = this.normalMap;
+        material.normalScale.set(1.4, 1.4);
       }
 
       if (this.specularMap) {
