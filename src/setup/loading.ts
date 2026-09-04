@@ -10,7 +10,7 @@ const loadingPrompts = [
   "Increasing entropy",
 ];
 
-const BACKGROUND_SELECTORS = [".webgl", ".identity", ".btn-group", ".caption"];
+const BACKGROUND_SELECTORS = [".webgl", ".identity", ".btn-group", ".orbit-nav"];
 
 let introActive = true;
 let ready = false;

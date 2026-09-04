@@ -11,6 +11,7 @@ import { updateIdentity } from "./setup/identity";
 import { createSelectiveBloom } from "./setup/bloom";
 import { FocusTransition } from "./setup/focus-transition";
 import { createBodyPicker } from "./setup/body-pick";
+import { createOrbitalNav } from "./setup/orbital-nav";
 import { LAYERS } from "./constants";
 
 THREE.ColorManagement.enabled = false;
@@ -18,7 +19,7 @@ THREE.ColorManagement.enabled = false;
 // Canvas
 const canvas = document.querySelector("canvas.webgl") as HTMLElement;
 const identityEl = document.querySelector(".identity") as HTMLElement;
-const captionNameEl = document.querySelector(".caption p") as HTMLElement;
+const orbitNavEl = document.getElementById("orbit-nav") as HTMLElement;
 
 // Scene
 const scene = new THREE.Scene();
@@ -57,7 +58,7 @@ window.addEventListener("resize", () => {
 });
 
 // Solar system
-const [solarSystem, planetNames] = createSolarSystem(scene);
+const [solarSystem] = createSolarSystem(scene);
 updateIdentity(options.focus);
 
 // Camera
@@ -94,13 +95,13 @@ const swapFocusUi = (from: string, to: string) => {
   solarSystem[from].labels.hidePOI();
   solarSystem[to].labels.showPOI();
   updateIdentity(to);
-  captionNameEl.textContent = to;
 };
 
 const setUiOpacity = (opacity: number) => {
   identityEl.style.opacity = String(opacity);
-  captionNameEl.style.opacity = String(opacity);
 };
+
+let orbitNav: ReturnType<typeof createOrbitalNav>;
 
 const requestFocus = (name: string) => {
   if (name === options.focus && !focusTransition.isActive()) {
@@ -117,20 +118,11 @@ const requestFocus = (name: string) => {
 
   options.focus = name;
   canvas.style.cursor = "default";
+  orbitNav.setFocus(name);
 };
 
-document.getElementById("btn-previous")?.addEventListener("click", () => {
-  if (isIntroActive()) return;
-  const index = planetNames.indexOf(options.focus);
-  const newIndex = index === 0 ? planetNames.length - 1 : index - 1;
-  requestFocus(planetNames[newIndex]);
-});
-
-document.getElementById("btn-next")?.addEventListener("click", () => {
-  if (isIntroActive()) return;
-  const index = (planetNames.indexOf(options.focus) + 1) % planetNames.length;
-  requestFocus(planetNames[index]);
-});
+orbitNav = createOrbitalNav(orbitNavEl, requestFocus);
+orbitNav.setFocus(options.focus);
 
 const onHoverPick = (clientX: number, clientY: number) => {
   if (isIntroActive()) return;

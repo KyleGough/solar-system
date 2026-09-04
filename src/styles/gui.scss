@@ -1,20 +1,3 @@
-.caption {
-  display: flex;
-  position: absolute;
-  bottom: 0;
-  margin-bottom: 2rem;
-  justify-content: center;
-  width: 100%;
-  gap: 2rem;
-  color: white;
-
-  p {
-    width: 125px;
-    text-align: center;
-    opacity: 1;
-  }
-}
-
 .btn-group {
   display: flex;
   position: absolute;
@@ -26,7 +9,6 @@
   fill: white;
 }
 
-.caption button,
 .btn-group button,
 .btn-group a {
   background-color: transparent;
