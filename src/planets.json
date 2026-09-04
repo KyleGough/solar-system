@@ -241,7 +241,7 @@
     "type": "moon",
     "orbits": "Jupiter",
     "tilt": 3.33,
-    "traversable": false,
+    "traversable": true,
     "textures": {
       "map": "./textures/ganymede.jpg"
     }
@@ -255,7 +255,7 @@
     "type": "moon",
     "orbits": "Saturn",
     "tilt": 27,
-    "traversable": false,
+    "traversable": true,
     "textures": {
       "map": "./textures/titan.webp"
     }
@@ -269,7 +269,7 @@
     "type": "moon",
     "orbits": "Jupiter",
     "tilt": 0,
-    "traversable": false,
+    "traversable": true,
     "textures": {
       "map": "./textures/callisto.jpg"
     }
@@ -283,7 +283,7 @@
     "type": "moon",
     "orbits": "Jupiter",
     "tilt": 0.05,
-    "traversable": false,
+    "traversable": true,
     "textures": {
       "map": "./textures/io.jpg"
     }
@@ -297,7 +297,7 @@
     "type": "moon",
     "orbits": "Jupiter",
     "tilt": 0.47,
-    "traversable": false,
+    "traversable": true,
     "textures": {
       "map": "./textures/europa.jpg"
     }
@@ -311,7 +311,7 @@
     "type": "moon",
     "orbits": "Neptune",
     "tilt": 156,
-    "traversable": false,
+    "traversable": true,
     "textures": {
       "map": "./textures/triton.jpg"
     }
