@@ -1,10 +1,6 @@
 .identity {
-  position: absolute;
-  top: 20px;
-  right: 20px;
   text-align: right;
   pointer-events: none;
-  z-index: 2;
   font-family: "IBM Plex Sans", ui-sans-serif, system-ui, sans-serif;
   color: oklch(0.78 0.11 85);
   -webkit-font-smoothing: antialiased;
@@ -34,10 +30,6 @@
 }
 
 @media (max-width: 560px) {
-  .identity {
-    max-width: 58vw;
-  }
-
   .identity-sub {
     display: none;
   }

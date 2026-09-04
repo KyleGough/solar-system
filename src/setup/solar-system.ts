@@ -8,7 +8,7 @@ export const createSolarSystem = (scene: THREE.Scene): SolarSystem => {
   const solarSystem: SolarSystem = {};
   let textureCount = 0;
 
-  const planets: Body[] = planetData;
+  const planets: Body[] = (planetData as Body[]).map((planet) => ({ ...planet }));
 
   for (const planet of planets) {
     const name = planet.name;

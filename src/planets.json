@@ -10,7 +10,8 @@
     "traversable": true,
     "textures": {
       "map": "./textures/sun.jpg"
-    }
+    },
+    "description": "The Sun is a G-type main-sequence star at the centre of the Solar System. It holds 99.8% of the system's mass and governs the orbits of every planet, moon, and small body."
   },
   {
     "name": "Mercury",
@@ -25,7 +26,8 @@
     "textures": {
       "map": "./textures/mercury.jpg",
       "bump": "./textures/mercury-bump.jpg"
-    }
+    },
+    "description": "Mercury is the smallest planet and the closest to the Sun. A cratered, airless world, it completes an 88-day orbit with days longer than its year."
   },
   {
     "name": "Venus",
@@ -40,11 +42,12 @@
     "textures": {
       "map": "./textures/venus.jpg",
       "bump": "./textures/venus-bump.jpg"
-    }
+    },
+    "description": "Venus is a rocky planet wrapped in a thick carbon-dioxide atmosphere. Surface temperatures are high enough to melt lead, hotter than Mercury despite the greater distance from the Sun."
   },
   {
     "name": "Earth",
-    "radius": 6371.0,
+    "radius": 6371,
     "distance": 152,
     "period": 365,
     "daylength": 24,
@@ -59,7 +62,8 @@
       "atmosphere": "./textures/earth-clouds.jpg",
       "atmosphereAlpha": "./textures/earth-clouds-alpha.jpg",
       "night": "./textures/earth-night.jpg"
-    }
+    },
+    "description": "Earth is the only known world with liquid-water oceans and life. A 23.4° axial tilt and a 24-hour rotation give rise to seasons and a protective magnetic field."
   },
   {
     "name": "Moon",
@@ -94,7 +98,8 @@
         "y": 3.06,
         "z": 0.67
       }
-    ]
+    ],
+    "description": "The Moon is Earth's only natural satellite, tidally locked so the same face always points home. Its dry, cratered surface still carries the marks of Apollo landings."
   },
   {
     "name": "Mars",
@@ -140,7 +145,8 @@
         "y": -0.8,
         "z": -0.1
       }
-    ]
+    ],
+    "description": "Mars is a cold desert planet with the tallest volcano and the longest canyon in the Solar System. Polar ice and ancient riverbeds hint at a wetter past."
   },
   {
     "name": "Jupiter",
@@ -161,7 +167,8 @@
         "y": -0.84,
         "z": -0.41
       }
-    ]
+    ],
+    "description": "Jupiter is the largest planet, a hydrogen-helium giant with a faint ring system. The Great Red Spot is an anticyclone wider than Earth, and four large Galilean moons orbit nearby."
   },
   {
     "name": "Saturn",
@@ -182,7 +189,8 @@
         "y": 0,
         "z": 1.57
       }
-    ]
+    ],
+    "description": "Saturn is a gas giant known for its broad, icy ring system. Low density and a hexagonal storm at the north pole set it apart from the other giants."
   },
   {
     "name": "Uranus",
@@ -196,7 +204,8 @@
     "traversable": true,
     "textures": {
       "map": "./textures/uranus.jpg"
-    }
+    },
+    "description": "Uranus is an ice giant that rolls on its side, with an axial tilt of about 82°. Methane in the atmosphere gives the planet its pale cyan colour."
   },
   {
     "name": "Neptune",
@@ -217,7 +226,8 @@
         "y": 0.21,
         "z": -0.18
       }
-    ]
+    ],
+    "description": "Neptune is the most distant planet, an ice giant with the strongest winds in the Solar System. The Great Dark Spot seen by Voyager 2 has since faded and reformed."
   },
   {
     "name": "Rings of Saturn",
@@ -245,7 +255,8 @@
     "traversable": true,
     "textures": {
       "map": "./textures/ganymede.jpg"
-    }
+    },
+    "description": "Ganymede is the largest moon in the Solar System, bigger than Mercury. An iron core and a likely subsurface ocean make it the only moon with its own magnetic field."
   },
   {
     "name": "Titan",
@@ -259,7 +270,8 @@
     "traversable": true,
     "textures": {
       "map": "./textures/titan.webp"
-    }
+    },
+    "description": "Titan is Saturn's largest moon and the only satellite with a dense atmosphere. Lakes and rivers of liquid methane run across a water-ice crust."
   },
   {
     "name": "Callisto",
@@ -273,7 +285,8 @@
     "traversable": true,
     "textures": {
       "map": "./textures/callisto.jpg"
-    }
+    },
+    "description": "Callisto is the outermost Galilean moon, a heavily cratered ice-rock body. It is the most geologically quiet of Jupiter's large moons."
   },
   {
     "name": "Io",
@@ -287,7 +300,8 @@
     "traversable": true,
     "textures": {
       "map": "./textures/io.jpg"
-    }
+    },
+    "description": "Io is the most volcanically active body in the Solar System. Jupiter's tides flex its interior, feeding hundreds of sulfur volcanoes."
   },
   {
     "name": "Europa",
@@ -301,7 +315,8 @@
     "traversable": true,
     "textures": {
       "map": "./textures/europa.jpg"
-    }
+    },
+    "description": "Europa is an ice-covered moon with a young, fractured crust. A global ocean of liquid water is thought to lie beneath, making it a prime target in the search for life."
   },
   {
     "name": "Triton",
@@ -315,6 +330,7 @@
     "traversable": true,
     "textures": {
       "map": "./textures/triton.jpg"
-    }
+    },
+    "description": "Triton is Neptune's largest moon and orbits backwards relative to Neptune's spin. Nitrogen geysers and a captured, Pluto-like composition suggest it was once a Kuiper Belt object."
   }
 ]

@@ -40,14 +40,28 @@
       </p>
     </div>
   </div>
-  <canvas class="webgl"></canvas>
-  <header class="identity">
-    <p class="identity-kicker" id="identity-kicker">Star</p>
-    <h1 id="identity-title">Sun</h1>
-    <p class="identity-sub" id="identity-sub">
-      Central star. Radius 432,000 km.
-    </p>
-  </header>
+  <canvas class="webgl" tabindex="-1"></canvas>
+  <div class="hud-end">
+    <header class="identity">
+      <p class="identity-kicker" id="identity-kicker">Star</p>
+      <h1 id="identity-title">Sun</h1>
+      <p class="identity-sub" id="identity-sub">
+        Central star. Radius 432,000 km.
+      </p>
+    </header>
+    <aside id="body-info" class="body-info" role="complementary" aria-label="Body information">
+      <div class="body-info-toolbar">
+        <button type="button" class="body-info-restore" id="body-info-restore" hidden>Info</button>
+        <button type="button" class="body-info-minimise" id="body-info-minimise" aria-label="Minimise">−</button>
+        <button type="button" class="body-info-close" id="body-info-close" aria-label="Close">×</button>
+      </div>
+      <div class="body-info-content">
+        <p class="body-info-kicker" id="body-info-kicker">Star</p>
+        <p class="body-info-blurb" id="body-info-blurb"></p>
+        <dl class="body-info-stats" id="body-info-stats"></dl>
+      </div>
+    </aside>
+  </div>
   <div class="btn-group">
     <a id="btn-github" href="https://github.com/KyleGough/solar-system" target="_blank"
       aria-label="View source" title="View source">

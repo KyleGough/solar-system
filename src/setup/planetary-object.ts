@@ -18,6 +18,7 @@ export interface Body {
   tilt: number;
   orbits?: string;
   labels?: PointOfInterest[];
+  description?: string;
   traversable: boolean;
   offset?: number;
 }

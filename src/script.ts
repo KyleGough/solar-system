@@ -8,6 +8,7 @@ import { createSolarSystem } from "./setup/solar-system";
 import { createGUI, options } from "./setup/gui";
 import { isIntroActive, onIntroDismiss } from "./setup/loading";
 import { updateIdentity } from "./setup/identity";
+import { createBodyInfo, updateBodyInfo } from "./setup/body-info";
 import { createSelectiveBloom } from "./setup/bloom";
 import { FocusTransition } from "./setup/focus-transition";
 import { createBodyPicker } from "./setup/body-pick";
@@ -23,7 +24,7 @@ THREE.ColorManagement.enabled = false;
 
 // Canvas
 const canvas = document.querySelector("canvas.webgl") as HTMLElement;
-const identityEl = document.querySelector(".identity") as HTMLElement;
+const hudEndEl = document.querySelector(".hud-end") as HTMLElement;
 const orbitNavEl = document.getElementById("orbit-nav") as HTMLElement;
 
 // Scene
@@ -69,6 +70,7 @@ if (urlFocus) {
   options.focus = urlFocus;
 }
 updateIdentity(options.focus);
+updateBodyInfo(options.focus);
 
 // Camera
 const aspect = sizes.width / sizes.height;
@@ -104,10 +106,11 @@ const swapFocusUi = (from: string, to: string) => {
   solarSystem[from].labels.hidePOI();
   solarSystem[to].labels.showPOI();
   updateIdentity(to);
+  updateBodyInfo(to);
 };
 
 const setUiOpacity = (opacity: number) => {
-  identityEl.style.opacity = String(opacity);
+  hudEndEl.style.opacity = String(opacity);
 };
 
 let orbitNav: ReturnType<typeof createOrbitalNav>;
@@ -136,6 +139,7 @@ const requestFocus = (name: string) => {
 
 orbitNav = createOrbitalNav(orbitNavEl, requestFocus);
 orbitNav.setFocus(options.focus);
+createBodyInfo(canvas, orbitNavEl);
 
 for (const object of Object.values(solarSystem)) {
   object.tick(0);
