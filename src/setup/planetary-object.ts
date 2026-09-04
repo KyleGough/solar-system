@@ -236,6 +236,6 @@ export class PlanetaryObject {
    * @returns the minimum orbital control camera distance allowed.
    */
   getMinDistance = (): number => {
-    return this.radius * 1.2;
+    return this.radius * 1.8;
   };
 }
