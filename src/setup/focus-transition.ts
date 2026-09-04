@@ -6,6 +6,8 @@ const MIN_DURATION = 0.6;
 const MAX_DURATION = 4.0;
 const MIN_DIST = 1;
 const MAX_DIST = 25;
+/** Just off the Y pole so lookAt and OrbitControls keep a stable azimuth. */
+const OVERHEAD_POLAR = 0.02;
 
 const easeInOut = (t: number): number => t * t * (3 - 2 * t);
 
@@ -42,6 +44,25 @@ const writeFocusOffset = (
   target.set(distance, distance / 3, 0);
 };
 
+const isOverheadFocus = (body: { type: string }): boolean => body.type === "star";
+
+const writeOverheadOffset = (
+  maxDistance: number,
+  destOffset: THREE.Vector3,
+  fromPos: THREE.Vector3,
+  lookAt: THREE.Vector3
+) => {
+  destOffset.subVectors(fromPos, lookAt);
+  destOffset.y = 0;
+  if (destOffset.lengthSq() < 1e-10) {
+    destOffset.set(0, 0, 1);
+  } else {
+    destOffset.normalize();
+  }
+  destOffset.multiplyScalar(maxDistance * Math.sin(OVERHEAD_POLAR));
+  destOffset.y = maxDistance * Math.cos(OVERHEAD_POLAR);
+};
+
 export class FocusTransition {
   private flight: Flight | null = null;
   private rideSpin = false;
@@ -52,6 +73,8 @@ export class FocusTransition {
   private readonly destLookAt = new THREE.Vector3();
   private readonly destOffset = new THREE.Vector3();
   private readonly destUp = new THREE.Vector3();
+  private readonly startQuat = new THREE.Quaternion();
+  private readonly destQuat = new THREE.Quaternion();
   private readonly currentLookAt = new THREE.Vector3();
   private readonly offset = new THREE.Vector3();
   private readonly worldTarget = new THREE.Vector3();
@@ -126,11 +149,22 @@ export class FocusTransition {
       this.detachToWorld();
     }
 
-    writeFocusOffset(toBody, this.offset);
     toBody.mesh.updateWorldMatrix(true, false);
-    toBody.mesh.localToWorld(this.destPos.copy(this.offset));
     toBody.mesh.getWorldPosition(this.destLookAt);
-    this.destOffset.subVectors(this.destPos, this.destLookAt);
+    if (isOverheadFocus(toBody)) {
+      writeOverheadOffset(
+        this.controls.maxDistance,
+        this.destOffset,
+        this.startPos,
+        this.destLookAt
+      );
+      this.destPos.addVectors(this.destLookAt, this.destOffset);
+      this.destUp.set(0, 1, 0);
+    } else {
+      writeFocusOffset(toBody, this.offset);
+      toBody.mesh.localToWorld(this.destPos.copy(this.offset));
+      this.destOffset.subVectors(this.destPos, this.destLookAt);
+    }
     const distance = this.startPos.distanceTo(this.destPos);
 
     this.flight = {
@@ -143,9 +177,18 @@ export class FocusTransition {
 
     this.controls.enabled = false;
     this.currentLookAt.copy(this.startLookAt);
+
+    if (isOverheadFocus(toBody)) {
+      this.camera.position.copy(this.destPos);
+      this.camera.up.copy(this.destUp);
+      this.camera.lookAt(this.destLookAt);
+      this.destQuat.copy(this.camera.quaternion);
+    }
+
     this.camera.position.copy(this.startPos);
     this.camera.up.copy(this.startUp);
     this.camera.lookAt(this.currentLookAt);
+    this.startQuat.copy(this.camera.quaternion);
 
     return true;
   };
@@ -166,10 +209,15 @@ export class FocusTransition {
     toBody.mesh.updateWorldMatrix(true, false);
     toBody.mesh.getWorldPosition(this.destLookAt);
     this.destPos.addVectors(this.destLookAt, this.destOffset);
-    this.destUp
-      .set(0, 1, 0)
-      .transformDirection(toBody.mesh.matrixWorld)
-      .normalize();
+    const overhead = isOverheadFocus(toBody);
+    if (overhead) {
+      this.destUp.set(0, 1, 0);
+    } else {
+      this.destUp
+        .set(0, 1, 0)
+        .transformDirection(toBody.mesh.matrixWorld)
+        .normalize();
+    }
 
     this.flight.elapsed += dt;
     const progress = Math.min(1, this.flight.elapsed / this.flight.duration);
@@ -178,7 +226,15 @@ export class FocusTransition {
     this.camera.position.lerpVectors(this.startPos, this.destPos, eased);
     this.currentLookAt.lerpVectors(this.startLookAt, this.destLookAt, eased);
     this.camera.up.lerpVectors(this.startUp, this.destUp, eased).normalize();
-    this.camera.lookAt(this.currentLookAt);
+    if (overhead) {
+      this.camera.quaternion.slerpQuaternions(
+        this.startQuat,
+        this.destQuat,
+        eased
+      );
+    } else {
+      this.camera.lookAt(this.currentLookAt);
+    }
 
     const justCrossedMidpoint = !this.flight.swapped && progress >= 0.5;
     if (justCrossedMidpoint) {
@@ -215,6 +271,8 @@ export class FocusTransition {
     this.controls.minDistance = toBody.getMinDistance();
     this.applyRig(this.flight.to);
     this.controls.enabled = true;
+    this.controls.update();
+    this.camera.copy(this.fakeCamera);
     this.flight = null;
   };
 
@@ -225,13 +283,24 @@ export class FocusTransition {
   snapTo = (name: string): void => {
     const body = this.solarSystem[name];
     body.mesh.updateWorldMatrix(true, false);
-    writeFocusOffset(body, this.offset);
-    body.mesh.localToWorld(this.camera.position.copy(this.offset));
     body.mesh.getWorldPosition(this.worldTarget);
-    this.camera.up
-      .set(0, 1, 0)
-      .transformDirection(body.mesh.matrixWorld)
-      .normalize();
+    if (isOverheadFocus(body)) {
+      writeOverheadOffset(
+        this.controls.maxDistance,
+        this.offset,
+        this.camera.position,
+        this.worldTarget
+      );
+      this.camera.position.addVectors(this.worldTarget, this.offset);
+      this.camera.up.set(0, 1, 0);
+    } else {
+      writeFocusOffset(body, this.offset);
+      body.mesh.localToWorld(this.camera.position.copy(this.offset));
+      this.camera.up
+        .set(0, 1, 0)
+        .transformDirection(body.mesh.matrixWorld)
+        .normalize();
+    }
     this.camera.lookAt(this.worldTarget);
     this.controls.minDistance = body.getMinDistance();
     this.applyRig(name);

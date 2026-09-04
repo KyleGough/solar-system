@@ -87,8 +87,9 @@ updateBodyInfo(options.focus);
 
 // Camera
 const aspect = sizes.width / sizes.height;
+const MAX_CAMERA_DISTANCE = 50;
 const camera = new THREE.PerspectiveCamera(75, aspect, 0.008, 1000);
-camera.position.set(0, 20, 0);
+camera.position.set(0, MAX_CAMERA_DISTANCE, 0);
 camera.layers.enable(LAYERS.POILabel);
 camera.layers.enable(LAYERS.SUN_SPOT);
 scene.add(camera);
@@ -104,7 +105,7 @@ onIntroDismiss(() => {
   controls.enabled = true;
 });
 controls.minDistance = solarSystem["Sun"].getMinDistance();
-controls.maxDistance = 50;
+controls.maxDistance = MAX_CAMERA_DISTANCE;
 
 const focusTransition = new FocusTransition(
   scene,
