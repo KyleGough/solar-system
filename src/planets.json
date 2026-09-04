@@ -257,7 +257,9 @@
         "name": "Great Dark Spot",
         "y": 0.21,
         "z": -0.18,
-        "fact": "Storm imaged by Voyager 2 in 1989; similar ovals have since come and gone."
+        "fact": "Intermittent anticyclonic storms with a shorter lifetime than Jupiter's spots, forming and dissipating once every few years or so.",
+        "image": "./images/great-dark-spot.jpg",
+        "imageAlt": "Neptune's Great Dark Spot"
       }
     ],
     "description": "Neptune is the most distant planet, an ice giant with the strongest winds in the Solar System. The Great Dark Spot seen by Voyager 2 has since faded and reformed."
