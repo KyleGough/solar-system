@@ -1,19 +1,15 @@
 import * as dat from "lil-gui";
-import { SolarSystem } from "./solar-system";
 import { LAYERS } from "../constants";
 import { isIntroActive } from "./loading";
 
 export const options = {
   showPaths: true,
-  showMoons: true,
   focus: "Sun",
   clock: true,
   speed: 0.125,
 };
 
 export const createGUI = (
-  ambientLight: THREE.AmbientLight,
-  solarSystem: SolarSystem,
   clock: THREE.Clock,
   camera: THREE.Camera,
   onRideSpin?: (ride: boolean) => void
@@ -37,7 +33,6 @@ export const createGUI = (
 
   const setToggle = (button: HTMLElement, on: boolean) => {
     button.setAttribute("aria-pressed", String(on));
-    button.classList.toggle("is-active", on);
   };
 
   const labelsButton = document.getElementById("btn-labels");

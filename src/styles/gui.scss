@@ -106,17 +106,9 @@
     0 0 0 3px var(--hud-brass);
 }
 
-.hud-ctrl.is-active .hud-ctrl-disc,
 .hud-ctrl[aria-pressed="true"] .hud-ctrl-disc {
   color: var(--hud-brass);
   transform: scale(1.18);
-  box-shadow:
-    0 0 0 2px var(--hud-ink),
-    0 0 0 3px var(--hud-brass);
-}
-
-.hud-ctrl.is-active:focus-visible .hud-ctrl-disc,
-.hud-ctrl[aria-pressed="true"]:focus-visible .hud-ctrl-disc {
   box-shadow:
     0 0 0 2px var(--hud-ink),
     0 0 0 3px var(--hud-brass);
@@ -146,9 +138,7 @@
   opacity: 1;
 }
 
-.hud-ctrl.is-active:hover .hud-ctrl-label,
 .hud-ctrl[aria-pressed="true"]:hover .hud-ctrl-label,
-.hud-ctrl.is-active:focus-visible .hud-ctrl-label,
 .hud-ctrl[aria-pressed="true"]:focus-visible .hud-ctrl-label {
   color: var(--hud-brass);
 }

@@ -58,7 +58,7 @@ const oklchToSrgb = (l: number, c: number, hDeg: number): THREE.Color => {
   return new THREE.Color(toSrgb(r), toSrgb(g), toSrgb(bl));
 };
 
-export const bodyColorCss = (name: string): string =>
+const bodyColorCss = (name: string): string =>
   (BODY_SWATCH[name] ?? FALLBACK_SWATCH).color;
 
 export const bodyColorThree = (name: string): THREE.Color => {

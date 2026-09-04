@@ -130,11 +130,6 @@ const forLocalMeshes = (
   };
 
   solarSystem[hostName].mesh.traverse(visitMesh);
-  for (const child of Object.values(solarSystem)) {
-    if (child.orbits === hostName) {
-      child.mesh.traverse(visitMesh);
-    }
-  }
 };
 
 const setSpotLit = (

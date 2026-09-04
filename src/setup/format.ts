@@ -8,16 +8,6 @@ export const formatDistance = (millionKm: number): string => {
   return `${millionKm.toLocaleString("en-GB")} million km`;
 };
 
-export const formatPeriod = (days: number): string => {
-  const abs = Math.abs(days);
-  if (abs >= 365) {
-    const years = abs / 365.25;
-    const rounded = years >= 10 ? years.toFixed(0) : years.toFixed(1);
-    return retrograde(`${rounded} year orbit`, days);
-  }
-  return retrograde(`${Math.round(abs)} day orbit`, days);
-};
-
 export const formatPeriodDuration = (days: number): string => {
   const abs = Math.abs(days);
   if (abs >= 365) {
