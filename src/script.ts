@@ -9,6 +9,7 @@ import { createLights } from "./setup/lights";
 import { createStarfield } from "./setup/starfield";
 import { createSolarSystem } from "./setup/solar-system";
 import { createGUI, options } from "./setup/gui";
+import { updateIdentity } from "./setup/identity";
 import { LAYERS } from "./constants";
 
 THREE.ColorManagement.enabled = false;
@@ -67,6 +68,7 @@ document.getElementById("btn-next")?.addEventListener("click", () => {
 
 // Solar system
 const [solarSystem, planetNames] = createSolarSystem(scene);
+updateIdentity(options.focus);
 
 const changeFocus = (oldFocus: string, newFocus: string) => {
   solarSystem[oldFocus].mesh.remove(camera);
@@ -77,6 +79,7 @@ const changeFocus = (oldFocus: string, newFocus: string) => {
   solarSystem[oldFocus].labels.hidePOI();
   solarSystem[newFocus].labels.showPOI();
   (document.querySelector(".caption p") as HTMLElement).innerHTML = newFocus;
+  updateIdentity(newFocus);
 };
 
 // Camera

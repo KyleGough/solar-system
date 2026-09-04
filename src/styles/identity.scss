@@ -1,0 +1,51 @@
+.identity {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  max-width: none;
+  text-align: right;
+  pointer-events: none;
+  z-index: 2;
+  font-family: "IBM Plex Sans", ui-sans-serif, system-ui, sans-serif;
+  color: oklch(0.92 0.025 85);
+  -webkit-font-smoothing: antialiased;
+}
+
+.identity-kicker,
+.identity-sub {
+  font-size: 0.6875rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: oklch(0.7 0.03 70);
+}
+
+.identity h1 {
+  margin: 6px 0 0;
+  font-size: 1.25rem;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  line-height: 1.2;
+}
+
+.identity-sub {
+  margin-top: 8px;
+  text-transform: none;
+  letter-spacing: 0.02em;
+  max-width: none;
+  margin-left: auto;
+  white-space: nowrap;
+}
+
+@media (max-width: 560px) {
+  .identity {
+    max-width: 58vw;
+  }
+
+  .identity-sub {
+    display: none;
+  }
+
+  .identity h1 {
+    font-size: 1.05rem;
+  }
+}

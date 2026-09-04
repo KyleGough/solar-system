@@ -1,7 +1,8 @@
 @use "./styles/animation.scss";
 @use "./styles/gui.scss";
+@use "./styles/identity.scss";
 @use "./styles/label.scss";
-@use "./styles//loading-screen.scss";
+@use "./styles/loading-screen.scss";
 
 * {
   margin: 0;
