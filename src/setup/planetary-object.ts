@@ -2,6 +2,7 @@ import * as THREE from "three";
 import { createRingMesh } from "./rings";
 import { createPath } from "./path";
 import { loadTexture } from "./textures";
+import { applyNightLights } from "./night-lights";
 import { Label } from "./label";
 import { PointOfInterest } from "./label";
 import { LAYERS } from "../constants";
@@ -27,6 +28,7 @@ interface TexturePaths {
   atmosphere?: string;
   atmosphereAlpha?: string;
   specular?: string;
+  night?: string;
 }
 
 interface Atmosphere {
@@ -62,6 +64,7 @@ export class PlanetaryObject {
   map!: THREE.Texture;
   bumpMap?: THREE.Texture;
   specularMap?: THREE.Texture;
+  nightMap?: THREE.Texture;
   atmosphere: Atmosphere = {};
   labels!: Label;
 
@@ -122,6 +125,9 @@ export class PlanetaryObject {
     if (textures.specular) {
       this.specularMap = loadTexture(textures.specular);
     }
+    if (textures.night) {
+      this.nightMap = loadTexture(textures.night);
+    }
     if (textures.atmosphere) {
       this.atmosphere.map = loadTexture(textures.atmosphere);
     }
@@ -161,6 +167,10 @@ export class PlanetaryObject {
 
       if (this.specularMap) {
         material.specularMap = this.specularMap;
+      }
+
+      if (this.nightMap) {
+        applyNightLights(material, this.nightMap);
       }
     }
 

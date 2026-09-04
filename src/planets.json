@@ -57,7 +57,8 @@
       "bump": "./textures/earth-bump.jpg",
       "specular": "./textures/earth-specular.jpg",
       "atmosphere": "./textures/earth-clouds.jpg",
-      "atmosphereAlpha": "./textures/earth-clouds-alpha.jpg"
+      "atmosphereAlpha": "./textures/earth-clouds-alpha.jpg",
+      "night": "./textures/earth-night.jpg"
     }
   },
   {
