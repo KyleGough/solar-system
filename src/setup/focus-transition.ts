@@ -17,7 +17,7 @@ const durationFromDistance = (distance: number): number => {
   return MIN_DURATION + t * (MAX_DURATION - MIN_DURATION);
 };
 
-export type FocusFlightFrame = {
+type FocusFlightFrame = {
   active: boolean;
   progress: number;
   from: string;

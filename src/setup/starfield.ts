@@ -39,6 +39,5 @@ export const createStarfield = (): THREE.Points => {
 
   const stars = new THREE.Points(geometry, material);
   stars.frustumCulled = false;
-  stars.name = "starfield";
   return stars;
 };

@@ -2,14 +2,12 @@
   position: absolute;
   top: 20px;
   right: 20px;
-  max-width: none;
   text-align: right;
   pointer-events: none;
   z-index: 2;
   font-family: "IBM Plex Sans", ui-sans-serif, system-ui, sans-serif;
   color: oklch(0.78 0.11 85);
   -webkit-font-smoothing: antialiased;
-  opacity: 1;
 }
 
 .identity-kicker,
@@ -32,8 +30,6 @@
   margin-top: 8px;
   text-transform: none;
   letter-spacing: 0.02em;
-  max-width: none;
-  margin-left: auto;
   white-space: nowrap;
 }
 

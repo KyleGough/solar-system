@@ -101,7 +101,7 @@ const createBodyButton = (body: Body, extraClass = ""): HTMLButtonElement => {
   return button;
 };
 
-export type OrbitNav = {
+type OrbitNav = {
   setFocus: (name: string) => void;
 };
 

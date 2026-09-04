@@ -140,7 +140,6 @@ export class PlanetaryObject {
     if (this.type === "star") {
       material = new THREE.MeshBasicMaterial({
         map: this.map,
-        lightMapIntensity: 2,
         toneMapped: false,
         color: new THREE.Color(2.5, 2.5, 2.5),
       });

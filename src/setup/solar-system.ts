@@ -1,18 +1,14 @@
-import { PlanetaryObject } from "./planetary-object";
 import planetData from "../planets.json";
-import { Body } from "./planetary-object";
+import { Body, PlanetaryObject } from "./planetary-object";
 import { setTextureCount } from "./textures";
 
 export type SolarSystem = Record<string, PlanetaryObject>;
 
-export const createSolarSystem = (
-  scene: THREE.Scene
-): [SolarSystem, string[]] => {
+export const createSolarSystem = (scene: THREE.Scene): SolarSystem => {
   const solarSystem: SolarSystem = {};
   let textureCount = 0;
 
   const planets: Body[] = planetData;
-  const traversable: string[] = [];
 
   for (const planet of planets) {
     const name = planet.name;
@@ -22,7 +18,6 @@ export const createSolarSystem = (
     }
 
     const object = new PlanetaryObject(planet);
-    object.mesh.name = name;
     object.mesh.userData.bodyName = name;
     object.mesh.userData.traversable = planet.traversable;
     if (object.path) {
@@ -38,14 +33,10 @@ export const createSolarSystem = (
       parentMesh.add(object.mesh);
       object.path && parentMesh.add(object.path);
     }
-
-    if (planet.traversable) {
-      traversable.push(planet.name);
-    }
   }
 
   scene.add(solarSystem["Sun"].mesh);
   setTextureCount(textureCount);
 
-  return [solarSystem, traversable];
+  return solarSystem;
 };

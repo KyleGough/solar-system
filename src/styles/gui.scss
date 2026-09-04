@@ -6,23 +6,16 @@
   justify-content: center;
   width: 100%;
   gap: 0.5rem;
-  fill: white;
 }
 
 .btn-group button,
 .btn-group a {
   background-color: transparent;
-  color: white;
   border: none;
   cursor: pointer;
-  transition: color 0.1s ease;
   fill: white;
 
   &:hover {
     fill: gainsboro;
   }
-}
-
-#btn-github {
-  display: inline-block;
 }

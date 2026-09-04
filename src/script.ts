@@ -58,7 +58,7 @@ window.addEventListener("resize", () => {
 });
 
 // Solar system
-const [solarSystem] = createSolarSystem(scene);
+const solarSystem = createSolarSystem(scene);
 updateIdentity(options.focus);
 
 // Camera
