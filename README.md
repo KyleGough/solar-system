@@ -12,7 +12,7 @@
 - Moons
 - POI labels
 - Custom controls
-- Orbit paths
+- Orbit trails
 - Sun bloom effect
 
 ## Planned changes

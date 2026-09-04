@@ -17,6 +17,8 @@ import { createSelectiveBloom } from "./setup/bloom";
 import { FocusTransition } from "./setup/focus-transition";
 import { createBodyPicker } from "./setup/body-pick";
 import { createOrbitalNav } from "./setup/orbital-nav";
+import { updateOrbitTrails } from "./setup/orbit-trails";
+import { setTrailResolution } from "./setup/path";
 import {
   onFocusUrlChange,
   readFocusFromUrl,
@@ -68,6 +70,7 @@ window.addEventListener("resize", () => {
   // Update renderers
   renderer.setSize(sizes.width, sizes.height);
   renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+  setTrailResolution(sizes.width, sizes.height);
   selectiveBloom.setSize(sizes.width, sizes.height);
   labelRenderer.setSize(sizes.width, sizes.height);
 });
@@ -220,6 +223,7 @@ const renderer = new THREE.WebGLRenderer({
 renderer.outputColorSpace = THREE.LinearSRGBColorSpace;
 renderer.setSize(sizes.width, sizes.height);
 renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+setTrailResolution(sizes.width, sizes.height);
 renderer.shadowMap.enabled = true;
 renderer.shadowMap.type = THREE.VSMShadowMap;
 
@@ -273,6 +277,15 @@ createGUI(lights.ambientLight, solarSystem, clock, fakeCamera, (ride) => {
   camera.updateMatrixWorld();
   updateSunShadows(lights, solarSystem, options.focus, camera);
   starfield.position.copy(camera.getWorldPosition(starfieldCenter));
+
+  updateOrbitTrails(solarSystem, wallDt, {
+    showAll: options.showPaths,
+    focus: options.focus,
+    flying: frame.active && !frame.justFinished,
+    from: frame.from,
+    to: frame.to,
+    justFinished: frame.justFinished,
+  });
 
   if (frame.justCrossedMidpoint || frame.justFinished) {
     swapFocusUi(frame.from, frame.to);

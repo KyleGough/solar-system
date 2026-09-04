@@ -52,13 +52,6 @@ export const createGUI = (
     if (isIntroActive()) return;
     options.showPaths = !options.showPaths;
     setToggle(pathsButton, options.showPaths);
-
-    for (const name in solarSystem) {
-      const object = solarSystem[name];
-      if (object.path) {
-        object.path.visible = options.showPaths;
-      }
-    }
   });
 
   const spinButton = document.getElementById("btn-spin");

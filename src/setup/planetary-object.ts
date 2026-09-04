@@ -60,7 +60,7 @@ export class PlanetaryObject {
   type: string;
   tilt: number; // degrees
   mesh: THREE.Mesh;
-  path?: THREE.Line;
+  path?: THREE.Mesh;
   rng: number;
   map!: THREE.Texture;
   bumpMap?: THREE.Texture;
@@ -89,8 +89,8 @@ export class PlanetaryObject {
 
     this.mesh = this.createMesh(parent);
 
-    if (this.orbits) {
-      this.path = createPath(this.distance);
+    if (this.orbits && this.distance > 0 && type !== "ring") {
+      this.path = createPath(this.distance, this.radius, body.name);
     }
 
     if (this.atmosphere.map) {
@@ -231,6 +231,9 @@ export class PlanetaryObject {
     // Circular rotation around orbit.
     this.mesh.position.x = Math.sin(orbit) * this.distance;
     this.mesh.position.z = Math.cos(orbit) * this.distance;
+    if (this.path) {
+      this.path.rotation.y = orbit;
+    }
 
     if (this.type === "ring") {
       this.mesh.rotation.z = rotation;
