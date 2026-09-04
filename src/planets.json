@@ -113,13 +113,6 @@
         "fact": "108 million year old crater with a diameter of 85km discovered by Tycho Brahe.",
         "image": "./images/tycho-crater.jpg",
         "imageAlt": "Overhead view of Tycho Crater"
-      },
-      {
-        "name": "Yutu-2",
-        "type": "rover",
-        "y": 3.06,
-        "z": 0.67,
-        "fact": "Chang'e 4 rover, first to operate on the lunar far side."
       }
     ],
     "description": "The Moon is Earth's only natural satellite, tidally locked so the same face always points home. Its dry, cratered surface still carries the marks of Apollo landings."
@@ -196,7 +189,9 @@
         "name": "Great Red Spot",
         "y": -0.84,
         "z": -0.41,
-        "fact": "Anticyclone wider than Earth, observed for centuries."
+        "fact": "Persistent anticyclonic storm that produces wind speeds up to 496 km/h. It was first observed in 1831.",
+        "image": "./images/great-red-spot.jpg",
+        "imageAlt": "Jupiter's Great Red Spot"
       }
     ],
     "description": "Jupiter is the largest planet, a hydrogen-helium giant with a faint ring system. The Great Red Spot is an anticyclone wider than Earth, and four large Galilean moons orbit nearby."
