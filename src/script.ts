@@ -66,12 +66,12 @@ const aspect = sizes.width / sizes.height;
 const camera = new THREE.PerspectiveCamera(75, aspect, 0.008, 1000);
 camera.position.set(0, 20, 0);
 camera.layers.enable(LAYERS.POILabel);
-solarSystem["Sun"].mesh.add(camera);
+scene.add(camera);
 
 // Controls
 const fakeCamera = camera.clone();
 const controls = new OrbitControls(fakeCamera, canvas);
-controls.target = solarSystem["Sun"].mesh.position;
+controls.target = new THREE.Vector3();
 controls.enableDamping = true;
 controls.enablePan = false;
 controls.enabled = false;
@@ -182,7 +182,9 @@ let lastWall = performance.now();
 fakeCamera.layers.enable(LAYERS.POILabel);
 
 // GUI
-createGUI(ambientLight, solarSystem, clock, fakeCamera);
+createGUI(ambientLight, solarSystem, clock, fakeCamera, (ride) => {
+  focusTransition.setRideSpin(ride, options.focus);
+});
 
 (function tick() {
   const wall = performance.now();
@@ -209,6 +211,7 @@ createGUI(ambientLight, solarSystem, clock, fakeCamera);
       };
 
   if (!focusTransition.isActive()) {
+    focusTransition.follow(options.focus);
     camera.copy(fakeCamera);
   }
   // Keep updating while flying so leftover orbit damping decays instead of
@@ -239,7 +242,11 @@ createGUI(ambientLight, solarSystem, clock, fakeCamera);
     if (frame.justFinished) {
       setUiOpacity(1);
     }
-    solarSystem[options.focus].labels.update(fakeCamera.position);
+    const labelBody = solarSystem[options.focus];
+    camera.getWorldPosition(labelWorldPos);
+    labelLocalPos.copy(labelWorldPos);
+    labelBody.mesh.worldToLocal(labelLocalPos);
+    labelBody.labels.update(labelLocalPos);
   }
 
   // Render

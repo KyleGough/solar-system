@@ -15,7 +15,8 @@ export const createGUI = (
   ambientLight: THREE.AmbientLight,
   solarSystem: SolarSystem,
   clock: THREE.Clock,
-  camera: THREE.Camera
+  camera: THREE.Camera,
+  onRideSpin?: (ride: boolean) => void
 ) => {
   const gui = new dat.GUI();
 
@@ -50,6 +51,17 @@ export const createGUI = (
       }
     }
   });
+
+  const spinButton = document.getElementById("btn-spin");
+  if (spinButton) {
+    spinButton.addEventListener("click", () => {
+      if (isIntroActive()) return;
+      const ride = spinButton.getAttribute("aria-pressed") !== "true";
+      spinButton.setAttribute("aria-pressed", String(ride));
+      spinButton.classList.toggle("is-active", ride);
+      onRideSpin?.(ride);
+    });
+  }
 
   // Toggle GUI panel
   document.getElementById("btn-settings")?.addEventListener("click", () => {

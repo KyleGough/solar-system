@@ -18,4 +18,9 @@
   &:hover {
     fill: gainsboro;
   }
+
+  &.is-active,
+  &[aria-pressed="true"] {
+    fill: oklch(0.78 0.11 85);
+  }
 }
