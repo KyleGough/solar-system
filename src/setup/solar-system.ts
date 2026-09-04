@@ -1,18 +1,14 @@
-import { PlanetaryObject } from "./planetary-object";
 import planetData from "../planets.json";
-import { Body } from "./planetary-object";
+import { Body, PlanetaryObject } from "./planetary-object";
 import { setTextureCount } from "./textures";
 
 export type SolarSystem = Record<string, PlanetaryObject>;
 
-export const createSolarSystem = (
-  scene: THREE.Scene
-): [SolarSystem, string[]] => {
+export const createSolarSystem = (scene: THREE.Scene): SolarSystem => {
   const solarSystem: SolarSystem = {};
   let textureCount = 0;
 
-  const planets: Body[] = planetData;
-  const traversable: string[] = [];
+  const planets: Body[] = (planetData as Body[]).map((planet) => ({ ...planet }));
 
   for (const planet of planets) {
     const name = planet.name;
@@ -21,7 +17,13 @@ export const createSolarSystem = (
       planet.period = planet.daylength / solarSystem[planet.orbits].daylength;
     }
 
-    const object = new PlanetaryObject(planet);
+    const parent = planet.orbits ? solarSystem[planet.orbits] : undefined;
+    const object = new PlanetaryObject(planet, parent);
+    object.mesh.userData.bodyName = name;
+    object.mesh.userData.traversable = planet.traversable;
+    if (object.path) {
+      object.path.userData.ignorePick = true;
+    }
 
     solarSystem[name] = object;
 
@@ -32,14 +34,10 @@ export const createSolarSystem = (
       parentMesh.add(object.mesh);
       object.path && parentMesh.add(object.path);
     }
-
-    if (planet.traversable) {
-      traversable.push(planet.name);
-    }
   }
 
   scene.add(solarSystem["Sun"].mesh);
   setTextureCount(textureCount);
 
-  return [solarSystem, traversable];
+  return solarSystem;
 };

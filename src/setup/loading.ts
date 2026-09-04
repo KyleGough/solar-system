@@ -1,4 +1,3 @@
-// List of prompts to display whilst loading textures.
 const loadingPrompts = [
   "Detecting neutrinos",
   "Forming event horizons",
@@ -11,41 +10,136 @@ const loadingPrompts = [
   "Increasing entropy",
 ];
 
-// Switch loading screen text every 2 seconds.
+const BACKGROUND_SELECTORS = [
+  ".webgl",
+  ".hud-end",
+  ".btn-group",
+  ".orbit-nav",
+];
+
+let introActive = true;
+let ready = false;
+const dismissCallbacks: Array<() => void> = [];
+
+const overlay = () => document.getElementById("intro");
+
+const setBackgroundInert = (inert: boolean) => {
+  for (const selector of BACKGROUND_SELECTORS) {
+    const el = document.querySelector(selector);
+    if (!el) continue;
+    if (inert) {
+      el.setAttribute("inert", "");
+    } else {
+      el.removeAttribute("inert");
+    }
+  }
+};
+
+setBackgroundInert(true);
+document.body.classList.add("intro-open");
+
 const switchLoadText = setInterval(() => {
+  if (ready) return;
+  const loadText = document.getElementById("loader-text");
+  if (!loadText) return;
   const index = Math.floor(Math.random() * loadingPrompts.length);
-  const loadText = document.getElementById("loader-text") as HTMLDivElement;
   loadText.textContent = `${loadingPrompts[index]}...`;
 }, 2000);
 
+export const isIntroActive = () => introActive;
+
+export const onIntroDismiss = (callback: () => void) => {
+  if (!introActive) {
+    callback();
+    return;
+  }
+  dismissCallbacks.push(callback);
+};
+
+export const setLoadProgress = (percent: number) => {
+  const clamped = Math.max(0, Math.min(100, percent));
+  const percentageEl = document.getElementById("loader-percentage");
+  const fillEl = document.getElementById("loader-bar-fill") as HTMLElement | null;
+  const barEl = document.getElementById("loader-bar");
+
+  if (percentageEl) {
+    percentageEl.textContent = `${clamped.toFixed(0)}%`;
+  }
+  if (fillEl) {
+    fillEl.style.width = `${clamped}%`;
+  }
+  if (barEl) {
+    barEl.setAttribute("aria-valuenow", String(Math.round(clamped)));
+  }
+};
+
+const prefersReducedMotion = () =>
+  window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+const dismissIntro = () => {
+  if (!introActive || !ready) return;
+
+  introActive = false;
+  const loadContainer = overlay();
+  if (!loadContainer) return;
+
+  loadContainer.style.pointerEvents = "none";
+  loadContainer.removeEventListener("click", dismissIntro);
+  window.removeEventListener("keydown", onKeyDismiss);
+
+  const finish = () => {
+    loadContainer.hidden = true;
+    document.body.classList.remove("intro-open");
+    setBackgroundInert(false);
+    for (const callback of dismissCallbacks) {
+      callback();
+    }
+    dismissCallbacks.length = 0;
+  };
+
+  if (prefersReducedMotion()) {
+    finish();
+    return;
+  }
+
+  const animation = loadContainer.animate(
+    { opacity: [1, 0] },
+    {
+      duration: 200,
+      easing: "cubic-bezier(0.25, 1, 0.5, 1)",
+      fill: "forwards",
+    }
+  );
+  animation.onfinish = finish;
+};
+
+const onKeyDismiss = (event: KeyboardEvent) => {
+  if (!ready || !introActive) return;
+  if (event.key === "Enter" || event.key === " " || event.key === "Escape") {
+    event.preventDefault();
+    dismissIntro();
+  }
+};
+
 /**
- * Updates the loading screen once textures are loaded.
+ * Marks textures as loaded and allows the intro panel to be dismissed.
  */
 export const onLoaded = () => {
+  ready = true;
   clearInterval(switchLoadText);
-  const loadText = document.getElementById("loader-text") as HTMLDivElement;
-  loadText.textContent = "Click to continue...";
+  setLoadProgress(100);
 
-  const loadIcon = document.getElementById("loader-circle") as HTMLDivElement;
-  const svg = loadIcon.children[0] as HTMLElement;
-  svg.style.animation = "none";
+  const loadText = document.getElementById("loader-text");
+  if (loadText) {
+    loadText.textContent = "Ready";
+  }
 
-  const loadContainer = document.getElementById("loading") as HTMLDivElement;
+  const loadContainer = overlay();
+  if (!loadContainer) return;
+  loadContainer.classList.add("is-ready");
+  loadContainer.setAttribute("aria-busy", "false");
   loadContainer.style.cursor = "pointer";
-
-  loadContainer.addEventListener("click", () => {
-    loadContainer.style.pointerEvents = "none";
-    const animation = loadContainer.animate(
-      { opacity: [1, 0], transform: ["scale(1)", "scale(0.75)"] },
-      {
-        duration: 750,
-        easing: "ease",
-        fill: "forwards",
-      }
-    );
-
-    animation.onfinish = () => {
-      loadContainer.style.display = "none";
-    };
-  });
+  document.getElementById("intro-hint")?.removeAttribute("aria-hidden");
+  loadContainer.addEventListener("click", dismissIntro);
+  window.addEventListener("keydown", onKeyDismiss);
 };

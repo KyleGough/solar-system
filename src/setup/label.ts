@@ -72,13 +72,17 @@ export class Label {
 
   /**
    * Update label opacities depending on camera position and direction.
-   * @param camera - Camera used to calculate distance and direction to labels.
+   * @param localCameraPosition - Camera position in the parent body's local space.
+   * @param fadeMultiplier - Extra 0–1 fade applied on top of geometric opacity.
    */
-  update = (camera: THREE.Camera) => {
+  update = (localCameraPosition: THREE.Vector3, fadeMultiplier = 1) => {
     this.elements.forEach((label) => {
-      const rotationOpacity = this.getRotationOpacity(camera, label);
-      const distanceOpacity = this.getDistanceOpacity(camera);
-      const opacity = rotationOpacity * distanceOpacity;
+      const rotationOpacity = this.getRotationOpacity(
+        localCameraPosition,
+        label
+      );
+      const distanceOpacity = this.getDistanceOpacity(localCameraPosition);
+      const opacity = rotationOpacity * distanceOpacity * fadeMultiplier;
       label.element.style.opacity = opacity.toString();
     });
   };
@@ -91,16 +95,18 @@ export class Label {
   };
 
   private getRotationOpacity = (
-    camera: THREE.Camera,
+    localCameraPosition: THREE.Vector3,
     label: CSS2DObject
   ): number => {
     const hideThreshold = 1;
     const fadeThreshold = 0.75;
 
     // Calculates the great-circle distance between the camera and label with normalised vectors.
-    const cameraVector = camera.position.clone().normalize();
+    const cameraVector = localCameraPosition.clone().normalize();
     const labelVector = label.position.clone().normalize();
-    const delta = Math.acos(cameraVector.dot(labelVector));
+    const delta = Math.acos(
+      Math.min(1, Math.max(-1, cameraVector.dot(labelVector)))
+    );
 
     if (delta > hideThreshold) {
       return 0;
@@ -111,10 +117,10 @@ export class Label {
     }
   };
 
-  private getDistanceOpacity = (camera: THREE.Camera): number => {
+  private getDistanceOpacity = (localCameraPosition: THREE.Vector3): number => {
     const hideThreshold = this.radius * 12;
     const fadeThreshold = this.radius * 8;
-    const distance = camera.position.length();
+    const distance = localCameraPosition.length();
 
     if (distance > hideThreshold) {
       return 0;

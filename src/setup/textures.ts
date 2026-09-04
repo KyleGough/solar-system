@@ -1,5 +1,5 @@
 import * as THREE from "three";
-import { onLoaded } from "./loading";
+import { onLoaded, setLoadProgress } from "./loading";
 
 let textureCount = 0;
 let texturesLoaded = 0;
@@ -8,11 +8,7 @@ const textureLoader = new THREE.TextureLoader();
 export const loadTexture = (path: string) => {
   return textureLoader.load(path, () => {
     texturesLoaded++;
-
-    const percentageContainer = document.getElementById(
-      "loader-percentage"
-    ) as HTMLElement;
-    percentageContainer.textContent = getProgress();
+    setLoadProgress((100 * texturesLoaded) / textureCount);
 
     if (texturesLoaded === textureCount) {
       onLoaded();
@@ -22,9 +18,4 @@ export const loadTexture = (path: string) => {
 
 export const setTextureCount = (n: number) => {
   textureCount = n;
-};
-
-const getProgress = (): string => {
-  const percentage = (100 * texturesLoaded) / textureCount;
-  return `${percentage.toFixed(0)}%`;
 };

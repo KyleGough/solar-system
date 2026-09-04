@@ -2,8 +2,10 @@ import * as THREE from "three";
 import { createRingMesh } from "./rings";
 import { createPath } from "./path";
 import { loadTexture } from "./textures";
+import { applyNightLights } from "./night-lights";
 import { Label } from "./label";
 import { PointOfInterest } from "./label";
+import { LAYERS } from "../constants";
 
 export interface Body {
   name: string;
@@ -16,6 +18,7 @@ export interface Body {
   tilt: number;
   orbits?: string;
   labels?: PointOfInterest[];
+  description?: string;
   traversable: boolean;
   offset?: number;
 }
@@ -26,6 +29,7 @@ interface TexturePaths {
   atmosphere?: string;
   atmosphereAlpha?: string;
   specular?: string;
+  night?: string;
 }
 
 interface Atmosphere {
@@ -58,13 +62,14 @@ export class PlanetaryObject {
   mesh: THREE.Mesh;
   path?: THREE.Line;
   rng: number;
-  map: THREE.Texture;
+  map!: THREE.Texture;
   bumpMap?: THREE.Texture;
   specularMap?: THREE.Texture;
+  nightMap?: THREE.Texture;
   atmosphere: Atmosphere = {};
-  labels: Label;
+  labels!: Label;
 
-  constructor(body: Body) {
+  constructor(body: Body, parent?: PlanetaryObject) {
     const { radius, distance, period, daylength, orbits, type, tilt } = body;
 
     this.radius = normaliseRadius(radius);
@@ -78,7 +83,11 @@ export class PlanetaryObject {
 
     this.loadTextures(body.textures);
 
-    this.mesh = this.createMesh();
+    if (type === "ring" && !parent) {
+      throw new Error(`Ring "${body.name}" must be constructed with its parent`);
+    }
+
+    this.mesh = this.createMesh(parent);
 
     if (this.orbits) {
       this.path = createPath(this.distance);
@@ -117,6 +126,9 @@ export class PlanetaryObject {
     if (textures.specular) {
       this.specularMap = loadTexture(textures.specular);
     }
+    if (textures.night) {
+      this.nightMap = loadTexture(textures.night);
+    }
     if (textures.atmosphere) {
       this.atmosphere.map = loadTexture(textures.atmosphere);
     }
@@ -129,9 +141,9 @@ export class PlanetaryObject {
    * Creates the main mesh object with textures.
    * @returns celestial body mesh.
    */
-  private createMesh = () => {
+  private createMesh = (parent?: PlanetaryObject) => {
     if (this.type === "ring") {
-      return createRingMesh(this.map);
+      return createRingMesh(this.map, parent!.radius);
     }
 
     const geometry = new THREE.SphereGeometry(this.radius, 64, 64);
@@ -139,7 +151,6 @@ export class PlanetaryObject {
     if (this.type === "star") {
       material = new THREE.MeshBasicMaterial({
         map: this.map,
-        lightMapIntensity: 2,
         toneMapped: false,
         color: new THREE.Color(2.5, 2.5, 2.5),
       });
@@ -158,12 +169,21 @@ export class PlanetaryObject {
       if (this.specularMap) {
         material.specularMap = this.specularMap;
       }
+
+      if (this.nightMap) {
+        applyNightLights(material, this.nightMap);
+      }
     }
 
     const sphere = new THREE.Mesh(geometry, material);
     sphere.rotation.x = this.tilt;
     sphere.castShadow = true;
     sphere.receiveShadow = true;
+
+    if (this.type === "star") {
+      // Bloom pass only. Kept off layer 0 so the mix shader does not draw the Sun twice.
+      sphere.layers.set(LAYERS.BLOOM);
+    }
 
     return sphere;
   };
@@ -220,9 +240,16 @@ export class PlanetaryObject {
   };
 
   /**
+   * Camera distance used when this body becomes the focus.
+   */
+  getFocusDistance = (): number => {
+    return this.radius * 2.25;
+  };
+
+  /**
    * @returns the minimum orbital control camera distance allowed.
    */
   getMinDistance = (): number => {
-    return this.radius * 3.5;
+    return this.radius * 1.8;
   };
 }

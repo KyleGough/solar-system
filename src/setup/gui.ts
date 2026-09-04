@@ -1,6 +1,7 @@
 import * as dat from "lil-gui";
 import { SolarSystem } from "./solar-system";
 import { LAYERS } from "../constants";
+import { isIntroActive } from "./loading";
 
 export const options = {
   showPaths: false,
@@ -8,34 +9,18 @@ export const options = {
   focus: "Sun",
   clock: true,
   speed: 0.125,
-  zangle: 0,
-  yangle: 0,
 };
 
 export const createGUI = (
   ambientLight: THREE.AmbientLight,
   solarSystem: SolarSystem,
   clock: THREE.Clock,
-  camera: THREE.Camera
+  camera: THREE.Camera,
+  onRideSpin?: (ride: boolean) => void
 ) => {
   const gui = new dat.GUI();
 
   gui.title("Simulation Controls");
-
-  gui.add(ambientLight, "intensity", 0, 1, 0.01).name("Ambient Intensity");
-
-  // Toggle moons
-  gui
-    .add(options, "showMoons")
-    .name("Show Moons")
-    .onChange((value: boolean) => {
-      for (const name in solarSystem) {
-        const object = solarSystem[name];
-        if (object.type === "moon") {
-          object.mesh.visible = value;
-        }
-      }
-    });
 
   // Pause the simulation
   gui
@@ -46,23 +31,27 @@ export const createGUI = (
     });
 
   // Control the simulation speed
-  gui.add(options, "speed", 0.1, 20, 0.1).name("Speed");
+  gui.add(options, "speed", 0, 5, 0.01).name("Speed");
 
   gui.hide();
 
-  // Toggle ambient lights
-  document.getElementById("btn-ambient")?.addEventListener("click", () => {
-    ambientLight.intensity = ambientLight.intensity === 0.1 ? 0.5 : 0.1;
-  });
+  const setToggle = (button: HTMLElement, on: boolean) => {
+    button.setAttribute("aria-pressed", String(on));
+    button.classList.toggle("is-active", on);
+  };
 
-  // Toggle labels
-  document.getElementById("btn-labels")?.addEventListener("click", () => {
+  const labelsButton = document.getElementById("btn-labels");
+  labelsButton?.addEventListener("click", () => {
+    if (isIntroActive()) return;
     camera.layers.toggle(LAYERS.POILabel);
+    setToggle(labelsButton, camera.layers.isEnabled(LAYERS.POILabel));
   });
 
-  // Toggle paths
-  document.getElementById("btn-paths")?.addEventListener("click", () => {
+  const pathsButton = document.getElementById("btn-paths");
+  pathsButton?.addEventListener("click", () => {
+    if (isIntroActive()) return;
     options.showPaths = !options.showPaths;
+    setToggle(pathsButton, options.showPaths);
 
     for (const name in solarSystem) {
       const object = solarSystem[name];
@@ -72,8 +61,18 @@ export const createGUI = (
     }
   });
 
-  // Toggle GUI panel
-  document.getElementById("btn-settings")?.addEventListener("click", () => {
+  const spinButton = document.getElementById("btn-spin");
+  spinButton?.addEventListener("click", () => {
+    if (isIntroActive()) return;
+    const ride = spinButton.getAttribute("aria-pressed") !== "true";
+    setToggle(spinButton, ride);
+    onRideSpin?.(ride);
+  });
+
+  const settingsButton = document.getElementById("btn-settings");
+  settingsButton?.addEventListener("click", () => {
+    if (isIntroActive()) return;
     gui.show(gui._hidden);
+    setToggle(settingsButton, !gui._hidden);
   });
 };

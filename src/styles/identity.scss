@@ -1,0 +1,40 @@
+.identity {
+  text-align: right;
+  pointer-events: none;
+  font-family: "IBM Plex Sans", ui-sans-serif, system-ui, sans-serif;
+  color: oklch(0.78 0.11 85);
+  -webkit-font-smoothing: antialiased;
+}
+
+.identity-kicker,
+.identity-sub {
+  font-size: 0.8125rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: oklch(0.78 0.11 85);
+}
+
+.identity h1 {
+  margin: 6px 0 0;
+  font-size: 1.5rem;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  line-height: 1.2;
+}
+
+.identity-sub {
+  margin-top: 8px;
+  text-transform: none;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+}
+
+@media (max-width: 560px) {
+  .identity-sub {
+    display: none;
+  }
+
+  .identity h1 {
+    font-size: 1.05rem;
+  }
+}
