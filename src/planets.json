@@ -51,6 +51,7 @@
     "distance": 152,
     "period": 365,
     "daylength": 24,
+    "cloudPeriod": 21,
     "type": "planet",
     "orbits": "Sun",
     "tilt": 23.44,
