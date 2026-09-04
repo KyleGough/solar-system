@@ -4,6 +4,7 @@ import { createPath } from "./path";
 import { loadTexture } from "./textures";
 import { Label } from "./label";
 import { PointOfInterest } from "./label";
+import { LAYERS } from "../constants";
 
 export interface Body {
   name: string;
@@ -164,6 +165,11 @@ export class PlanetaryObject {
     sphere.rotation.x = this.tilt;
     sphere.castShadow = true;
     sphere.receiveShadow = true;
+
+    if (this.type === "star") {
+      // Bloom pass only. Kept off layer 0 so the mix shader does not draw the Sun twice.
+      sphere.layers.set(LAYERS.BLOOM);
+    }
 
     return sphere;
   };
