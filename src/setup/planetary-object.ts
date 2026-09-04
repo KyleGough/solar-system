@@ -65,7 +65,7 @@ export class PlanetaryObject {
   atmosphere: Atmosphere = {};
   labels!: Label;
 
-  constructor(body: Body) {
+  constructor(body: Body, parent?: PlanetaryObject) {
     const { radius, distance, period, daylength, orbits, type, tilt } = body;
 
     this.radius = normaliseRadius(radius);
@@ -79,7 +79,11 @@ export class PlanetaryObject {
 
     this.loadTextures(body.textures);
 
-    this.mesh = this.createMesh();
+    if (type === "ring" && !parent) {
+      throw new Error(`Ring "${body.name}" must be constructed with its parent`);
+    }
+
+    this.mesh = this.createMesh(parent);
 
     if (this.orbits) {
       this.path = createPath(this.distance);
@@ -130,9 +134,9 @@ export class PlanetaryObject {
    * Creates the main mesh object with textures.
    * @returns celestial body mesh.
    */
-  private createMesh = () => {
+  private createMesh = (parent?: PlanetaryObject) => {
     if (this.type === "ring") {
-      return createRingMesh(this.map);
+      return createRingMesh(this.map, parent!.radius);
     }
 
     const geometry = new THREE.SphereGeometry(this.radius, 64, 64);
