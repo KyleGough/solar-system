@@ -232,7 +232,7 @@ export class PlanetaryObject {
    * Camera distance used when this body becomes the focus.
    */
   getFocusDistance = (): number => {
-    return this.radius * 3.5;
+    return this.radius * 2.25;
   };
 
   /**
