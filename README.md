@@ -24,7 +24,8 @@
 
 ## Setup
 
-Download [Node.js](https://nodejs.org/en/download/).
+This project requires [Node.js](https://nodejs.org/en/download/) 24 or later. If you use [nvm](https://github.com/nvm-sh/nvm), run `nvm use` to pick up the version in `.nvmrc`.
+
 Run the following commands:
 
 ```bash
