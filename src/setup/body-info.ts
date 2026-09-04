@@ -1,10 +1,12 @@
 import type { Body } from "./planetary-object";
+import type { PointOfInterest } from "./label";
 import planetData from "../planets.json";
 import { isIntroActive } from "./loading";
 import {
   formatDistance,
   formatHours,
   formatKm,
+  formatMass,
   formatPeriodDuration,
   formatTilt,
 } from "./format";
@@ -16,11 +18,19 @@ const NAV_GAP = 12;
 const panelEl = () => document.getElementById("body-info");
 const kickerEl = () => document.getElementById("body-info-kicker");
 const blurbEl = () => document.getElementById("body-info-blurb");
+const figureEl = () => document.getElementById("body-info-figure");
+const imageEl = () =>
+  document.getElementById("body-info-image") as HTMLImageElement | null;
 const statsEl = () => document.getElementById("body-info-stats");
+const pipsEl = () => document.getElementById("body-info-pips");
 
 let canvasEl: HTMLElement | null = null;
 let orbitNavEl: HTMLElement | null = null;
 let minimised = false;
+let pipBodyName = "";
+let pipList: PointOfInterest[] = [];
+let onPoiPick: ((bodyName: string, poi: PointOfInterest) => void) | null = null;
+let onPoiClose: (() => void) | null = null;
 
 const isEditableTarget = (target: EventTarget | null): boolean => {
   if (!(target instanceof HTMLElement)) return false;
@@ -53,23 +63,36 @@ const syncPanelDock = () => {
   panel.style.setProperty("--body-info-nav-offset", `${offset}px`);
 };
 
+const syncToolbar = (moveFocus = false) => {
+  const panel = panelEl();
+  if (!panel) return;
+  const isPoi = panel.classList.contains("is-poi");
+
+  const restore = document.getElementById("body-info-restore");
+  const minimise = document.getElementById("body-info-minimise");
+  const close = document.getElementById("body-info-close");
+  const maximise = document.getElementById("body-info-maximise");
+  restore?.toggleAttribute("hidden", !minimised);
+  minimise?.toggleAttribute("hidden", minimised || isPoi);
+  close?.toggleAttribute("hidden", minimised || !isPoi);
+  maximise?.toggleAttribute("hidden", !minimised);
+
+  if (!moveFocus) return;
+  if (minimised) {
+    maximise?.focus();
+  } else if (isPoi) {
+    close?.focus();
+  } else {
+    minimise?.focus();
+  }
+};
+
 const setMinimised = (next: boolean, moveFocus = false) => {
   minimised = next;
   const panel = panelEl();
   if (!panel) return;
   panel.classList.toggle("is-minimised", minimised);
-
-  const restore = document.getElementById("body-info-restore");
-  const minimise = document.getElementById("body-info-minimise");
-  restore?.toggleAttribute("hidden", !minimised);
-  minimise?.toggleAttribute("hidden", minimised);
-
-  if (!moveFocus) return;
-  if (minimised) {
-    restore?.focus();
-  } else {
-    minimise?.focus();
-  }
+  syncToolbar(moveFocus);
 };
 
 const setOpen = (open: boolean) => {
@@ -88,12 +111,21 @@ const closePanel = () => {
   canvasEl?.focus({ preventScroll: true });
 };
 
-const appendStat = (root: HTMLElement, label: string, value: string) => {
+const appendStat = (root: HTMLElement, label: string, value: string | Node) => {
   const dt = document.createElement("dt");
   dt.textContent = label;
   const dd = document.createElement("dd");
-  dd.textContent = value;
+  dd.append(value);
   root.append(dt, dd);
+};
+
+const massValue = (kg: number): DocumentFragment => {
+  const { mantissa, exponent } = formatMass(kg);
+  const value = document.createDocumentFragment();
+  const sup = document.createElement("sup");
+  sup.textContent = String(exponent);
+  value.append(`${mantissa} × 10`, sup, " kg");
+  return value;
 };
 
 const fillStats = (body: Body, root: HTMLElement) => {
@@ -103,8 +135,14 @@ const fillStats = (body: Body, root: HTMLElement) => {
   }
 };
 
-const statsFor = (body: Body): Array<[string, string]> => {
-  const rows: Array<[string, string]> = [["Radius", formatKm(body.radius)]];
+const statsFor = (body: Body): Array<[string, string | Node]> => {
+  const rows: Array<[string, string | Node]> = [
+    ["Radius", formatKm(body.radius)],
+  ];
+
+  if (body.mass != null) {
+    rows.push(["Mass", massValue(body.mass)]);
+  }
 
   if (body.orbits && body.distance > 0) {
     rows.push(["Distance", formatDistance(body.distance)]);
@@ -114,13 +152,73 @@ const statsFor = (body: Body): Array<[string, string]> => {
     rows.push(["Orbital period", formatPeriodDuration(body.period)]);
   }
 
-  if (body.type !== "moon") {
+  if (body.type !== "moon" && body.type !== "star") {
     rows.push(["Day length", formatHours(body.daylength)]);
   }
 
-  rows.push(["Axial tilt", formatTilt(body.tilt)]);
+  if (body.type !== "star") {
+    rows.push(["Axial tilt", formatTilt(body.tilt)]);
+  }
+
+  if (body.stats) {
+    rows.push(...body.stats);
+  }
 
   return rows;
+};
+
+const clearPoiImage = () => {
+  const figure = figureEl();
+  const image = imageEl();
+  if (image) {
+    image.removeAttribute("src");
+    image.alt = "";
+  }
+  if (figure) figure.hidden = true;
+};
+
+const fillPoiImage = (poi: PointOfInterest) => {
+  const figure = figureEl();
+  const image = imageEl();
+  if (!figure || !image) return;
+
+  if (!poi.image) {
+    clearPoiImage();
+    return;
+  }
+
+  image.src = poi.image;
+  image.alt = poi.imageAlt ?? "";
+  figure.hidden = false;
+};
+
+const fillPips = (
+  bodyName: string,
+  pois: PointOfInterest[],
+  activeName = ""
+) => {
+  const pips = pipsEl();
+  if (!pips) return;
+
+  pipBodyName = bodyName;
+  pipList = pois;
+  pips.replaceChildren();
+  pips.hidden = pois.length === 0;
+  panelEl()?.classList.toggle("has-pips", pois.length > 0);
+
+  for (const poi of pois) {
+    const button = document.createElement("button");
+    button.type = "button";
+    button.className = "body-info-pip";
+    button.dataset.poi = poi.name;
+    button.setAttribute("aria-label", poi.name);
+    const current = poi.name === activeName;
+    button.classList.toggle("is-current", current);
+    if (current) {
+      button.setAttribute("aria-current", "true");
+    }
+    pips.append(button);
+  }
 };
 
 export const updateBodyInfo = (name: string): void => {
@@ -133,24 +231,49 @@ export const updateBodyInfo = (name: string): void => {
   if (kicker) kicker.textContent = body.type;
   if (blurb) blurb.textContent = body.description ?? "";
   if (blurb) blurb.hidden = !body.description;
-  if (stats) fillStats(body, stats);
+  if (stats) {
+    stats.hidden = false;
+    fillStats(body, stats);
+  }
+  clearPoiImage();
+  fillPips(name, body.labels ?? []);
+  panelEl()?.classList.remove("is-poi");
 
+  setOpen(true);
+};
+
+export const updatePoiInfo = (bodyName: string, poi: PointOfInterest): void => {
+  const body = bodies.find((entry) => entry.name === bodyName);
+  if (!body || !body.traversable) return;
+
+  const kicker = kickerEl();
+  const blurb = blurbEl();
+  const stats = statsEl();
+  if (kicker) kicker.textContent = poi.name;
+  if (blurb) {
+    blurb.textContent = poi.fact ?? "";
+    blurb.hidden = !poi.fact;
+  }
+  fillPoiImage(poi);
+  if (stats) stats.hidden = true;
+  fillPips(bodyName, body.labels ?? [], poi.name);
+  panelEl()?.classList.add("is-poi");
+
+  setMinimised(false);
   setOpen(true);
 };
 
 export const createBodyInfo = (
   canvas: HTMLElement,
-  orbitNav: HTMLElement
+  orbitNav: HTMLElement,
+  onPick?: (bodyName: string, poi: PointOfInterest) => void,
+  onClose?: () => void
 ): void => {
   canvasEl = canvas;
   orbitNavEl = orbitNav;
+  onPoiPick = onPick ?? null;
+  onPoiClose = onClose ?? null;
   canvas.setAttribute("tabindex", "-1");
-
-  const close = document.getElementById("body-info-close");
-  close?.addEventListener("click", () => {
-    if (isIntroActive()) return;
-    closePanel();
-  });
 
   const minimise = document.getElementById("body-info-minimise");
   minimise?.addEventListener("click", () => {
@@ -158,10 +281,35 @@ export const createBodyInfo = (
     setMinimised(true, true);
   });
 
-  const restore = document.getElementById("body-info-restore");
-  restore?.addEventListener("click", () => {
+  const close = document.getElementById("body-info-close");
+  close?.addEventListener("click", () => {
+    if (isIntroActive()) return;
+    onPoiClose?.();
+    syncToolbar(true);
+  });
+
+  const expand = () => {
     if (isIntroActive()) return;
     setMinimised(false, true);
+  };
+
+  const restore = document.getElementById("body-info-restore");
+  restore?.addEventListener("click", expand);
+
+  const maximise = document.getElementById("body-info-maximise");
+  maximise?.addEventListener("click", expand);
+
+  pipsEl()?.addEventListener("click", (event) => {
+    if (isIntroActive()) return;
+    const target = event.target;
+    if (!(target instanceof Element)) return;
+    const button = target.closest("button[data-poi]");
+    if (!(button instanceof HTMLButtonElement)) return;
+    const name = button.dataset.poi;
+    if (!name || button.classList.contains("is-current")) return;
+    const poi = pipList.find((entry) => entry.name === name);
+    if (!poi || !pipBodyName) return;
+    onPoiPick?.(pipBodyName, poi);
   });
 
   window.addEventListener("keydown", (event) => {

@@ -11,8 +11,12 @@ const NIGHT_OUTGOING_LIGHT = /* glsl */ `
 vec3 dayLight = reflectedLight.directDiffuse + reflectedLight.indirectDiffuse + reflectedLight.directSpecular + reflectedLight.indirectSpecular;
 float nightLuma = max(totalEmissiveRadiance.r, max(totalEmissiveRadiance.g, totalEmissiveRadiance.b));
 totalEmissiveRadiance *= 1.0 + 1.0 * smoothstep(0.05, 0.25, nightLuma);
-#if ( NUM_POINT_LIGHTS > 0 )
-	vec3 nightLightDir = normalize(pointLights[0].position - geometry.position);
+#if ( NUM_SPOT_LIGHTS > 0 ) || ( NUM_POINT_LIGHTS > 0 )
+	#if ( NUM_SPOT_LIGHTS > 0 )
+		vec3 nightLightDir = normalize(spotLights[0].position - geometry.position);
+	#else
+		vec3 nightLightDir = normalize(pointLights[0].position - geometry.position);
+	#endif
 	float nightFactor = 1.0 - smoothstep(-0.15, 0.22, dot(geometry.normal, nightLightDir));
 	vec3 outgoingLight = mix(dayLight, totalEmissiveRadiance, nightFactor);
 #else

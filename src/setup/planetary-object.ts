@@ -10,9 +10,13 @@ import { LAYERS } from "../constants";
 export interface Body {
   name: string;
   radius: number;
+  /** Mass in kilograms. Omitted for non-physical bodies such as rings. */
+  mass?: number;
   distance: number;
   period: number;
   daylength: number;
+  /** Hours for one cloud-layer rotation. Faster than daylength so weather drifts. */
+  cloudPeriod?: number;
   textures: TexturePaths;
   type: string;
   tilt: number;
@@ -21,11 +25,13 @@ export interface Body {
   description?: string;
   traversable: boolean;
   offset?: number;
+  stats?: Array<[string, string]>;
 }
 
 interface TexturePaths {
   map: string;
   bump?: string;
+  normal?: string;
   atmosphere?: string;
   atmosphereAlpha?: string;
   specular?: string;
@@ -56,26 +62,31 @@ export class PlanetaryObject {
   distance: number; // in million km
   period: number; // in days
   daylength: number; // in hours
+  cloudPeriod?: number; // in hours
   orbits?: string;
   type: string;
   tilt: number; // degrees
   mesh: THREE.Mesh;
-  path?: THREE.Line;
+  atmosphereMesh?: THREE.Mesh;
+  path?: THREE.Mesh;
   rng: number;
   map!: THREE.Texture;
   bumpMap?: THREE.Texture;
+  normalMap?: THREE.Texture;
   specularMap?: THREE.Texture;
   nightMap?: THREE.Texture;
   atmosphere: Atmosphere = {};
   labels!: Label;
 
   constructor(body: Body, parent?: PlanetaryObject) {
-    const { radius, distance, period, daylength, orbits, type, tilt } = body;
+    const { radius, distance, period, daylength, cloudPeriod, orbits, type, tilt } =
+      body;
 
     this.radius = normaliseRadius(radius);
     this.distance = normaliseDistance(distance);
     this.period = period;
     this.daylength = daylength;
+    this.cloudPeriod = cloudPeriod;
     this.orbits = orbits;
     this.type = type;
     this.tilt = degreesToRadians(tilt);
@@ -89,12 +100,13 @@ export class PlanetaryObject {
 
     this.mesh = this.createMesh(parent);
 
-    if (this.orbits) {
-      this.path = createPath(this.distance);
+    if (this.orbits && this.distance > 0 && type !== "ring") {
+      this.path = createPath(this.distance, this.radius, body.name);
     }
 
     if (this.atmosphere.map) {
-      this.mesh.add(this.createAtmosphereMesh());
+      this.atmosphereMesh = this.createAtmosphereMesh();
+      this.mesh.add(this.atmosphereMesh);
     }
 
     this.initLabels(body.labels);
@@ -122,6 +134,9 @@ export class PlanetaryObject {
     this.map = loadTexture(textures.map);
     if (textures.bump) {
       this.bumpMap = loadTexture(textures.bump);
+    }
+    if (textures.normal) {
+      this.normalMap = loadTexture(textures.normal);
     }
     if (textures.specular) {
       this.specularMap = loadTexture(textures.specular);
@@ -166,6 +181,11 @@ export class PlanetaryObject {
         material.bumpScale = this.radius / 50;
       }
 
+      if (this.normalMap) {
+        material.normalMap = this.normalMap;
+        material.normalScale.set(1.4, 1.4);
+      }
+
       if (this.specularMap) {
         material.specularMap = this.specularMap;
       }
@@ -189,8 +209,8 @@ export class PlanetaryObject {
   };
 
   /**
-   * Creates the atmosphere mesh object with textures.
-   * @returns atmosphere mesh.
+   * Creates the cloud-layer mesh. Kept as a child so it follows orbit and
+   * inherits axial tilt; tick() applies a separate spin so weather drifts.
    */
   private createAtmosphereMesh = () => {
     const geometry = new THREE.SphereGeometry(this.radius + 0.0005, 64, 64);
@@ -198,6 +218,8 @@ export class PlanetaryObject {
     const material = new THREE.MeshPhongMaterial({
       map: this.atmosphere?.map,
       transparent: true,
+      depthWrite: false,
+      shininess: 0,
     });
 
     if (this.atmosphere.alpha) {
@@ -205,13 +227,13 @@ export class PlanetaryObject {
     }
 
     const sphere = new THREE.Mesh(geometry, material);
+    sphere.name = "clouds";
     sphere.receiveShadow = true;
-    sphere.rotation.x = this.tilt;
     return sphere;
   };
 
-  private getRotation = (elapsedTime: number) => {
-    return this.daylength ? (elapsedTime * timeFactor) / this.daylength : 0;
+  private getRotation = (elapsedTime: number, periodHours = this.daylength) => {
+    return periodHours ? (elapsedTime * timeFactor) / periodHours : 0;
   };
 
   private getOrbitRotation = (elapsedTime: number) => {
@@ -231,11 +253,21 @@ export class PlanetaryObject {
     // Circular rotation around orbit.
     this.mesh.position.x = Math.sin(orbit) * this.distance;
     this.mesh.position.z = Math.cos(orbit) * this.distance;
+    if (this.path) {
+      this.path.rotation.y = orbit;
+    }
 
     if (this.type === "ring") {
       this.mesh.rotation.z = rotation;
     } else {
       this.mesh.rotation.y = rotation;
+    }
+
+    // Parent already spins with the day. Extra local Y is the drift relative
+    // to the surface, so world cloud spin equals the cloud period.
+    if (this.atmosphereMesh && this.cloudPeriod) {
+      this.atmosphereMesh.rotation.y =
+        this.getRotation(elapsedTime, this.cloudPeriod) - rotation;
     }
   };
 

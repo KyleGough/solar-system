@@ -2,6 +2,7 @@
   {
     "name": "Sun",
     "radius": 695700,
+    "mass": 1.9885e30,
     "distance": 0,
     "period": 1,
     "daylength": 600,
@@ -11,11 +12,22 @@
     "textures": {
       "map": "./textures/sun.jpg"
     },
-    "description": "The Sun is a G-type main-sequence star at the centre of the Solar System. It holds 99.8% of the system's mass and governs the orbits of every planet, moon, and small body."
+    "stats": [
+      [
+        "Galactic period",
+        "250 million years"
+      ],
+      [
+        "Absolute magnitude",
+        "4.83"
+      ]
+    ],
+    "description": "The Sun is a G-type main-sequence star at the centre of the Solar System. It holds 99.86% of the system's mass and governs the orbits of every planet, moon, and small body."
   },
   {
     "name": "Mercury",
     "radius": 2439.4,
+    "mass": 3.301e23,
     "distance": 56,
     "period": 88,
     "daylength": 4222.6,
@@ -25,13 +37,14 @@
     "traversable": true,
     "textures": {
       "map": "./textures/mercury.jpg",
-      "bump": "./textures/mercury-bump.jpg"
+      "normal": "./textures/mercury-normal.png"
     },
     "description": "Mercury is the smallest planet and the closest to the Sun. A cratered, airless world, it completes an 88-day orbit with days longer than its year."
   },
   {
     "name": "Venus",
     "radius": 6051.8,
+    "mass": 4.867e24,
     "distance": 108,
     "period": 224,
     "daylength": 2802,
@@ -48,9 +61,11 @@
   {
     "name": "Earth",
     "radius": 6371,
+    "mass": 5.972e24,
     "distance": 152,
     "period": 365,
     "daylength": 24,
+    "cloudPeriod": 21,
     "type": "planet",
     "orbits": "Sun",
     "tilt": 23.44,
@@ -63,11 +78,12 @@
       "atmosphereAlpha": "./textures/earth-clouds-alpha.jpg",
       "night": "./textures/earth-night.jpg"
     },
-    "description": "Earth is the only known world with liquid-water oceans and life. A 23.4° axial tilt and a 24-hour rotation give rise to seasons and a protective magnetic field."
+    "description": "Earth is the only known world with liquid-water oceans and life. It's axial tilt and 24-hour rotation give rise to seasons and a protective magnetic field."
   },
   {
     "name": "Moon",
     "radius": 1737,
+    "mass": 7.342e22,
     "distance": 0.38,
     "period": 0,
     "daylength": -28,
@@ -82,21 +98,21 @@
     },
     "labels": [
       {
-        "name": "Apollo 11",
+        "name": "Sea of Tranquility",
         "type": "landing",
         "y": 0.36,
-        "z": 0.05
+        "z": 0.05,
+        "fact": "Site of the first crewed landing by NASA astronauts Neil Armstrong and Buzz Aldrin on 20 July 1969.",
+        "image": "./images/apollo-11-landing.jpg",
+        "imageAlt": "Apollo 11 landing site at the Sea of Tranquility"
       },
       {
         "name": "Tycho Crater",
-        "y": -0.18,
-        "z": -0.64
-      },
-      {
-        "name": "Yutu-2",
-        "type": "rover",
-        "y": 3.06,
-        "z": 0.67
+        "y": -0.14,
+        "z": -0.77,
+        "fact": "108 million year old crater with a diameter of 85km discovered by Tycho Brahe.",
+        "image": "./images/tycho-crater.jpg",
+        "imageAlt": "Overhead view of Tycho Crater"
       }
     ],
     "description": "The Moon is Earth's only natural satellite, tidally locked so the same face always points home. Its dry, cratered surface still carries the marks of Apollo landings."
@@ -104,6 +120,7 @@
   {
     "name": "Mars",
     "radius": 3389.5,
+    "mass": 6.417e23,
     "distance": 247,
     "period": 686,
     "daylength": 24.7,
@@ -119,31 +136,36 @@
       {
         "name": "Olympus Mons",
         "type": "mountain",
-        "y": 0.59,
-        "z": 0.52
+        "y": 0.75,
+        "z": 0.45,
+        "fact": "Tallest volcano in the Solar System, about 22 km high."
       },
       {
         "name": "Tharsis Montes",
         "type": "mountain",
-        "y": 1.13,
-        "z": 0.28
+        "y": 1.23,
+        "z": -0.06,
+        "fact": "Three shield volcanoes on the Tharsis rise, west of Valles Marineris."
       },
       {
         "name": "Valles Marineris",
-        "y": 1.6,
-        "z": 1.75
+        "y": 1.29,
+        "z": -2.75,
+        "fact": "Canyon system about 4,000 km long, a fifth of the way around Mars."
       },
       {
         "name": "Perseverance",
         "type": "rover",
         "y": -1.96,
-        "z": -0.87
+        "z": -0.87,
+        "fact": "NASA rover in Jezero Crater since 2021, caching samples for return."
       },
       {
         "name": "Curiosity",
         "type": "rover",
         "y": -0.8,
-        "z": -0.1
+        "z": -0.1,
+        "fact": "NASA rover in Gale Crater since 2012, reading Mars as a former habitat."
       }
     ],
     "description": "Mars is a cold desert planet with the tallest volcano and the longest canyon in the Solar System. Polar ice and ancient riverbeds hint at a wetter past."
@@ -151,6 +173,7 @@
   {
     "name": "Jupiter",
     "radius": 69911,
+    "mass": 1.898e27,
     "distance": 741,
     "period": 4332,
     "daylength": 9.9,
@@ -165,7 +188,10 @@
       {
         "name": "Great Red Spot",
         "y": -0.84,
-        "z": -0.41
+        "z": -0.41,
+        "fact": "Persistent anticyclonic storm that produces wind speeds up to 496 km/h. It was first observed in 1831.",
+        "image": "./images/great-red-spot.jpg",
+        "imageAlt": "Jupiter's Great Red Spot"
       }
     ],
     "description": "Jupiter is the largest planet, a hydrogen-helium giant with a faint ring system. The Great Red Spot is an anticyclone wider than Earth, and four large Galilean moons orbit nearby."
@@ -173,6 +199,7 @@
   {
     "name": "Saturn",
     "radius": 58232,
+    "mass": 5.683e26,
     "distance": 1463,
     "period": 10755,
     "daylength": 10.7,
@@ -187,7 +214,10 @@
       {
         "name": "Saturn's Hexagon",
         "y": 0,
-        "z": 1.57
+        "z": 1.57,
+        "fact": "Persistent hexagonal cloud pattern around the north pole, wider than two Earths.",
+        "image": "./images/saturn-hexagon.jpg",
+        "imageAlt": "Saturn's north-polar hexagon, a teal six-sided storm with a dark central vortex"
       }
     ],
     "description": "Saturn is a gas giant known for its broad, icy ring system. Low density and a hexagonal storm at the north pole set it apart from the other giants."
@@ -195,6 +225,7 @@
   {
     "name": "Uranus",
     "radius": 25362,
+    "mass": 8.681e25,
     "distance": 2938,
     "period": 30687,
     "daylength": 17.2,
@@ -210,6 +241,7 @@
   {
     "name": "Neptune",
     "radius": 24622,
+    "mass": 1.024e26,
     "distance": 4474,
     "period": 60190,
     "daylength": 16.1,
@@ -224,7 +256,8 @@
       {
         "name": "Great Dark Spot",
         "y": 0.21,
-        "z": -0.18
+        "z": -0.18,
+        "fact": "Storm imaged by Voyager 2 in 1989; similar ovals have since come and gone."
       }
     ],
     "description": "Neptune is the most distant planet, an ice giant with the strongest winds in the Solar System. The Great Dark Spot seen by Voyager 2 has since faded and reformed."
@@ -246,6 +279,7 @@
   {
     "name": "Ganymede",
     "radius": 2634,
+    "mass": 1.482e23,
     "distance": 1.07,
     "period": 7.15,
     "daylength": 9.9,
@@ -261,6 +295,7 @@
   {
     "name": "Titan",
     "radius": 2574,
+    "mass": 1.345e23,
     "distance": 1.2,
     "period": 15.95,
     "daylength": 10.7,
@@ -276,6 +311,7 @@
   {
     "name": "Callisto",
     "radius": 2410,
+    "mass": 1.076e23,
     "distance": 1.88,
     "period": 16.69,
     "daylength": 9.9,
@@ -291,6 +327,7 @@
   {
     "name": "Io",
     "radius": 1821,
+    "mass": 8.932e22,
     "distance": 0.42,
     "period": 1.77,
     "daylength": 9.9,
@@ -306,6 +343,7 @@
   {
     "name": "Europa",
     "radius": 1560,
+    "mass": 4.8e22,
     "distance": 0.67,
     "period": 3.55,
     "daylength": 9.9,
@@ -321,6 +359,7 @@
   {
     "name": "Triton",
     "radius": 1353,
+    "mass": 2.139e22,
     "distance": 0.35,
     "period": -5.87,
     "daylength": 16.1,

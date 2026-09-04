@@ -21,9 +21,6 @@ export const createSolarSystem = (scene: THREE.Scene): SolarSystem => {
     const object = new PlanetaryObject(planet, parent);
     object.mesh.userData.bodyName = name;
     object.mesh.userData.traversable = planet.traversable;
-    if (object.path) {
-      object.path.userData.ignorePick = true;
-    }
 
     solarSystem[name] = object;
 

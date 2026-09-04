@@ -15,6 +15,7 @@ const BACKGROUND_SELECTORS = [
   ".hud-end",
   ".btn-group",
   ".orbit-nav",
+  ".poi-layer",
 ];
 
 let introActive = true;

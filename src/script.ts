@@ -2,23 +2,31 @@ import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 import { CSS2DRenderer } from "three/examples/jsm/renderers/CSS2DRenderer";
 import { createEnvironmentMap } from "./setup/environment-map";
-import { createLights } from "./setup/lights";
+import {
+  applyShadowCasters,
+  createLights,
+  updateSunShadows,
+} from "./setup/lights";
 import { createStarfield } from "./setup/starfield";
 import { createSolarSystem } from "./setup/solar-system";
 import { createGUI, options } from "./setup/gui";
+import { createPoiProbe } from "./setup/poi-probe";
 import { isIntroActive, onIntroDismiss } from "./setup/loading";
 import { updateIdentity } from "./setup/identity";
-import { createBodyInfo, updateBodyInfo } from "./setup/body-info";
+import { createBodyInfo, updateBodyInfo, updatePoiInfo } from "./setup/body-info";
 import { createSelectiveBloom } from "./setup/bloom";
 import { FocusTransition } from "./setup/focus-transition";
 import { createBodyPicker } from "./setup/body-pick";
 import { createOrbitalNav } from "./setup/orbital-nav";
+import { updateOrbitTrails } from "./setup/orbit-trails";
+import { setTrailResolution } from "./setup/path";
 import {
   onFocusUrlChange,
   readFocusFromUrl,
   writeFocusToUrl,
 } from "./setup/focus-url";
 import { LAYERS } from "./constants";
+import type { PointOfInterest } from "./setup/label";
 
 THREE.ColorManagement.enabled = false;
 
@@ -38,8 +46,13 @@ const labelWorldPos = new THREE.Vector3();
 const labelLocalPos = new THREE.Vector3();
 
 // Lights
-const [ambientLight, pointLight] = createLights();
-scene.add(ambientLight, pointLight);
+const lights = createLights();
+scene.add(
+  lights.ambientLight,
+  lights.pointLight,
+  lights.spotLight,
+  lights.shadowTarget
+);
 
 // Sizes
 const sizes = {
@@ -59,12 +72,14 @@ window.addEventListener("resize", () => {
   // Update renderers
   renderer.setSize(sizes.width, sizes.height);
   renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+  setTrailResolution(sizes.width, sizes.height);
   selectiveBloom.setSize(sizes.width, sizes.height);
   labelRenderer.setSize(sizes.width, sizes.height);
 });
 
 // Solar system
 const solarSystem = createSolarSystem(scene);
+applyShadowCasters(solarSystem);
 const urlFocus = readFocusFromUrl();
 if (urlFocus) {
   options.focus = urlFocus;
@@ -74,9 +89,11 @@ updateBodyInfo(options.focus);
 
 // Camera
 const aspect = sizes.width / sizes.height;
+const MAX_CAMERA_DISTANCE = 50;
 const camera = new THREE.PerspectiveCamera(75, aspect, 0.008, 1000);
-camera.position.set(0, 20, 0);
+camera.position.set(0, MAX_CAMERA_DISTANCE, 0);
 camera.layers.enable(LAYERS.POILabel);
+camera.layers.enable(LAYERS.SUN_SPOT);
 scene.add(camera);
 
 // Controls
@@ -90,7 +107,7 @@ onIntroDismiss(() => {
   controls.enabled = true;
 });
 controls.minDistance = solarSystem["Sun"].getMinDistance();
-controls.maxDistance = 50;
+controls.maxDistance = MAX_CAMERA_DISTANCE;
 
 const focusTransition = new FocusTransition(
   scene,
@@ -102,11 +119,17 @@ const focusTransition = new FocusTransition(
 
 const picker = createBodyPicker(camera, canvas, solarSystem);
 
+let poiProbe: ReturnType<typeof createPoiProbe>;
+
 const swapFocusUi = (from: string, to: string) => {
+  releasePoiSpin();
   solarSystem[from].labels.hidePOI();
+  solarSystem[from].labels.setActive(null);
   solarSystem[to].labels.showPOI();
+  solarSystem[to].labels.setActive(null);
   updateIdentity(to);
   updateBodyInfo(to);
+  poiProbe?.sync();
 };
 
 const setUiOpacity = (opacity: number) => {
@@ -114,12 +137,55 @@ const setUiOpacity = (opacity: number) => {
 };
 
 let orbitNav: ReturnType<typeof createOrbitalNav>;
+let poiForcedSpin = false;
+
+const spinButton = () => document.getElementById("btn-spin");
+
+const setSpinPressed = (on: boolean) => {
+  spinButton()?.setAttribute("aria-pressed", String(on));
+};
+
+const isSpinPressed = () => spinButton()?.getAttribute("aria-pressed") === "true";
+
+const releasePoiSpin = () => {
+  if (!poiForcedSpin) return;
+  poiForcedSpin = false;
+  setSpinPressed(false);
+  focusTransition.setRideSpin(false, options.focus);
+};
+
+const restoreBodyHud = (name: string) => {
+  releasePoiSpin();
+  solarSystem[name].labels.setActive(null);
+  updateIdentity(name);
+  updateBodyInfo(name);
+};
+
+const selectPoi = (
+  bodyName: string,
+  poi: PointOfInterest,
+  localPos: THREE.Vector3
+) => {
+  if (isIntroActive()) return;
+  if (focusTransition.isTraveling()) return;
+
+  focusTransition.panTo(bodyName, localPos);
+  if (!isSpinPressed()) {
+    poiForcedSpin = true;
+    setSpinPressed(true);
+    focusTransition.setRideSpin(true, bodyName);
+  }
+  solarSystem[bodyName].labels.setActive(poi.name);
+  updateIdentity(bodyName, poi);
+  updatePoiInfo(bodyName, poi);
+};
 
 const requestFocus = (name: string) => {
   if (!solarSystem[name]) {
     return;
   }
   if (name === options.focus && !focusTransition.isActive()) {
+    restoreBodyHud(name);
     return;
   }
   if (focusTransition.destination() === name) {
@@ -131,6 +197,7 @@ const requestFocus = (name: string) => {
     return;
   }
 
+  releasePoiSpin();
   options.focus = name;
   canvas.style.cursor = "default";
   orbitNav.setFocus(name);
@@ -139,10 +206,20 @@ const requestFocus = (name: string) => {
 
 orbitNav = createOrbitalNav(orbitNavEl, requestFocus);
 orbitNav.setFocus(options.focus);
-createBodyInfo(canvas, orbitNavEl);
+createBodyInfo(
+  canvas,
+  orbitNavEl,
+  (bodyName, poi) => {
+    const localPos = solarSystem[bodyName].labels.positionOf(poi.name);
+    if (!localPos) return;
+    selectPoi(bodyName, poi, localPos);
+  },
+  () => restoreBodyHud(options.focus)
+);
 
-for (const object of Object.values(solarSystem)) {
+for (const [name, object] of Object.entries(solarSystem)) {
   object.tick(0);
+  object.labels.onSelect = (poi, localPos) => selectPoi(name, poi, localPos);
 }
 
 if (urlFocus) {
@@ -171,6 +248,11 @@ const onHoverPick = (clientX: number, clientY: number) => {
     return;
   }
 
+  if (poiProbe?.isHovering(clientX, clientY)) {
+    canvas.style.cursor = "crosshair";
+    return;
+  }
+
   const name = picker.pick(clientX, clientY);
   canvas.style.cursor = name ? "pointer" : "default";
 };
@@ -194,10 +276,10 @@ canvas.addEventListener("dblclick", (event) => {
 // Label renderer
 const labelRenderer = new CSS2DRenderer();
 labelRenderer.setSize(sizes.width, sizes.height);
-labelRenderer.domElement.style.position = "absolute";
-labelRenderer.domElement.style.top = "0";
-labelRenderer.domElement.style.left = "0";
-labelRenderer.domElement.style.pointerEvents = "none";
+labelRenderer.domElement.className = "poi-layer";
+if (isIntroActive()) {
+  labelRenderer.domElement.setAttribute("inert", "");
+}
 document.body.appendChild(labelRenderer.domElement);
 
 // Renderer
@@ -209,8 +291,9 @@ const renderer = new THREE.WebGLRenderer({
 renderer.outputColorSpace = THREE.LinearSRGBColorSpace;
 renderer.setSize(sizes.width, sizes.height);
 renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+setTrailResolution(sizes.width, sizes.height);
 renderer.shadowMap.enabled = true;
-renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+renderer.shadowMap.type = THREE.VSMShadowMap;
 
 const selectiveBloom = createSelectiveBloom(renderer, scene, camera, sizes);
 
@@ -220,11 +303,15 @@ let elapsedTime = 0;
 let lastWall = performance.now();
 
 fakeCamera.layers.enable(LAYERS.POILabel);
+fakeCamera.layers.enable(LAYERS.SUN_SPOT);
 
 // GUI
-createGUI(ambientLight, solarSystem, clock, fakeCamera, (ride) => {
+const gui = createGUI(clock, fakeCamera, lights, (ride) => {
+  poiForcedSpin = false;
   focusTransition.setRideSpin(ride, options.focus);
 });
+poiProbe = createPoiProbe(gui, camera, canvas, solarSystem, () => options.focus);
+poiProbe.sync();
 
 (function tick() {
   const wall = performance.now();
@@ -246,6 +333,7 @@ createGUI(ambientLight, solarSystem, clock, fakeCamera, (ride) => {
         progress: 1,
         from: "",
         to: "",
+        mode: "travel" as const,
         justCrossedMidpoint: false,
         justFinished: false,
       };
@@ -259,13 +347,25 @@ createGUI(ambientLight, solarSystem, clock, fakeCamera, (ride) => {
   controls.update();
 
   camera.updateMatrixWorld();
+  updateSunShadows(lights, solarSystem, options.focus, camera);
   starfield.position.copy(camera.getWorldPosition(starfieldCenter));
 
-  if (frame.justCrossedMidpoint || frame.justFinished) {
+  updateOrbitTrails(solarSystem, wallDt, {
+    showAll: options.showPaths,
+    flying: frame.active && !frame.justFinished && frame.mode === "travel",
+    from: frame.from,
+    to: frame.to,
+    justFinished: frame.justFinished && frame.mode === "travel",
+  });
+
+  if (
+    frame.mode === "travel" &&
+    (frame.justCrossedMidpoint || frame.justFinished)
+  ) {
     swapFocusUi(frame.from, frame.to);
   }
 
-  if (frame.active && !frame.justFinished) {
+  if (frame.active && !frame.justFinished && frame.mode === "travel") {
     const fade =
       frame.progress < 0.5
         ? 1 - frame.progress / 0.5
@@ -288,6 +388,8 @@ createGUI(ambientLight, solarSystem, clock, fakeCamera, (ride) => {
     labelBody.mesh.worldToLocal(labelLocalPos);
     labelBody.labels.update(labelLocalPos);
   }
+
+  poiProbe.update(camera);
 
   // Render
   selectiveBloom.render(solarSystem["Sun"].mesh);

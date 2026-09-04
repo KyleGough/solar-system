@@ -6,8 +6,7 @@
   -webkit-font-smoothing: antialiased;
 }
 
-.identity-kicker,
-.identity-sub {
+.identity-kicker {
   font-size: 0.8125rem;
   letter-spacing: 0.08em;
   text-transform: uppercase;
@@ -22,18 +21,7 @@
   line-height: 1.2;
 }
 
-.identity-sub {
-  margin-top: 8px;
-  text-transform: none;
-  letter-spacing: 0.02em;
-  white-space: nowrap;
-}
-
 @media (max-width: 560px) {
-  .identity-sub {
-    display: none;
-  }
-
   .identity h1 {
     font-size: 1.05rem;
   }

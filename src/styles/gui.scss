@@ -1,26 +1,182 @@
 .btn-group {
-  display: flex;
+  --hud-brass: oklch(0.78 0.11 85);
+  --hud-ink: oklch(0.12 0.02 48);
+  --hud-line: oklch(0.55 0.02 85 / 0.28);
+  --hud-label: oklch(0.78 0.04 85);
+  --ease-out-quart: cubic-bezier(0.25, 1, 0.5, 1);
+  --disc-size: 32px;
+  --disc-pad-top: 10px;
+  --label-gap: 12px;
+
   position: absolute;
-  top: 0;
-  margin-top: 2rem;
+  top: 20px;
+  left: 50%;
+  z-index: 3;
+  display: flex;
+  align-items: flex-start;
   justify-content: center;
-  width: 100%;
-  gap: 0.5rem;
+  gap: 2px;
+  transform: translateX(-50%);
+  font-family: "IBM Plex Sans", ui-sans-serif, system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  pointer-events: auto;
 }
 
-.btn-group button,
-.btn-group a {
-  background-color: transparent;
-  border: none;
-  cursor: pointer;
-  fill: white;
+.btn-group::before {
+  content: "";
+  position: absolute;
+  left: 14px;
+  right: 14px;
+  top: 26px;
+  height: 1px;
+  background: var(--hud-line);
+  pointer-events: none;
+}
 
-  &:hover {
-    fill: gainsboro;
+.hud-ctrl {
+  appearance: none;
+  box-sizing: border-box;
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 52px;
+  height: 52px;
+  padding: var(--disc-pad-top) 0 0;
+  border: none;
+  background: transparent;
+  color: var(--hud-label);
+  font: inherit;
+  line-height: 0;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.hud-ctrl:focus {
+  outline: none;
+}
+
+.hud-ctrl-disc {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--disc-size);
+  height: var(--disc-size);
+  flex-shrink: 0;
+  border-radius: 50%;
+  background: var(--hud-ink);
+  box-shadow: 0 0 0 1px var(--hud-line);
+  transform: scale(1);
+  transition:
+    transform 180ms var(--ease-out-quart),
+    box-shadow 180ms var(--ease-out-quart),
+    color 180ms var(--ease-out-quart);
+}
+
+.hud-ctrl-disc svg {
+  display: block;
+  width: 16px;
+  height: 16px;
+}
+
+.hud-ctrl-disc svg * {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.6;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.hud-ctrl-disc svg .is-fill {
+  fill: currentColor;
+  stroke: none;
+}
+
+.hud-ctrl:hover .hud-ctrl-disc,
+.hud-ctrl:focus-visible .hud-ctrl-disc {
+  color: var(--hud-brass);
+  transform: scale(1.12);
+}
+
+.hud-ctrl:focus-visible .hud-ctrl-disc {
+  box-shadow:
+    0 0 0 2px var(--hud-ink),
+    0 0 0 3px var(--hud-brass);
+}
+
+.hud-ctrl[aria-pressed="true"] .hud-ctrl-disc {
+  color: var(--hud-brass);
+  transform: scale(1.18);
+  box-shadow:
+    0 0 0 2px var(--hud-ink),
+    0 0 0 3px var(--hud-brass);
+}
+
+.hud-ctrl-label {
+  position: absolute;
+  top: calc(var(--disc-pad-top) + var(--disc-size) + var(--label-gap));
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 0.6875rem;
+  font-weight: 500;
+  line-height: 1.2;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  color: var(--hud-label);
+  opacity: 0;
+  pointer-events: none;
+  transition:
+    opacity 150ms var(--ease-out-quart),
+    color 150ms var(--ease-out-quart);
+}
+
+.hud-ctrl:hover .hud-ctrl-label,
+.hud-ctrl:focus-visible .hud-ctrl-label {
+  opacity: 1;
+}
+
+.hud-ctrl[aria-pressed="true"]:hover .hud-ctrl-label,
+.hud-ctrl[aria-pressed="true"]:focus-visible .hud-ctrl-label {
+  color: var(--hud-brass);
+}
+
+@media (max-width: 560px) {
+  .btn-group {
+    --disc-size: 28px;
+    --disc-pad-top: 8px;
+    --label-gap: 8px;
+    top: 12px;
+    left: 12px;
+    transform: none;
   }
 
-  &.is-active,
-  &[aria-pressed="true"] {
-    fill: oklch(0.78 0.11 85);
+  .hud-ctrl {
+    width: 44px;
+    height: 44px;
+  }
+
+  .btn-group::before {
+    left: 10px;
+    right: 10px;
+    top: 22px;
+  }
+
+  .hud-ctrl-label {
+    font-size: 0.625rem;
+    letter-spacing: 0.04em;
+  }
+
+  .hud-ctrl:hover .hud-ctrl-label {
+    opacity: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hud-ctrl-disc,
+  .hud-ctrl-label {
+    transition: none;
   }
 }

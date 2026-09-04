@@ -12,14 +12,11 @@
 - Moons
 - POI labels
 - Custom controls
-- Orbit paths
+- Orbit trails
 - Sun bloom effect
 
 ## Planned changes
 
-- [ ] Earth night time texture
-- [ ] Planet information panel
-- [ ] Accuracy of distances
 - [ ] Improve shadow quality
 
 ## Setup

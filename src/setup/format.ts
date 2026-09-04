@@ -1,21 +1,35 @@
 export const formatKm = (km: number): string =>
   `${Math.round(km).toLocaleString("en-GB")} km`;
 
+export type ScientificMass = {
+  mantissa: string;
+  exponent: number;
+};
+
+export const formatMass = (kg: number): ScientificMass => {
+  let exponent = Math.floor(Math.log10(kg));
+  let coefficient = kg / 10 ** exponent;
+  const rounded = Number(coefficient.toFixed(2));
+  if (rounded >= 10) {
+    coefficient = 1;
+    exponent += 1;
+  } else {
+    coefficient = rounded;
+  }
+
+  const mantissa = coefficient.toLocaleString("en-GB", {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  });
+
+  return { mantissa, exponent };
+};
+
 export const formatDistance = (millionKm: number): string => {
   if (millionKm < 1) {
     return `${Math.round(millionKm * 1_000_000).toLocaleString("en-GB")} km`;
   }
   return `${millionKm.toLocaleString("en-GB")} million km`;
-};
-
-export const formatPeriod = (days: number): string => {
-  const abs = Math.abs(days);
-  if (abs >= 365) {
-    const years = abs / 365.25;
-    const rounded = years >= 10 ? years.toFixed(0) : years.toFixed(1);
-    return retrograde(`${rounded} year orbit`, days);
-  }
-  return retrograde(`${Math.round(abs)} day orbit`, days);
 };
 
 export const formatPeriodDuration = (days: number): string => {

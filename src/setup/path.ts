@@ -1,29 +1,82 @@
 import * as THREE from "three";
+import { Line2 } from "three/examples/jsm/lines/Line2";
+import { LineGeometry } from "three/examples/jsm/lines/LineGeometry";
+import { LineMaterial } from "three/examples/jsm/lines/LineMaterial";
+import { bodyColorThree } from "./swatch";
 
-export const createPath = (radius: number) => {
-  const points: THREE.Vector3[] = [];
-  const count = 1024;
+const ARC_SEGS = 48;
+const TRAIL_FRACTION = 0.16;
+const LINE_WIDTH = 2.4;
 
-  for (let i = 0; i < count; i++) {
-    const theta = (i / count) * Math.PI * 2;
-    const x = Math.sin(theta);
-    const z = Math.cos(theta);
-    points.push(new THREE.Vector3(x, 0, z));
+const trailResolution = new THREE.Vector2(1, 1);
+
+export const setTrailResolution = (width: number, height: number) => {
+  trailResolution.set(width, height);
+};
+
+const createTrailGeometry = (
+  orbitRadius: number,
+  bodyRadius: number,
+  color: THREE.Color
+): LineGeometry => {
+  const trailAngle = Math.PI * 2 * TRAIL_FRACTION;
+  const gap = Math.asin(
+    Math.min(0.85, (bodyRadius * 1.45) / Math.max(orbitRadius, bodyRadius * 2))
+  );
+
+  const positions: number[] = [];
+  const colors: number[] = [];
+
+  for (let i = 0; i <= ARC_SEGS; i++) {
+    const t = i / ARC_SEGS;
+    const theta = -(gap + trailAngle * (1 - t));
+    positions.push(
+      Math.sin(theta) * orbitRadius,
+      0,
+      Math.cos(theta) * orbitRadius
+    );
+    const fade = t * t;
+    colors.push(color.r * fade, color.g * fade, color.b * fade);
   }
 
-  points.push(new THREE.Vector3(0, 0, 1));
+  const geometry = new LineGeometry();
+  geometry.setPositions(positions);
+  geometry.setColors(colors);
+  return geometry;
+};
 
-  const material = new THREE.LineBasicMaterial({
-    color: "white",
+export const createPath = (
+  orbitRadius: number,
+  bodyRadius: number,
+  name: string
+): THREE.Mesh => {
+  const color = bodyColorThree(name);
+  const material = new LineMaterial({
+    color: 0xffffff,
+    linewidth: LINE_WIDTH,
+    vertexColors: true,
+    dashed: false,
+    worldUnits: false,
     transparent: true,
-    opacity: 0.25,
+    opacity: 0,
+    depthTest: true,
+    depthWrite: false,
+    toneMapped: false,
   });
+  material.uniforms.resolution.value = trailResolution;
 
-  const geometry = new THREE.BufferGeometry().setFromPoints(points);
-
-  const mesh = new THREE.Line(geometry, material);
-  mesh.scale.set(radius, radius, radius);
+  const mesh = new Line2(createTrailGeometry(orbitRadius, bodyRadius, color), material);
   mesh.visible = false;
-
+  mesh.frustumCulled = false;
+  mesh.userData.ignorePick = true;
+  mesh.userData.trailOpacity = 0;
+  mesh.renderOrder = 2;
   return mesh;
+};
+
+export const setTrailOpacity = (trail: THREE.Mesh, opacity: number) => {
+  const material = trail.material as LineMaterial;
+  material.opacity = opacity;
+  trail.userData.trailOpacity = opacity;
+  trail.visible = opacity > 0.01;
 };

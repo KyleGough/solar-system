@@ -1,29 +1,9 @@
 import planetData from "../planets.json";
 import type { Body } from "./planetary-object";
 import { isIntroActive } from "./loading";
+import { BODY_SWATCH, FALLBACK_SWATCH } from "./swatch";
 
 const bodies = planetData as Body[];
-
-const SWATCH: Record<string, { color: string; size: string }> = {
-  Sun: { color: "oklch(0.82 0.14 85)", size: "20px" },
-  Mercury: { color: "oklch(0.62 0.03 70)", size: "10px" },
-  Venus: { color: "oklch(0.78 0.08 95)", size: "12px" },
-  Earth: { color: "oklch(0.62 0.1 230)", size: "12px" },
-  Mars: { color: "oklch(0.58 0.12 40)", size: "11px" },
-  Jupiter: { color: "oklch(0.72 0.1 65)", size: "18px" },
-  Saturn: { color: "oklch(0.78 0.08 85)", size: "16px" },
-  Uranus: { color: "oklch(0.72 0.08 200)", size: "14px" },
-  Neptune: { color: "oklch(0.52 0.12 250)", size: "14px" },
-  Moon: { color: "oklch(0.7 0.015 80)", size: "9px" },
-  Io: { color: "oklch(0.78 0.12 95)", size: "9px" },
-  Europa: { color: "oklch(0.82 0.04 85)", size: "9px" },
-  Ganymede: { color: "oklch(0.58 0.03 70)", size: "9px" },
-  Callisto: { color: "oklch(0.45 0.03 60)", size: "9px" },
-  Titan: { color: "oklch(0.68 0.1 70)", size: "9px" },
-  Triton: { color: "oklch(0.72 0.04 40)", size: "9px" },
-};
-
-const FALLBACK_SWATCH = { color: "oklch(0.7 0.02 85)", size: "10px" };
 
 const primaries: Body[] = bodies
   .filter(
@@ -81,7 +61,7 @@ const isEditableTarget = (target: EventTarget | null): boolean => {
 };
 
 const createBodyButton = (body: Body, extraClass = ""): HTMLButtonElement => {
-  const swatch = SWATCH[body.name] ?? FALLBACK_SWATCH;
+  const swatch = BODY_SWATCH[body.name] ?? FALLBACK_SWATCH;
   const button = document.createElement("button");
   button.type = "button";
   button.className = extraClass ? `orbit-nav-body ${extraClass}` : "orbit-nav-body";

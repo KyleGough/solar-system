@@ -1,19 +1,100 @@
-$label-img-size: 15px;
-
-.label {
-  color: white;
-  font-weight: 200;
-  font-size: 0.8rem;
-  width: 70px;
-  text-align: center;
+.poi-layer {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
   pointer-events: none;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 6px;
+}
 
-  img {
-    width: $label-img-size;
-    height: $label-img-size;
+.poi {
+  --poi-brass: oklch(0.78 0.11 85);
+  --poi-dim: oklch(0.78 0.04 85);
+  --poi-ink: oklch(0.12 0.02 48);
+  --ease-out-quart: cubic-bezier(0.25, 1, 0.5, 1);
+
+  appearance: none;
+  position: relative;
+  display: flex;
+  align-items: center;
+  margin: 0;
+  padding: 8px 0;
+  border: none;
+  background: transparent;
+  color: var(--poi-dim);
+  font-family: "IBM Plex Sans", ui-sans-serif, system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  cursor: pointer;
+  pointer-events: auto;
+  white-space: nowrap;
+  user-select: none;
+  transition: color 150ms var(--ease-out-quart);
+}
+
+.poi::before {
+  content: "";
+  position: absolute;
+  inset: -6px -4px;
+}
+
+.poi:focus {
+  outline: none;
+}
+
+.poi:hover,
+.poi:focus-visible,
+.poi.is-active {
+  color: var(--poi-brass);
+}
+
+.poi:focus-visible .poi-name {
+  box-shadow: 0 0 0 1px var(--poi-brass);
+}
+
+.poi.is-flip {
+  flex-direction: row-reverse;
+}
+
+.poi-mark {
+  position: relative;
+  z-index: 1;
+  width: 7px;
+  height: 7px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  background: currentColor;
+  box-shadow: 0 0 0 1px var(--poi-ink);
+}
+
+.poi.is-active .poi-mark {
+  width: 8px;
+  height: 8px;
+  box-shadow:
+    0 0 0 2px var(--poi-ink),
+    0 0 0 3px var(--poi-brass);
+}
+
+.poi-tick {
+  width: 16px;
+  height: 1.5px;
+  flex-shrink: 0;
+  background: currentColor;
+  opacity: 0.8;
+}
+
+.poi-name {
+  margin: 0 0 0 8px;
+  padding: 1px 2px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  line-height: 1.2;
+}
+
+.poi.is-flip .poi-name {
+  margin: 0 8px 0 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .poi {
+    transition: none;
   }
 }
