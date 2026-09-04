@@ -10,6 +10,8 @@ import { LAYERS } from "../constants";
 export interface Body {
   name: string;
   radius: number;
+  /** Mass in kilograms. Omitted for non-physical bodies such as rings. */
+  mass?: number;
   distance: number;
   period: number;
   daylength: number;

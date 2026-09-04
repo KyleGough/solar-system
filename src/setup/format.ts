@@ -1,6 +1,30 @@
 export const formatKm = (km: number): string =>
   `${Math.round(km).toLocaleString("en-GB")} km`;
 
+export type ScientificMass = {
+  mantissa: string;
+  exponent: number;
+};
+
+export const formatMass = (kg: number): ScientificMass => {
+  let exponent = Math.floor(Math.log10(kg));
+  let coefficient = kg / 10 ** exponent;
+  const rounded = Number(coefficient.toFixed(2));
+  if (rounded >= 10) {
+    coefficient = 1;
+    exponent += 1;
+  } else {
+    coefficient = rounded;
+  }
+
+  const mantissa = coefficient.toLocaleString("en-GB", {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  });
+
+  return { mantissa, exponent };
+};
+
 export const formatDistance = (millionKm: number): string => {
   if (millionKm < 1) {
     return `${Math.round(millionKm * 1_000_000).toLocaleString("en-GB")} km`;

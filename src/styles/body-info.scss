@@ -139,7 +139,7 @@
   row-gap: 0.55rem;
   margin-top: 1.15rem;
   font-size: 0.75rem;
-  line-height: 1.35;
+  line-height: 1.55;
 }
 
 .body-info-stats dt {
@@ -154,6 +154,16 @@
   letter-spacing: 0.02em;
   text-align: right;
   color: var(--brass);
+}
+
+.body-info-stats dd sup {
+  font-size: 0.85em;
+  font-weight: 500;
+  line-height: 0;
+  vertical-align: baseline;
+  position: relative;
+  top: -0.45em;
+  margin-inline: 0.04em;
 }
 
 .hud-end {

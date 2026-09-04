@@ -5,6 +5,7 @@ import {
   formatDistance,
   formatHours,
   formatKm,
+  formatMass,
   formatPeriodDuration,
   formatTilt,
 } from "./format";
@@ -90,12 +91,21 @@ const closePanel = () => {
   canvasEl?.focus({ preventScroll: true });
 };
 
-const appendStat = (root: HTMLElement, label: string, value: string) => {
+const appendStat = (root: HTMLElement, label: string, value: string | Node) => {
   const dt = document.createElement("dt");
   dt.textContent = label;
   const dd = document.createElement("dd");
-  dd.textContent = value;
+  dd.append(value);
   root.append(dt, dd);
+};
+
+const massValue = (kg: number): DocumentFragment => {
+  const { mantissa, exponent } = formatMass(kg);
+  const value = document.createDocumentFragment();
+  const sup = document.createElement("sup");
+  sup.textContent = String(exponent);
+  value.append(`${mantissa} × 10`, sup, " kg");
+  return value;
 };
 
 const fillStats = (body: Body, root: HTMLElement) => {
@@ -105,8 +115,14 @@ const fillStats = (body: Body, root: HTMLElement) => {
   }
 };
 
-const statsFor = (body: Body): Array<[string, string]> => {
-  const rows: Array<[string, string]> = [["Radius", formatKm(body.radius)]];
+const statsFor = (body: Body): Array<[string, string | Node]> => {
+  const rows: Array<[string, string | Node]> = [
+    ["Radius", formatKm(body.radius)],
+  ];
+
+  if (body.mass != null) {
+    rows.push(["Mass", massValue(body.mass)]);
+  }
 
   if (body.orbits && body.distance > 0) {
     rows.push(["Distance", formatDistance(body.distance)]);

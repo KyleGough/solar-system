@@ -2,6 +2,7 @@
   {
     "name": "Sun",
     "radius": 695700,
+    "mass": 1.9885e+30,
     "distance": 0,
     "period": 1,
     "daylength": 600,
@@ -26,6 +27,7 @@
   {
     "name": "Mercury",
     "radius": 2439.4,
+    "mass": 3.301e+23,
     "distance": 56,
     "period": 88,
     "daylength": 4222.6,
@@ -42,6 +44,7 @@
   {
     "name": "Venus",
     "radius": 6051.8,
+    "mass": 4.867e+24,
     "distance": 108,
     "period": 224,
     "daylength": 2802,
@@ -58,6 +61,7 @@
   {
     "name": "Earth",
     "radius": 6371,
+    "mass": 5.972e+24,
     "distance": 152,
     "period": 365,
     "daylength": 24,
@@ -79,6 +83,7 @@
   {
     "name": "Moon",
     "radius": 1737,
+    "mass": 7.342e+22,
     "distance": 0.38,
     "period": 0,
     "daylength": -28,
@@ -115,6 +120,7 @@
   {
     "name": "Mars",
     "radius": 3389.5,
+    "mass": 6.417e+23,
     "distance": 247,
     "period": 686,
     "daylength": 24.7,
@@ -162,6 +168,7 @@
   {
     "name": "Jupiter",
     "radius": 69911,
+    "mass": 1.898e+27,
     "distance": 741,
     "period": 4332,
     "daylength": 9.9,
@@ -184,6 +191,7 @@
   {
     "name": "Saturn",
     "radius": 58232,
+    "mass": 5.683e+26,
     "distance": 1463,
     "period": 10755,
     "daylength": 10.7,
@@ -206,6 +214,7 @@
   {
     "name": "Uranus",
     "radius": 25362,
+    "mass": 8.681e+25,
     "distance": 2938,
     "period": 30687,
     "daylength": 17.2,
@@ -221,6 +230,7 @@
   {
     "name": "Neptune",
     "radius": 24622,
+    "mass": 1.024e+26,
     "distance": 4474,
     "period": 60190,
     "daylength": 16.1,
@@ -257,6 +267,7 @@
   {
     "name": "Ganymede",
     "radius": 2634,
+    "mass": 1.482e+23,
     "distance": 1.07,
     "period": 7.15,
     "daylength": 9.9,
@@ -272,6 +283,7 @@
   {
     "name": "Titan",
     "radius": 2574,
+    "mass": 1.345e+23,
     "distance": 1.2,
     "period": 15.95,
     "daylength": 10.7,
@@ -287,6 +299,7 @@
   {
     "name": "Callisto",
     "radius": 2410,
+    "mass": 1.076e+23,
     "distance": 1.88,
     "period": 16.69,
     "daylength": 9.9,
@@ -302,6 +315,7 @@
   {
     "name": "Io",
     "radius": 1821,
+    "mass": 8.932e+22,
     "distance": 0.42,
     "period": 1.77,
     "daylength": 9.9,
@@ -317,6 +331,7 @@
   {
     "name": "Europa",
     "radius": 1560,
+    "mass": 4.8e+22,
     "distance": 0.67,
     "period": 3.55,
     "daylength": 9.9,
@@ -332,6 +347,7 @@
   {
     "name": "Triton",
     "radius": 1353,
+    "mass": 2.139e+22,
     "distance": 0.35,
     "period": -5.87,
     "daylength": 16.1,
