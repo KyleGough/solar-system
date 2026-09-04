@@ -1,7 +1,7 @@
 {
   "name": "threejs-solar-system",
   "private": true,
-  "version": "0.0.0",
+  "version": "0.1.0",
   "type": "module",
   "engines": {
     "node": ">=24"
