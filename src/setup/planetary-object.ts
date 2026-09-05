@@ -27,6 +27,14 @@ export interface Body {
   textures: TexturePaths;
   type: string;
   tilt: number;
+  /** Orbital inclination in degrees to the parent’s orbital plane. */
+  inclination?: number;
+  /**
+   * If true, this orbit is attached to the parent’s equator (tilted, not
+   * spinning). Moons and rings default to that; planets use the parent’s
+   * inertial frame so inclination is measured from the ecliptic.
+   */
+  equatorialOrbit?: boolean;
   orbits?: string;
   labels?: PointOfInterest[];
   description?: string;
@@ -76,7 +84,15 @@ export class PlanetaryObject {
   cloudPeriod?: number; // in hours
   orbits?: string;
   type: string;
-  tilt: number; // degrees
+  tilt: number; // radians
+  inclination: number; // radians
+  equatorialOrbit: boolean;
+  /** Inertial frame at the body centre. No axial tilt, no day spin. */
+  origin: THREE.Group;
+  /** Axial tilt only. Parent of the globe; moons/rings may attach here. */
+  equator: THREE.Group;
+  /** This body’s orbital plane (inclination). Parent of origin and path. */
+  orbit: THREE.Group;
   mesh: THREE.Mesh;
   atmosphereMesh?: THREE.Mesh;
   path?: THREE.Mesh;
@@ -105,6 +121,9 @@ export class PlanetaryObject {
     this.orbits = orbits;
     this.type = type;
     this.tilt = degreesToRadians(tilt);
+    this.inclination = degreesToRadians(body.inclination ?? 0);
+    this.equatorialOrbit =
+      body.equatorialOrbit ?? (type === "moon" || type === "ring");
     this.rng = body.offset ?? Math.random() * 2 * Math.PI;
 
     this.loadTextures(body.textures);
@@ -113,10 +132,27 @@ export class PlanetaryObject {
       throw new Error(`Ring "${body.name}" must be constructed with its parent`);
     }
 
+    this.orbit = new THREE.Group();
+    this.orbit.name = `${body.name}-orbit`;
+    this.orbit.rotation.x = this.inclination;
+
+    this.origin = new THREE.Group();
+    this.origin.name = `${body.name}-origin`;
+    this.orbit.add(this.origin);
+
+    this.equator = new THREE.Group();
+    this.equator.name = `${body.name}-equator`;
+    if (type !== "ring") {
+      this.equator.rotation.x = this.tilt;
+    }
+    this.origin.add(this.equator);
+
     this.mesh = this.createMesh(parent);
+    this.equator.add(this.mesh);
 
     if (this.orbits && this.distance > 0 && type !== "ring") {
       this.path = createPath(this.distance, this.radius, body.name);
+      this.orbit.add(this.path);
     }
 
     if (this.atmosphere.map) {
@@ -231,7 +267,6 @@ export class PlanetaryObject {
     }
 
     const sphere = new THREE.Mesh(geometry, material);
-    sphere.rotation.x = this.tilt;
     sphere.castShadow = true;
     sphere.receiveShadow = true;
 
@@ -275,7 +310,7 @@ export class PlanetaryObject {
   };
 
   private getOrbitRotation = (elapsedTime: number) => {
-    return this.daylength ? (elapsedTime * timeFactor) / (this.period * 24) : 0;
+    return this.period ? (elapsedTime * timeFactor) / (this.period * 24) : 0;
   };
 
   /**
@@ -288,9 +323,9 @@ export class PlanetaryObject {
     const orbitRotation = this.getOrbitRotation(elapsedTime);
     const orbit = orbitRotation + this.rng;
 
-    // Circular rotation around orbit.
-    this.mesh.position.x = Math.sin(orbit) * this.distance;
-    this.mesh.position.z = Math.cos(orbit) * this.distance;
+    // Move the inertial origin; the globe only spins in place.
+    this.origin.position.x = Math.sin(orbit) * this.distance;
+    this.origin.position.z = Math.cos(orbit) * this.distance;
     if (this.path) {
       this.path.rotation.y = orbit;
     }
@@ -313,7 +348,7 @@ export class PlanetaryObject {
    * Camera distance used when this body becomes the focus.
    */
   getFocusDistance = (): number => {
-    if (this.mesh.getObjectByName("rings")) {
+    if (this.origin.getObjectByName("rings")) {
       return this.radius * RING_OUTER * 1.55;
     }
     return this.radius * 2.25;

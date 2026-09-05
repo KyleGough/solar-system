@@ -147,6 +147,10 @@ const statsFor = (body: Body): Array<[string, string | Node]> => {
     rows.push(["Orbital period", formatPeriodDuration(body.period)]);
   }
 
+  if (body.inclination) {
+    rows.push(["Orbital inclination", formatTilt(body.inclination)]);
+  }
+
   if (body.type !== "moon" && body.type !== "star") {
     rows.push(["Day length", formatHours(body.daylength)]);
   }

@@ -1,10 +1,11 @@
+import type { Scene } from "three";
 import planetData from "../planets.json";
 import { Body, PlanetaryObject } from "./planetary-object";
 import { setTextureCount } from "./textures";
 
 export type SolarSystem = Record<string, PlanetaryObject>;
 
-export const createSolarSystem = (scene: THREE.Scene): SolarSystem => {
+export const createSolarSystem = (scene: Scene): SolarSystem => {
   const solarSystem: SolarSystem = {};
   let textureCount = 0;
 
@@ -12,10 +13,6 @@ export const createSolarSystem = (scene: THREE.Scene): SolarSystem => {
 
   for (const planet of planets) {
     const name = planet.name;
-
-    if (planet.period === 0 && planet.orbits) {
-      planet.period = planet.daylength / solarSystem[planet.orbits].daylength;
-    }
 
     const parent = planet.orbits ? solarSystem[planet.orbits] : undefined;
     const object = new PlanetaryObject(planet, parent);
@@ -27,15 +24,14 @@ export const createSolarSystem = (scene: THREE.Scene): SolarSystem => {
     textureCount += Object.keys(planet.textures).length;
 
     if (object.orbits) {
-      const parentMesh = solarSystem[object.orbits].mesh;
-      parentMesh.add(object.mesh);
-      if (object.path) {
-        parentMesh.add(object.path);
-      }
+      const host = solarSystem[object.orbits];
+      const parentFrame = object.equatorialOrbit ? host.equator : host.origin;
+      parentFrame.add(object.orbit);
+    } else {
+      scene.add(object.orbit);
     }
   }
 
-  scene.add(solarSystem["Sun"].mesh);
   setTextureCount(textureCount);
 
   return solarSystem;
