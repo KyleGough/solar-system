@@ -1,7 +1,7 @@
 export default {
   root: "src/",
   publicDir: "../static/",
-  base: process.env.VITE_BASE_PATH || "/solar-system/",
+  base: "./",  // <-- Use relative paths for local serving
   server: {
     host: true,
     open: false,
