@@ -20,7 +20,6 @@
   <div id="intro" class="intro" role="dialog" aria-modal="true" aria-busy="true" aria-labelledby="intro-title"
     aria-describedby="intro-body">
     <div class="intro-panel">
-      <p class="intro-kicker">Created by Kyle Gough</p>
       <h1 id="intro-title">Solar System Model</h1>
       <p class="intro-body" id="intro-body">
         An interactive 3D model of the Sun, planets, and major moons, with orbits,
@@ -70,15 +69,18 @@
     </aside>
   </div>
   <div class="btn-group" role="toolbar" aria-label="View controls">
-    <a class="hud-ctrl" id="btn-github" href="https://github.com/KyleGough/solar-system" target="_blank"
-      rel="noopener noreferrer" aria-label="View source">
+    <button class="hud-ctrl" id="btn-run" type="button" aria-label="Pause simulation" aria-pressed="true">
       <span class="hud-ctrl-disc" aria-hidden="true">
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-          <path d="M8.5 7 4 12l4.5 5M15.5 7 20 12l-4.5 5" />
+        <svg class="icon-pause" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+          <rect class="is-fill" x="7.6" y="6.6" width="2.8" height="10.8" rx="0.6" />
+          <rect class="is-fill" x="13.6" y="6.6" width="2.8" height="10.8" rx="0.6" />
+        </svg>
+        <svg class="icon-play" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+          <path class="is-fill" d="M9 6.8v10.4L18.6 12z" />
         </svg>
       </span>
-      <span class="hud-ctrl-label">Source</span>
-    </a>
+      <span class="hud-ctrl-label">Pause</span>
+    </button>
     <button class="hud-ctrl" id="btn-labels" type="button" aria-label="Show labels" aria-pressed="true">
       <span class="hud-ctrl-disc" aria-hidden="true">
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
@@ -106,11 +108,12 @@
       </span>
       <span class="hud-ctrl-label">Spin</span>
     </button>
-    <button class="hud-ctrl" id="btn-settings" type="button" aria-label="Simulation controls" aria-pressed="false">
+    <button class="hud-ctrl" id="btn-settings" type="button" aria-label="Simulation controls" aria-pressed="false" hidden>
       <span class="hud-ctrl-disc" aria-hidden="true">
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
           <circle cx="12" cy="12" r="3" />
-          <path d="M12 5.2v-2M12 20.8v-2M18.8 12h2M3.2 12h2M16.6 7.4l1.5-1.5M5.9 18.1l1.5-1.5M16.6 16.6l1.5 1.5M5.9 5.9l1.5 1.5" />
+          <path
+            d="M12 5.2v-2M12 20.8v-2M18.8 12h2M3.2 12h2M16.6 7.4l1.5-1.5M5.9 18.1l1.5-1.5M16.6 16.6l1.5 1.5M5.9 5.9l1.5 1.5" />
         </svg>
       </span>
       <span class="hud-ctrl-label">Controls</span>

@@ -35,6 +35,7 @@ export const createStarfield = (): THREE.Points => {
     opacity: 0.85,
     sizeAttenuation: false,
     depthWrite: false,
+    toneMapped: false,
   });
 
   const stars = new THREE.Points(geometry, material);

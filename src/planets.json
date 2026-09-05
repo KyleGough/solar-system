@@ -52,19 +52,20 @@
     "atmosphereOpacity": 0.9,
     "atmosphereGlow": {
       "color": [
-        0.96,
-        0.9,
-        0.72
+        0.9255,
+        0.8235,
+        0.5176
       ],
       "mieColor": [
-        1.0,
-        0.92,
-        0.7
+        0.702,
+        0.6,
+        0.302
       ],
-      "intensity": 0.5,
-      "scale": 1.042,
-      "height": 0.012,
-      "mie": 0.45
+      "intensity": 2.43,
+      "scale": 0.996,
+      "height": 0,
+      "mie": 0.43,
+      "scatter": 0.93
     },
     "type": "planet",
     "orbits": "Sun",
@@ -89,17 +90,18 @@
       "color": [
         0.28,
         0.52,
-        1.0
+        1
       ],
       "mieColor": [
-        1.0,
+        1,
         0.68,
         0.38
       ],
-      "intensity": 1.4,
-      "scale": 1.038,
-      "height": 0.01,
-      "mie": 0.32
+      "intensity": 0.28,
+      "scale": 1.027,
+      "height": 0.016,
+      "mie": 0.32,
+      "scatter": 0.42
     },
     "type": "planet",
     "orbits": "Sun",
@@ -161,19 +163,20 @@
     "daylength": 24.7,
     "atmosphereGlow": {
       "color": [
-        0.82,
-        0.5,
-        0.32
+        0.6549,
+        0.3412,
+        0.1725
       ],
       "mieColor": [
-        0.95,
-        0.48,
-        0.22
+        0.2431,
+        0.0941,
+        0.0157
       ],
-      "intensity": 0.78,
-      "scale": 1.034,
-      "height": 0.01,
-      "mie": 0.4
+      "intensity": 1.17,
+      "scale": 0.98,
+      "height": 0.022,
+      "mie": 0.56,
+      "scatter": 0.32
     },
     "type": "planet",
     "orbits": "Sun",
@@ -245,14 +248,15 @@
         0.95
       ],
       "mieColor": [
-        1.0,
+        1,
         0.86,
         0.65
       ],
-      "intensity": 1.08,
-      "scale": 1.024,
-      "height": 0.008,
-      "mie": 0.18
+      "intensity": 4,
+      "scale": 0.958,
+      "height": 0,
+      "mie": 0.51,
+      "scatter": 0.82
     },
     "type": "planet",
     "orbits": "Sun",
@@ -287,14 +291,15 @@
         0.7
       ],
       "mieColor": [
-        1.0,
-        0.9,
-        0.62
+        0.9176,
+        0.6667,
+        0
       ],
-      "intensity": 0.88,
-      "scale": 1.012,
-      "height": 0.004,
-      "mie": 0.14
+      "intensity": 2.17,
+      "scale": 0.9645,
+      "height": 0,
+      "mie": 0.82,
+      "scatter": 0.79
     },
     "type": "planet",
     "orbits": "Sun",
@@ -330,14 +335,15 @@
         0.84
       ],
       "mieColor": [
-        0.78,
-        0.94,
-        0.95
+        1,
+        1,
+        1
       ],
-      "intensity": 0.55,
-      "scale": 1.042,
-      "height": 0.07,
-      "mie": 0.1
+      "intensity": 4,
+      "scale": 0.98,
+      "height": 0.003,
+      "mie": 1.19,
+      "scatter": 0.82
     },
     "type": "planet",
     "orbits": "Sun",
@@ -357,19 +363,20 @@
     "daylength": 16.1,
     "atmosphereGlow": {
       "color": [
-        0.32,
-        0.52,
-        1.0
+        0.28,
+        0.48,
+        0.78
       ],
       "mieColor": [
-        0.55,
-        0.72,
-        1.0
+        0.48,
+        0.66,
+        0.88
       ],
-      "intensity": 1.25,
-      "scale": 1.038,
-      "height": 0.014,
-      "mie": 0.12
+      "intensity": 0.81,
+      "scale": 0.98,
+      "height": 0,
+      "mie": 0.43,
+      "scatter": 0.36
     },
     "type": "planet",
     "orbits": "Sun",
@@ -434,14 +441,15 @@
         0.16
       ],
       "mieColor": [
-        1.0,
+        1,
         0.58,
         0.22
       ],
-      "intensity": 0.355,
-      "scale": 1.0425,
-      "height": 0.013,
-      "mie": 0.7
+      "intensity": 0.86,
+      "scale": 1.0115,
+      "height": 0,
+      "mie": 0.7,
+      "scatter": 0.32
     },
     "type": "moon",
     "orbits": "Saturn",

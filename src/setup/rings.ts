@@ -60,6 +60,8 @@ void main() {
   vec3 color = texel.rgb * diffuse * lit + texel.rgb * 0.045;
 
   gl_FragColor = vec4( color, texel.a );
+  #include <tonemapping_fragment>
+  #include <encodings_fragment>
 }
 `;
 

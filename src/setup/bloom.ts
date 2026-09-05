@@ -42,6 +42,7 @@ const mixFragment = `
     float visible = step(viewZ, sunViewZ);
 
     gl_FragColor = base + bloom * visible;
+    #include <encodings_fragment>
   }
 `;
 

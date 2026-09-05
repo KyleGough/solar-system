@@ -3,8 +3,11 @@ import { createRingMesh, RING_OUTER } from "./rings";
 import { createPath } from "./path";
 import { loadTexture } from "./textures";
 import { applyNightLights } from "./night-lights";
+import { applyDaysideRelief } from "./dayside-relief";
 import {
   createAtmosphereGlow,
+  DEFAULT_MIE_COLOR,
+  updateAtmosphereGlow,
   type AtmosphereGlowParams,
 } from "./atmosphere-glow";
 import { Label } from "./label";
@@ -81,10 +84,12 @@ export class PlanetaryObject {
   map!: THREE.Texture;
   bumpMap?: THREE.Texture;
   normalMap?: THREE.Texture;
-  specularMap?: THREE.Texture;
+  roughnessMap?: THREE.Texture;
   nightMap?: THREE.Texture;
   atmosphere: Atmosphere = {};
   atmosphereOpacity?: number;
+  atmosphereGlow?: THREE.Group;
+  atmosphereGlowParams?: Required<AtmosphereGlowParams>;
   labels!: Label;
 
   constructor(body: Body, parent?: PlanetaryObject) {
@@ -120,7 +125,18 @@ export class PlanetaryObject {
     }
 
     if (body.atmosphereGlow) {
-      this.mesh.add(createAtmosphereGlow(this.radius, body.atmosphereGlow));
+      this.atmosphereGlowParams = {
+        ...body.atmosphereGlow,
+        color: [...body.atmosphereGlow.color],
+        mieColor: [...(body.atmosphereGlow.mieColor ?? DEFAULT_MIE_COLOR)],
+        mie: body.atmosphereGlow.mie ?? 0.3,
+        scatter: body.atmosphereGlow.scatter ?? 0,
+      };
+      this.atmosphereGlow = createAtmosphereGlow(
+        this.radius,
+        this.atmosphereGlowParams
+      );
+      this.mesh.add(this.atmosphereGlow);
     }
 
     this.initLabels(body.labels);
@@ -147,13 +163,13 @@ export class PlanetaryObject {
   private loadTextures(textures: TexturePaths) {
     this.map = loadTexture(textures.map);
     if (textures.bump) {
-      this.bumpMap = loadTexture(textures.bump);
+      this.bumpMap = loadTexture(textures.bump, "data");
     }
     if (textures.normal) {
-      this.normalMap = loadTexture(textures.normal);
+      this.normalMap = loadTexture(textures.normal, "data");
     }
     if (textures.specular) {
-      this.specularMap = loadTexture(textures.specular);
+      this.roughnessMap = loadTexture(textures.specular, "glossRoughness");
     }
     if (textures.night) {
       this.nightMap = loadTexture(textures.night);
@@ -162,7 +178,7 @@ export class PlanetaryObject {
       this.atmosphere.map = loadTexture(textures.atmosphere);
     }
     if (textures.atmosphereAlpha) {
-      this.atmosphere.alpha = loadTexture(textures.atmosphereAlpha);
+      this.atmosphere.alpha = loadTexture(textures.atmosphereAlpha, "data");
     }
   }
 
@@ -184,9 +200,10 @@ export class PlanetaryObject {
         color: new THREE.Color(2.5, 2.5, 2.5),
       });
     } else {
-      material = new THREE.MeshPhongMaterial({
+      material = new THREE.MeshStandardMaterial({
         map: this.map,
-        shininess: 5,
+        roughness: this.roughnessMap ? 1 : 0.9,
+        metalness: 0,
         toneMapped: true,
       });
 
@@ -200,8 +217,12 @@ export class PlanetaryObject {
         material.normalScale.set(1.4, 1.4);
       }
 
-      if (this.specularMap) {
-        material.specularMap = this.specularMap;
+      if (this.roughnessMap) {
+        material.roughnessMap = this.roughnessMap;
+      }
+
+      if (this.bumpMap || this.normalMap) {
+        applyDaysideRelief(material);
       }
 
       if (this.nightMap) {
@@ -229,12 +250,13 @@ export class PlanetaryObject {
   private createAtmosphereMesh = () => {
     const geometry = new THREE.SphereGeometry(this.radius + 0.0005, 64, 64);
 
-    const material = new THREE.MeshPhongMaterial({
+    const material = new THREE.MeshStandardMaterial({
       map: this.atmosphere?.map,
       transparent: true,
       opacity: this.atmosphereOpacity ?? 1,
       depthWrite: false,
-      shininess: 0,
+      roughness: 1,
+      metalness: 0,
     });
 
     if (this.atmosphere.alpha) {
@@ -302,5 +324,14 @@ export class PlanetaryObject {
    */
   getMinDistance = (): number => {
     return this.radius * 1.8;
+  };
+
+  applyAtmosphereGlow = () => {
+    if (!this.atmosphereGlow || !this.atmosphereGlowParams) return;
+    updateAtmosphereGlow(
+      this.atmosphereGlow,
+      this.radius,
+      this.atmosphereGlowParams
+    );
   };
 }
