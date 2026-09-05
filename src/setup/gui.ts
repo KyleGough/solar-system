@@ -12,7 +12,7 @@ export const options = {
   speed: 0.125,
 };
 
-const GLOW_BODIES = ["Mars", "Earth", "Venus", "Neptune"] as const;
+const GLOW_BODIES = ["Jupiter", "Titan", "Saturn", "Uranus"] as const;
 
 const roundGlow = (n: number): number => Number(n.toFixed(4));
 
