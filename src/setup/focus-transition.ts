@@ -80,6 +80,7 @@ const writeOverheadOffset = (
 export class FocusTransition {
   private flight: Flight | null = null;
   private rideSpin = false;
+  private readonly inertialRig = new THREE.Object3D();
   private readonly startPos = new THREE.Vector3();
   private readonly startLookAt = new THREE.Vector3();
   private readonly startUp = new THREE.Vector3();
@@ -99,6 +100,8 @@ export class FocusTransition {
   private readonly panQuatEnd = new THREE.Quaternion();
   private readonly panQuat = new THREE.Quaternion();
   private readonly identityQuat = new THREE.Quaternion();
+  private readonly spinUndo = new THREE.Quaternion();
+  private readonly axisY = new THREE.Vector3(0, 1, 0);
   private panRadius = 0;
 
   constructor(
@@ -107,7 +110,11 @@ export class FocusTransition {
     private readonly fakeCamera: THREE.PerspectiveCamera,
     private readonly controls: OrbitControls,
     private readonly solarSystem: SolarSystem
-  ) {}
+  ) {
+    this.inertialRig.name = "inertial-focus";
+    this.inertialRig.userData.ignorePick = true;
+    this.scene.add(this.inertialRig);
+  }
 
   isActive = (): boolean => this.flight !== null;
 
@@ -116,8 +123,8 @@ export class FocusTransition {
   destination = (): string | null => this.flight?.to ?? null;
 
   /**
-   * Keep the world-space camera beside the focused body as it orbits, without
-   * inheriting axial spin. Call after bodies tick, while not flying.
+   * Keep the camera beside the focused body as it orbits, without inheriting
+   * axial spin. Call after bodies tick, while not flying.
    */
   follow = (name: string): void => {
     if (this.rideSpin) {
@@ -125,16 +132,20 @@ export class FocusTransition {
     }
 
     const body = this.solarSystem[name];
-    body.mesh.updateWorldMatrix(true, false);
-    body.mesh.getWorldPosition(this.worldTarget);
-    this.targetDelta.subVectors(this.worldTarget, this.prevTarget);
+    this.syncInertialRig(body);
+
+    if (this.camera.parent === this.inertialRig) {
+      return;
+    }
+
+    this.targetDelta.subVectors(this.inertialRig.position, this.prevTarget);
     this.fakeCamera.position.add(this.targetDelta);
-    this.controls.target.copy(this.worldTarget);
-    this.prevTarget.copy(this.worldTarget);
+    this.controls.target.copy(this.inertialRig.position);
+    this.prevTarget.copy(this.inertialRig.position);
   };
 
   /**
-   * Parent the camera to the focused mesh (ride spin) or keep it in world space.
+   * Parent the camera to the focused mesh (ride spin) or to the inertial rig.
    * Ignored while a flight is in progress; complete() applies the latest mode.
    */
   setRideSpin = (ride: boolean, focusName: string): void => {
@@ -445,27 +456,40 @@ export class FocusTransition {
   /**
    * Snap the camera rig to the current ride/inertial mode without changing
    * the world viewpoint.
+   *
+   * OrbitControls bakes the orbit axis from `object.up` once, at construction.
+   * Both modes therefore keep `up` at (0, 1, 0) and parent the camera into a
+   * frame whose local Y is the body's pole, so drag yaw is the same on every
+   * body — including Uranus and Triton.
    */
   private applyRig = (focusName: string): void => {
     const body = this.solarSystem[focusName];
-    body.mesh.updateWorldMatrix(true, false);
+    this.syncInertialRig(body);
 
     if (this.rideSpin) {
       body.mesh.attach(this.camera);
-      this.fakeCamera.position.copy(this.camera.position);
-      this.fakeCamera.quaternion.copy(this.camera.quaternion);
-      this.fakeCamera.up.set(0, 1, 0);
-      this.camera.up.set(0, 1, 0);
-      this.controls.target.set(0, 0, 0);
-      return;
+    } else {
+      this.inertialRig.attach(this.camera);
     }
 
-    this.detachToWorld();
-    body.mesh.getWorldPosition(this.worldTarget);
-    this.controls.target.copy(this.worldTarget);
-    this.prevTarget.copy(this.worldTarget);
     this.fakeCamera.position.copy(this.camera.position);
     this.fakeCamera.quaternion.copy(this.camera.quaternion);
-    this.fakeCamera.up.copy(this.camera.up);
+    this.fakeCamera.up.set(0, 1, 0);
+    this.camera.up.set(0, 1, 0);
+    this.controls.target.set(0, 0, 0);
+  };
+
+  /**
+   * Place the rig at the body with the same tilt as the mesh, but without
+   * daily spin. Local Y is the spin axis; OrbitControls can then use the
+   * default (0, 1, 0) up vector.
+   */
+  private syncInertialRig = (body: { mesh: THREE.Object3D }): void => {
+    body.mesh.updateWorldMatrix(true, false);
+    body.mesh.getWorldPosition(this.inertialRig.position);
+    body.mesh.getWorldQuaternion(this.inertialRig.quaternion);
+    this.spinUndo.setFromAxisAngle(this.axisY, -body.mesh.rotation.y);
+    this.inertialRig.quaternion.multiply(this.spinUndo);
+    this.inertialRig.updateMatrixWorld();
   };
 }
