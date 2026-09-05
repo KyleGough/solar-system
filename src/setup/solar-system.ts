@@ -29,7 +29,9 @@ export const createSolarSystem = (scene: THREE.Scene): SolarSystem => {
     if (object.orbits) {
       const parentMesh = solarSystem[object.orbits].mesh;
       parentMesh.add(object.mesh);
-      object.path && parentMesh.add(object.path);
+      if (object.path) {
+        parentMesh.add(object.path);
+      }
     }
   }
 

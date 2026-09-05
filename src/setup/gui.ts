@@ -25,7 +25,11 @@ export const createGUI = (
     .add(options, "clock")
     .name("Run")
     .onChange((value: boolean) => {
-      value ? clock.start() : clock.stop();
+      if (value) {
+        clock.start();
+      } else {
+        clock.stop();
+      }
     });
 
   // Control the simulation speed

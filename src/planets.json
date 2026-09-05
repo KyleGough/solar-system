@@ -300,6 +300,7 @@
     "orbits": "Sun",
     "tilt": 26.73,
     "traversable": true,
+    "offset": 0,
     "textures": {
       "map": "./textures/saturn.jpg"
     },
