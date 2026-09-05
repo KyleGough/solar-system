@@ -48,13 +48,16 @@
     "distance": 108,
     "period": 224,
     "daylength": 2802,
+    "cloudPeriod": 96,
+    "atmosphereOpacity": 0.9,
     "type": "planet",
     "orbits": "Sun",
     "tilt": 2.64,
     "traversable": true,
     "textures": {
       "map": "./textures/venus.jpg",
-      "bump": "./textures/venus-bump.jpg"
+      "bump": "./textures/venus-bump.jpg",
+      "atmosphere": "./textures/venus-clouds.jpg"
     },
     "description": "Venus is a rocky planet wrapped in a thick carbon-dioxide atmosphere. Surface temperatures are high enough to melt lead, hotter than Mercury despite the greater distance from the Sun."
   },

@@ -26,6 +26,8 @@ export interface Body {
   traversable: boolean;
   offset?: number;
   stats?: Array<[string, string]>;
+  /** 0–1 opacity of the atmosphere mesh. Defaults to 1. */
+  atmosphereOpacity?: number;
 }
 
 interface TexturePaths {
@@ -76,6 +78,7 @@ export class PlanetaryObject {
   specularMap?: THREE.Texture;
   nightMap?: THREE.Texture;
   atmosphere: Atmosphere = {};
+  atmosphereOpacity?: number;
   labels!: Label;
 
   constructor(body: Body, parent?: PlanetaryObject) {
@@ -87,6 +90,7 @@ export class PlanetaryObject {
     this.period = period;
     this.daylength = daylength;
     this.cloudPeriod = cloudPeriod;
+    this.atmosphereOpacity = body.atmosphereOpacity;
     this.orbits = orbits;
     this.type = type;
     this.tilt = degreesToRadians(tilt);
@@ -218,6 +222,7 @@ export class PlanetaryObject {
     const material = new THREE.MeshPhongMaterial({
       map: this.atmosphere?.map,
       transparent: true,
+      opacity: this.atmosphereOpacity ?? 1,
       depthWrite: false,
       shininess: 0,
     });
