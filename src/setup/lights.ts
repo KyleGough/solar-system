@@ -24,7 +24,7 @@ export type Lights = {
 };
 
 export const createLights = (): Lights => {
-  const ambientLight = new THREE.AmbientLight(0xffffff, 0.02);
+  const ambientLight = new THREE.AmbientLight(0xffffff, 0.025);
   ambientLight.layers.enable(0);
   ambientLight.layers.enable(LAYERS.SUN_SPOT);
 

@@ -28,7 +28,7 @@ import {
 import { LAYERS } from "./constants";
 import type { PointOfInterest } from "./setup/label";
 
-THREE.ColorManagement.enabled = false;
+THREE.ColorManagement.enabled = true;
 
 // Canvas
 const canvas = document.querySelector("canvas.webgl") as HTMLElement;
@@ -290,7 +290,9 @@ const renderer = new THREE.WebGLRenderer({
   antialias: true,
 });
 
-renderer.outputColorSpace = THREE.LinearSRGBColorSpace;
+renderer.outputColorSpace = THREE.SRGBColorSpace;
+renderer.toneMapping = THREE.ACESFilmicToneMapping;
+renderer.toneMappingExposure = 1.15;
 renderer.setSize(sizes.width, sizes.height);
 renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 setTrailResolution(sizes.width, sizes.height);

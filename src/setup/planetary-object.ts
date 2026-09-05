@@ -3,6 +3,7 @@ import { createRingMesh, RING_OUTER } from "./rings";
 import { createPath } from "./path";
 import { loadTexture } from "./textures";
 import { applyNightLights } from "./night-lights";
+import { applyDaysideRelief } from "./dayside-relief";
 import {
   createAtmosphereGlow,
   type AtmosphereGlowParams,
@@ -81,7 +82,7 @@ export class PlanetaryObject {
   map!: THREE.Texture;
   bumpMap?: THREE.Texture;
   normalMap?: THREE.Texture;
-  specularMap?: THREE.Texture;
+  roughnessMap?: THREE.Texture;
   nightMap?: THREE.Texture;
   atmosphere: Atmosphere = {};
   atmosphereOpacity?: number;
@@ -147,13 +148,13 @@ export class PlanetaryObject {
   private loadTextures(textures: TexturePaths) {
     this.map = loadTexture(textures.map);
     if (textures.bump) {
-      this.bumpMap = loadTexture(textures.bump);
+      this.bumpMap = loadTexture(textures.bump, "data");
     }
     if (textures.normal) {
-      this.normalMap = loadTexture(textures.normal);
+      this.normalMap = loadTexture(textures.normal, "data");
     }
     if (textures.specular) {
-      this.specularMap = loadTexture(textures.specular);
+      this.roughnessMap = loadTexture(textures.specular, "glossRoughness");
     }
     if (textures.night) {
       this.nightMap = loadTexture(textures.night);
@@ -162,7 +163,7 @@ export class PlanetaryObject {
       this.atmosphere.map = loadTexture(textures.atmosphere);
     }
     if (textures.atmosphereAlpha) {
-      this.atmosphere.alpha = loadTexture(textures.atmosphereAlpha);
+      this.atmosphere.alpha = loadTexture(textures.atmosphereAlpha, "data");
     }
   }
 
@@ -184,15 +185,16 @@ export class PlanetaryObject {
         color: new THREE.Color(2.5, 2.5, 2.5),
       });
     } else {
-      material = new THREE.MeshPhongMaterial({
+      material = new THREE.MeshStandardMaterial({
         map: this.map,
-        shininess: 5,
+        roughness: this.roughnessMap ? 1 : 0.9,
+        metalness: 0,
         toneMapped: true,
       });
 
       if (this.bumpMap) {
         material.bumpMap = this.bumpMap;
-        material.bumpScale = this.radius / 50;
+        material.bumpScale = this.radius / 30;
       }
 
       if (this.normalMap) {
@@ -200,8 +202,12 @@ export class PlanetaryObject {
         material.normalScale.set(1.4, 1.4);
       }
 
-      if (this.specularMap) {
-        material.specularMap = this.specularMap;
+      if (this.roughnessMap) {
+        material.roughnessMap = this.roughnessMap;
+      }
+
+      if (this.bumpMap || this.normalMap) {
+        applyDaysideRelief(material);
       }
 
       if (this.nightMap) {
@@ -229,12 +235,13 @@ export class PlanetaryObject {
   private createAtmosphereMesh = () => {
     const geometry = new THREE.SphereGeometry(this.radius + 0.0005, 64, 64);
 
-    const material = new THREE.MeshPhongMaterial({
+    const material = new THREE.MeshStandardMaterial({
       map: this.atmosphere?.map,
       transparent: true,
       opacity: this.atmosphereOpacity ?? 1,
       depthWrite: false,
-      shininess: 0,
+      roughness: 1,
+      metalness: 0,
     });
 
     if (this.atmosphere.alpha) {
