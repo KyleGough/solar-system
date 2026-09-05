@@ -33,6 +33,10 @@
   pointer-events: none;
 }
 
+.hud-ctrl[hidden] {
+  display: none;
+}
+
 .hud-ctrl {
   appearance: none;
   box-sizing: border-box;
@@ -92,6 +96,18 @@
 .hud-ctrl-disc svg .is-fill {
   fill: currentColor;
   stroke: none;
+}
+
+.hud-ctrl .icon-play {
+  display: none;
+}
+
+.hud-ctrl[aria-pressed="false"] .icon-pause {
+  display: none;
+}
+
+.hud-ctrl[aria-pressed="false"] .icon-play {
+  display: block;
 }
 
 .hud-ctrl:hover .hud-ctrl-disc,

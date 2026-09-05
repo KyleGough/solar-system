@@ -30,7 +30,6 @@
   color: var(--text);
 }
 
-.intro-kicker,
 .intro-hint,
 .intro-load-row {
   font-size: 0.6875rem;
@@ -102,6 +101,7 @@
 }
 
 @keyframes intro-hint-pulse {
+
   0%,
   100% {
     opacity: 1;

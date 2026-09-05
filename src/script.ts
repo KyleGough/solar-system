@@ -310,7 +310,7 @@ fakeCamera.layers.enable(LAYERS.POILabel);
 fakeCamera.layers.enable(LAYERS.SUN_SPOT);
 
 // GUI
-const gui = createGUI(clock, fakeCamera, lights, (ride) => {
+const gui = createGUI(clock, fakeCamera, lights, solarSystem, (ride) => {
   poiForcedSpin = false;
   focusTransition.setRideSpin(ride, options.focus);
 });
