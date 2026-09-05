@@ -19,7 +19,7 @@
   overflow-y: auto;
   pointer-events: auto;
   transform: translateY(-50%);
-  background: color-mix(in oklch, var(--bg-deep) 88%, transparent);
+  background: rgba(0, 0, 0, 0.9);
   border: 1px solid var(--line);
   font-family: var(--sans);
   color: var(--text);
@@ -316,7 +316,7 @@
     right: 12px;
     width: auto;
     max-width: none;
-    max-height: min(40vh, calc(100dvh - var(--body-info-nav-offset, 8rem) - 6rem));
+    max-height: min(70vh, calc(100dvh - var(--body-info-nav-offset, 8rem) - 6rem));
     transform: none;
   }
 

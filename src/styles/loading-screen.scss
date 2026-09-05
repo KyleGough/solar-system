@@ -24,7 +24,7 @@
   transform: translate(-50%, -50%);
   width: min(30rem, calc(100vw - 40px));
   padding: 3rem;
-  background: color-mix(in oklch, var(--bg-deep) 88%, transparent);
+  background: rgba(0, 0, 0, 0.5);
   border: 1px solid var(--line);
   font-family: var(--sans);
   color: var(--text);
