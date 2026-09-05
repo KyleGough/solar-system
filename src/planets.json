@@ -440,14 +440,15 @@
         0.16
       ],
       "mieColor": [
-        1.0,
+        1,
         0.58,
         0.22
       ],
-      "intensity": 0.355,
-      "scale": 1.0425,
-      "height": 0.013,
-      "mie": 0.7
+      "intensity": 0.86,
+      "scale": 1.0115,
+      "height": 0,
+      "mie": 0.7,
+      "scatter": 0.32
     },
     "type": "moon",
     "orbits": "Saturn",
