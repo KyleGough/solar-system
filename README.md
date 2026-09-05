@@ -1,39 +1,32 @@
 # Solar System Model
 
-3D model of the solar system allowing traversal of all the planets. Provides labels showcasing points of interest on certain planets such as _Olympus Mons_ on Mars. This model was created using Three.js and is currently serving as a tool to enhance my learning whilst progressing through Three.js journey.
+An interactive 3D model of the Sun, planets, and major moons. Travel between bodies, read a few facts, and toggle view layers. Built with [Three.js](https://threejs.org/).
 
-## Current features
+**Live demo:** [kylegough.github.io/solar-system](https://kylegough.github.io/solar-system/)
 
-- Orbits
-- Textures
-- Loading screen
-- Environment
-- Lighting and Shadows
-- Moons
-- POI labels
-- Custom controls
-- Orbit trails
-- Sun bloom effect
+## How to explore
 
-## Planned changes
+- Double-click a body to travel to it.
+- Use the orbit nav to jump between the Sun, planets, and major moons.
+- **Labels** shows or hides points of interest. **Trails** shows or hides orbit paths. **Spin** rides the focused body's rotation. **Controls** opens simulation settings.
+- The info panel shows a short description and stats for the focused body.
+- Link to a body with a hash in the URL, for example `#mars`.
 
-- [ ] Improve shadow quality
+## Capabilities
+
+- The Sun, Mercury, Venus, Earth, Mars, Jupiter, Saturn, Uranus, and Neptune, plus major moons
+- Rings, orbit trails, and a bloom effect on the Sun
+- Points of interest on some bodies
+- Night lights on Earth
+- HUD facts for the focused body
 
 ## Setup
 
 This project requires [Node.js](https://nodejs.org/en/download/) 24 or later. If you use [nvm](https://github.com/nvm-sh/nvm), run `nvm use` to pick up the version in `.nvmrc`.
 
-Run the following commands:
-
 ```bash
-# Install dependencies
 npm install
-
-# Run the local server
 npm run dev
-
-# Build for production in the dist/ directory
-npm run build
 ```
 
 ## Screenshots
@@ -44,7 +37,7 @@ npm run build
 ![Mars](https://github.com/KyleGough/solar-system/assets/24881448/7b6806d4-d8ff-400e-8405-afb8f189acbc)
 ![Neptune](https://github.com/KyleGough/solar-system/assets/24881448/a5677621-40ab-4aa5-a14e-f928010e1806)
 
-## Resources
+## Credits
 
 - **The Sun, Jupiter, Saturn, Uranus, and Neptune** - [https://www.solarsystemscope.com/textures/](https://www.solarsystemscope.com/textures/)
 - **Terrestrial Planets** - [https://planetpixelemporium.com/planets.html](https://planetpixelemporium.com/planets.html)
