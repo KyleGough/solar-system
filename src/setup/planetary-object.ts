@@ -367,21 +367,30 @@ export class PlanetaryObject {
   };
 
   /**
-   * Camera distance from the body centre so the globe (or ring system)
-   * occupies `FOCUS_VIEWPORT_FILL` of the viewport width.
+   * Camera distance from the body centre. Uses the less zoomed-in of the
+   * 0.95-viewport-width fit and the previous fixed framing, so a traverse
+   * never comes in closer than before, but will pull back when the body
+   * would overflow the viewport.
    */
   getFocusDistance = (camera: THREE.PerspectiveCamera): number => {
-    return Math.max(
-      this.getMinDistance(),
-      distanceToFillViewport(this.getVisualRadius(), camera)
-    );
+    const fitted = distanceToFillViewport(this.getVisualRadius(), camera);
+    const legacy = this.getLegacyFocusDistance();
+    return Math.max(this.getMinDistance(), fitted, legacy);
+  };
+
+  /** Fixed framing used before viewport-width fitting. */
+  getLegacyFocusDistance = (): number => {
+    if (this.origin.getObjectByName("rings")) {
+      return this.radius * RING_OUTER * 1.55;
+    }
+    return this.radius * 2.25;
   };
 
   /**
    * @returns the minimum orbital control camera distance allowed.
    */
   getMinDistance = (): number => {
-    return this.radius * 1.2;
+    return this.radius * 1.8;
   };
 
   /** Bounding radius used when framing the body in the viewport. */
