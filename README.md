@@ -31,11 +31,11 @@ npm run dev
 
 ## Screenshots
 
-![Sun](https://github.com/KyleGough/solar-system/assets/24881448/194f78d5-b35b-4661-bdae-85fd06f7a94f)
-![Earth](https://github.com/KyleGough/solar-system/assets/24881448/ca9ca06e-36a7-46f8-91cc-5942df1e3906)
-![Moon](https://github.com/KyleGough/solar-system/assets/24881448/d22fcdad-d7bc-4bf1-b026-9967317b1a69)
-![Mars](https://github.com/KyleGough/solar-system/assets/24881448/7b6806d4-d8ff-400e-8405-afb8f189acbc)
-![Neptune](https://github.com/KyleGough/solar-system/assets/24881448/a5677621-40ab-4aa5-a14e-f928010e1806)
+<img width="2560" height="1287" alt="Mars" src="https://github.com/user-attachments/assets/75501202-2021-446b-a0a6-34db18a30922" />
+<img width="2560" height="1287" alt="Solar System Model" src="https://github.com/user-attachments/assets/84b4c0e6-51f7-4a39-a33f-f72042f21a54" />
+<img width="2560" height="1287" alt="Earth" src="https://github.com/user-attachments/assets/bc4d3c77-1e48-4a79-a2d2-43fc2030e0ec" />
+<img width="2560" height="1287" alt="Moon" src="https://github.com/user-attachments/assets/d2fd0ce8-ea86-448f-a91a-c2db5d5f2b63" />
+<img width="2560" height="1287" alt="Neptune" src="https://github.com/user-attachments/assets/57d17e91-0202-4b98-8f56-974b9e42f765" />
 
 ## Credits
 
