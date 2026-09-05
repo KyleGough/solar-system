@@ -100,9 +100,7 @@ const hasTransitCasters = (
   solarSystem: SolarSystem
 ): boolean => {
   return Object.values(solarSystem).some(
-    (body) =>
-      body.orbits === hostName &&
-      (body.type === "moon" || body.type === "ring")
+    (body) => body.orbits === hostName && body.type === "moon"
   );
 };
 
@@ -162,14 +160,18 @@ const assignSpotLayers = (solarSystem: SolarSystem, hostName: string | null) => 
 };
 
 /**
- * Turn off casters past Saturn (Uranus, Neptune, Triton). Inner bodies and
- * Saturn’s rings keep both flags so moon transits and the ring-on-globe
- * shadow can land.
+ * Turn off casters past Saturn (Uranus, Neptune, Triton). Rings do not
+ * cast or receive the sun shadow map.
  */
 export const applyShadowCasters = (solarSystem: SolarSystem) => {
   const limit = solarSystem[SHADOW_LIMIT_BODY].distance;
 
   for (const [name, body] of Object.entries(solarSystem)) {
+    if (body.type === "ring") {
+      body.mesh.castShadow = false;
+      body.mesh.receiveShadow = false;
+      continue;
+    }
     const enabled =
       body.type !== "star" && heliocentricDistance(name, solarSystem) <= limit;
     body.mesh.castShadow = enabled;

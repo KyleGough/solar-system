@@ -119,7 +119,8 @@ const focusTransition = new FocusTransition(
 
 const picker = createBodyPicker(camera, canvas, solarSystem);
 
-let poiProbe: ReturnType<typeof createPoiProbe>;
+// Assigned after helpers that close over this binding.
+let poiProbe: ReturnType<typeof createPoiProbe>; // eslint-disable-line prefer-const
 
 const swapFocusUi = (from: string, to: string) => {
   releasePoiSpin();
@@ -136,7 +137,8 @@ const setUiOpacity = (opacity: number) => {
   hudEndEl.style.opacity = String(opacity);
 };
 
-let orbitNav: ReturnType<typeof createOrbitalNav>;
+// Assigned after requestFocus, which closes over this binding.
+let orbitNav: ReturnType<typeof createOrbitalNav>; // eslint-disable-line prefer-const
 let poiForcedSpin = false;
 
 const spinButton = () => document.getElementById("btn-spin");

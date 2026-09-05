@@ -143,4 +143,8 @@ export const onLoaded = () => {
   document.getElementById("intro-hint")?.removeAttribute("aria-hidden");
   loadContainer.addEventListener("click", dismissIntro);
   window.addEventListener("keydown", onKeyDismiss);
+
+  if (new URLSearchParams(window.location.search).has("nointro")) {
+    dismissIntro();
+  }
 };

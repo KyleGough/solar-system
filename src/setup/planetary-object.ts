@@ -1,5 +1,5 @@
 import * as THREE from "three";
-import { createRingMesh } from "./rings";
+import { createRingMesh, RING_OUTER } from "./rings";
 import { createPath } from "./path";
 import { loadTexture } from "./textures";
 import { applyNightLights } from "./night-lights";
@@ -76,7 +76,6 @@ export class PlanetaryObject {
   tilt: number; // degrees
   mesh: THREE.Mesh;
   atmosphereMesh?: THREE.Mesh;
-  glowMesh?: THREE.Object3D;
   path?: THREE.Mesh;
   rng: number;
   map!: THREE.Texture;
@@ -121,8 +120,7 @@ export class PlanetaryObject {
     }
 
     if (body.atmosphereGlow) {
-      this.glowMesh = createAtmosphereGlow(this.radius, body.atmosphereGlow);
-      this.mesh.add(this.glowMesh);
+      this.mesh.add(createAtmosphereGlow(this.radius, body.atmosphereGlow));
     }
 
     this.initLabels(body.labels);
@@ -293,6 +291,9 @@ export class PlanetaryObject {
    * Camera distance used when this body becomes the focus.
    */
   getFocusDistance = (): number => {
+    if (this.mesh.getObjectByName("rings")) {
+      return this.radius * RING_OUTER * 1.55;
+    }
     return this.radius * 2.25;
   };
 
