@@ -23,8 +23,10 @@
       <h1 id="intro-title">Solar System Model</h1>
       <p class="intro-body" id="intro-body">
         An interactive 3D model of the Sun, planets, and major moons, with orbits,
-        and points of interest. Double-click a planet to travel to
-        it.
+        and points of interest.
+      </p>
+      <p class="intro-body" id="intro-body-2">
+        Distances and sizes are NOT to scale.
       </p>
       <div class="intro-load">
         <div class="intro-load-row">
@@ -47,7 +49,7 @@
       <p class="identity-kicker" id="identity-kicker">Star</p>
       <h1 id="identity-title">Sun</h1>
     </header>
-    <aside id="body-info" class="body-info" role="complementary" aria-label="Body information">
+    <aside id="body-info" class="body-info" role="complementary" aria-label="Body information" hidden>
       <div class="body-info-toolbar">
         <button type="button" class="body-info-restore" id="body-info-restore" hidden>Info</button>
         <button type="button" class="body-info-minimise" id="body-info-minimise" aria-label="Minimise">−</button>
@@ -108,7 +110,8 @@
       </span>
       <span class="hud-ctrl-label">Spin</span>
     </button>
-    <button class="hud-ctrl" id="btn-settings" type="button" aria-label="Simulation controls" aria-pressed="false" hidden>
+    <button class="hud-ctrl" id="btn-settings" type="button" aria-label="Simulation controls" aria-pressed="false"
+      hidden>
       <span class="hud-ctrl-disc" aria-hidden="true">
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
           <circle cx="12" cy="12" r="3" />

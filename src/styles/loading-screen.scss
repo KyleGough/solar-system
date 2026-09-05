@@ -120,6 +120,10 @@ body.intro-open {
   .orbit-nav {
     pointer-events: none;
   }
+
+  .body-info {
+    visibility: hidden;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
