@@ -143,8 +143,11 @@
 .body-info-figure {
   display: flex;
   justify-content: center;
+  align-items: center;
+  width: 200px;
+  height: 200px;
   margin: 1rem auto 0;
-  max-width: 200px;
+  flex-shrink: 0;
 }
 
 .body-info-figure[hidden] {
@@ -153,11 +156,9 @@
 
 .body-info-image {
   display: block;
-  width: auto;
-  height: auto;
-  max-width: 200px;
-  max-height: 200px;
-  object-fit: contain;
+  width: 200px;
+  height: 200px;
+  object-fit: cover;
 }
 
 .body-info-stats {
