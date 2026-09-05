@@ -56,12 +56,17 @@ interface Atmosphere {
 
 const timeFactor = 8 * Math.PI * 2; // 1s real-time => 8h simulation time
 
+/** One scene unit = one million kilometres. */
+const MILLION_KM = 1_000_000;
+
+/** Convert radius in km into the same scene units as orbital distance. */
 const normaliseRadius = (radius: number): number => {
-  return Math.sqrt(radius) / 500;
+  return radius / 1000
 };
 
+/** Distance is already in million km; keep it linear so orbits stay to scale. */
 const normaliseDistance = (distance: number): number => {
-  return Math.pow(distance, 0.4);
+  return distance * 100;
 };
 
 const degreesToRadians = (degrees: number): number => {
@@ -248,7 +253,7 @@ export class PlanetaryObject {
    * inherits axial tilt; tick() applies a separate spin so weather drifts.
    */
   private createAtmosphereMesh = () => {
-    const geometry = new THREE.SphereGeometry(this.radius + 0.0005, 64, 64);
+    const geometry = new THREE.SphereGeometry(this.radius * 1.003, 64, 64);
 
     const material = new THREE.MeshStandardMaterial({
       map: this.atmosphere?.map,

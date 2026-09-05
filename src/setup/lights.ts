@@ -12,6 +12,7 @@ const TRANSIT_MAP_DISTANCE = 6;
 const SUN_INTENSITY = 1;
 
 const hostWorld = new THREE.Vector3();
+const sunWorld = new THREE.Vector3();
 const cameraWorld = new THREE.Vector3();
 
 let layeredHost: string | null = null;
@@ -24,13 +25,15 @@ export type Lights = {
 };
 
 export const createLights = (): Lights => {
-  const ambientLight = new THREE.AmbientLight(0xffffff, 0.02);
+  const ambientLight = new THREE.AmbientLight(0xffffff, 0.015);
   ambientLight.layers.enable(0);
   ambientLight.layers.enable(LAYERS.SUN_SPOT);
 
   // Omnidirectional fill. Shadowing is the spotlight’s job: a point-light
   // cubemap cannot tighten around one planet, and VSM does not run on it.
+  // Inverse-square falloff would black out the outer planets at true scale.
   const pointLight = new THREE.PointLight(0xffffff, SUN_INTENSITY);
+  pointLight.decay = 0;
   pointLight.castShadow = false;
   pointLight.layers.set(0);
 
@@ -42,6 +45,7 @@ export const createLights = (): Lights => {
   spotLight.position.set(0, 0, 0);
   spotLight.target = shadowTarget;
   spotLight.castShadow = false;
+  spotLight.decay = 0;
   spotLight.penumbra = 0.25;
   spotLight.layers.set(LAYERS.SUN_SPOT);
   spotLight.shadow.mapSize.set(SHADOW_MAP_SIZE, SHADOW_MAP_SIZE);
@@ -209,7 +213,8 @@ export const updateSunShadows = (
   }
 
   host.mesh.getWorldPosition(hostWorld);
-  const dist = hostWorld.length();
+  solarSystem["Sun"].mesh.getWorldPosition(sunWorld);
+  const dist = hostWorld.distanceTo(sunWorld);
   if (dist < 1e-4) {
     assignSpotLayers(solarSystem, null);
     spotLight.visible = false;

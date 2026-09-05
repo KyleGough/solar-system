@@ -39,20 +39,17 @@ const orbitNavEl = document.getElementById("orbit-nav") as HTMLElement;
 const scene = new THREE.Scene();
 
 scene.background = createEnvironmentMap("./textures/environment");
-const starfield = createStarfield();
-scene.add(starfield);
 const starfieldCenter = new THREE.Vector3();
 const labelWorldPos = new THREE.Vector3();
 const labelLocalPos = new THREE.Vector3();
 
 // Lights
 const lights = createLights();
-scene.add(
-  lights.ambientLight,
-  lights.pointLight,
-  lights.spotLight,
-  lights.shadowTarget
-);
+scene.add(lights.ambientLight);
+
+const spaceRoot = new THREE.Group();
+spaceRoot.name = "space";
+scene.add(spaceRoot);
 
 // Sizes
 const sizes = {
@@ -78,7 +75,9 @@ window.addEventListener("resize", () => {
 });
 
 // Solar system
-const solarSystem = createSolarSystem(scene);
+const solarSystem = createSolarSystem(spaceRoot);
+spaceRoot.add(lights.pointLight, lights.spotLight);
+scene.add(lights.shadowTarget);
 applyShadowCasters(solarSystem);
 const urlFocus = readFocusFromUrl();
 if (urlFocus) {
@@ -89,12 +88,21 @@ updateBodyInfo(options.focus);
 
 // Camera
 const aspect = sizes.width / sizes.height;
-const MAX_CAMERA_DISTANCE = 50;
-const camera = new THREE.PerspectiveCamera(75, aspect, 0.008, 1000);
+const MAX_CAMERA_DISTANCE = solarSystem["Neptune"].distance * 1.75;
+const camera = new THREE.PerspectiveCamera(
+  75,
+  aspect,
+  0.0004,
+  MAX_CAMERA_DISTANCE * 2.5
+);
 camera.position.set(0, MAX_CAMERA_DISTANCE, 0);
 camera.layers.enable(LAYERS.POILabel);
 camera.layers.enable(LAYERS.SUN_SPOT);
 scene.add(camera);
+
+const STARFIELD_DISTANCE = camera.far * 0.6;
+const starfield = createStarfield(STARFIELD_DISTANCE);
+scene.add(starfield);
 
 // Controls
 const fakeCamera = camera.clone();
@@ -317,6 +325,92 @@ const gui = createGUI(clock, fakeCamera, lights, solarSystem, (ride) => {
 poiProbe = createPoiProbe(gui, camera, canvas, solarSystem, () => options.focus);
 poiProbe.sync();
 
+const originShift = new THREE.Vector3();
+const clipCam = new THREE.Vector3();
+const clipFocus = new THREE.Vector3();
+const clipSun = new THREE.Vector3();
+
+const isDescendant = (ancestor: THREE.Object3D, node: THREE.Object3D) => {
+  let current: THREE.Object3D | null = node;
+  while (current) {
+    if (current === ancestor) {
+      return true;
+    }
+    current = current.parent;
+  }
+  return false;
+};
+
+/** Keep GPU matrices near the origin so large heliocentric coords do not jitter. */
+const recenterToFocus = (focusName: string) => {
+  const body = solarSystem[focusName] ?? solarSystem[options.focus];
+  body.mesh.updateWorldMatrix(true, false);
+  body.mesh.getWorldPosition(originShift);
+  if (originShift.lengthSq() < 1e-12) {
+    return;
+  }
+
+  spaceRoot.position.sub(originShift);
+  spaceRoot.updateMatrixWorld(true);
+
+  if (!isDescendant(spaceRoot, camera)) {
+    const parent = camera.parent;
+    if (!parent || parent === scene) {
+      camera.position.sub(originShift);
+    } else {
+      parent.position.sub(originShift);
+      parent.updateMatrixWorld(true);
+    }
+    camera.updateMatrixWorld(true);
+  }
+
+  focusTransition.applyOriginShift(originShift);
+};
+
+const updateClipPlanes = (focusName: string) => {
+  const body = solarSystem[focusName] ?? solarSystem[options.focus];
+  camera.getWorldPosition(clipCam);
+  body.mesh.getWorldPosition(clipFocus);
+  solarSystem["Sun"].mesh.getWorldPosition(clipSun);
+
+  const dist = Math.max(clipCam.distanceTo(clipFocus), body.radius * 0.5);
+  const surface = Math.max(dist - body.radius, dist * 0.05);
+  camera.near = THREE.MathUtils.clamp(
+    surface * 0.25,
+    dist * 0.001,
+    surface * 0.8
+  );
+
+  let farPad = body.radius * 40;
+  if (body.orbits && solarSystem[body.orbits]) {
+    farPad = Math.max(
+      farPad,
+      Math.abs(body.distance) * 2.5,
+      solarSystem[body.orbits].radius * 8
+    );
+  }
+  for (const child of Object.values(solarSystem)) {
+    if (child.orbits === focusName && child.type !== "ring") {
+      farPad = Math.max(farPad, child.distance + child.radius);
+    }
+  }
+
+  const sunDist = clipCam.distanceTo(clipSun);
+  camera.far = Math.max(
+    dist + farPad,
+    dist * 8,
+    sunDist * 1.05 + solarSystem["Sun"].radius
+  );
+  camera.updateProjectionMatrix();
+
+  fakeCamera.near = camera.near;
+  fakeCamera.far = camera.far;
+  fakeCamera.aspect = camera.aspect;
+  fakeCamera.updateProjectionMatrix();
+
+  starfield.scale.setScalar((camera.far * 0.55) / STARFIELD_DISTANCE);
+};
+
 (function tick() {
   const wall = performance.now();
   const wallDt = Math.min(0.05, (wall - lastWall) / 1000);
@@ -351,6 +445,12 @@ poiProbe.sync();
   controls.update();
 
   camera.updateMatrixWorld();
+  const clipFocusName =
+    frame.active && frame.mode === "travel" && frame.progress < 0.5 && frame.from
+      ? frame.from
+      : options.focus;
+  recenterToFocus(clipFocusName);
+  updateClipPlanes(clipFocusName);
   updateSunShadows(lights, solarSystem, options.focus, camera);
   starfield.position.copy(camera.getWorldPosition(starfieldCenter));
 

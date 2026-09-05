@@ -5,7 +5,7 @@ import { SolarSystem } from "./solar-system";
 const MIN_DURATION = 0.6;
 const MAX_DURATION = 4.0;
 const MIN_DIST = 1;
-const MAX_DIST = 25;
+const MAX_DIST = 2500;
 /** Just off the Y pole so lookAt and OrbitControls keep a stable azimuth. */
 const OVERHEAD_POLAR = 0.02;
 /** South of the equator on the dayside arrival pose. */
@@ -419,6 +419,20 @@ export class FocusTransition {
     }
 
     return frame;
+  };
+
+  /**
+   * Keep cached world-space flight vectors in the same frame as a floating
+   * origin shift so travel lerps do not jump.
+   */
+  applyOriginShift = (shift: THREE.Vector3): void => {
+    this.startPos.sub(shift);
+    this.startLookAt.sub(shift);
+    this.destPos.sub(shift);
+    this.destLookAt.sub(shift);
+    this.currentLookAt.sub(shift);
+    this.worldTarget.sub(shift);
+    this.prevTarget.sub(shift);
   };
 
   private detachToWorld = () => {

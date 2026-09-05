@@ -1,9 +1,8 @@
 import * as THREE from "three";
 
 const STAR_COUNT = 2200;
-const DISTANCE = 400;
 
-export const createStarfield = (): THREE.Points => {
+export const createStarfield = (distance: number): THREE.Points => {
   const positions = new Float32Array(STAR_COUNT * 3);
   const colors = new Float32Array(STAR_COUNT * 3);
   const warm = new THREE.Color("#e4d3a8");
@@ -14,9 +13,9 @@ export const createStarfield = (): THREE.Points => {
     const theta = Math.acos(2 * Math.random() - 1);
     const phi = Math.random() * Math.PI * 2;
     const sinT = Math.sin(theta);
-    positions[i * 3] = DISTANCE * sinT * Math.cos(phi);
-    positions[i * 3 + 1] = DISTANCE * Math.cos(theta);
-    positions[i * 3 + 2] = DISTANCE * sinT * Math.sin(phi);
+    positions[i * 3] = distance * sinT * Math.cos(phi);
+    positions[i * 3 + 1] = distance * Math.cos(theta);
+    positions[i * 3 + 2] = distance * sinT * Math.sin(phi);
     mix.lerpColors(warm, cool, Math.random());
     const mag = 0.35 + Math.random() * 0.65;
     colors[i * 3] = mix.r * mag;

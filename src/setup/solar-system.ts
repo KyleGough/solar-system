@@ -4,7 +4,7 @@ import { setTextureCount } from "./textures";
 
 export type SolarSystem = Record<string, PlanetaryObject>;
 
-export const createSolarSystem = (scene: THREE.Scene): SolarSystem => {
+export const createSolarSystem = (parent: THREE.Object3D): SolarSystem => {
   const solarSystem: SolarSystem = {};
   let textureCount = 0;
 
@@ -35,7 +35,7 @@ export const createSolarSystem = (scene: THREE.Scene): SolarSystem => {
     }
   }
 
-  scene.add(solarSystem["Sun"].mesh);
+  parent.add(solarSystem["Sun"].mesh);
   setTextureCount(textureCount);
 
   return solarSystem;
