@@ -3,6 +3,9 @@
   --nav-ink: oklch(0.12 0.02 48);
   --nav-line: oklch(0.55 0.02 85 / 0.28);
   --nav-label: oklch(0.78 0.04 85);
+  --nav-body-min-height: 52px;
+  --nav-body-pad-top: 14px;
+  --nav-body-pad-bottom: 10px;
   --ease-out-quart: cubic-bezier(0.25, 1, 0.5, 1);
 
   position: absolute;
@@ -28,7 +31,11 @@
   position: absolute;
   left: 6%;
   right: 6%;
-  top: 28px;
+  top: calc(
+    var(--nav-body-pad-top) +
+      (var(--nav-body-min-height) - var(--nav-body-pad-top) - var(--nav-body-pad-bottom)) /
+      2
+  );
   height: 1px;
   background: var(--nav-line);
   pointer-events: none;
@@ -53,12 +60,13 @@
 
 .orbit-nav-body {
   position: relative;
+  box-sizing: border-box;
   display: flex;
   align-items: center;
   justify-content: center;
   width: 100%;
-  min-height: 52px;
-  padding: 14px 0 10px;
+  min-height: var(--nav-body-min-height);
+  padding: var(--nav-body-pad-top) 0 var(--nav-body-pad-bottom);
   background: transparent;
   border: none;
   cursor: pointer;
@@ -188,13 +196,11 @@
 
 @media (max-width: 560px) {
   .orbit-nav {
+    --nav-body-min-height: 44px;
+    --nav-body-pad-top: 12px;
+    --nav-body-pad-bottom: 8px;
     bottom: 12px;
     width: calc(100vw - 16px);
-  }
-
-  .orbit-nav-body {
-    min-height: 44px;
-    padding: 12px 0 8px;
   }
 
   .orbit-nav-label {
