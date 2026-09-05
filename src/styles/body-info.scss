@@ -19,7 +19,7 @@
   overflow-y: auto;
   pointer-events: auto;
   transform: translateY(-50%);
-  background: color-mix(in oklch, var(--bg-deep) 88%, transparent);
+  background: rgba(0, 0, 0, 0.9);
   border: 1px solid var(--line);
   font-family: var(--sans);
   color: var(--text);
