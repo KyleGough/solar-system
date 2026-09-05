@@ -22,7 +22,7 @@
         "4.83"
       ]
     ],
-    "description": "The Sun is a G-type main-sequence star at the centre of the Solar System. It holds 99.86% of the system's mass and governs the orbits of every planet, moon, and small body."
+    "description": "The Sun is a G-type main-sequence star at the centre of the Solar System. It holds 99.86% of the system's mass and dictates the orbits of every planet, moon, and small body."
   },
   {
     "name": "Mercury",
@@ -39,7 +39,7 @@
       "map": "./textures/mercury.jpg",
       "normal": "./textures/mercury-normal.png"
     },
-    "description": "Mercury is the smallest planet and the closest to the Sun. A cratered, airless world, it completes an 88-day orbit with days longer than its year."
+    "description": "Mercury is the smallest planet and the closest to the Sun. It is a heavily cratered and airless world in 3:2 spin-orbit resonance with the Sun."
   },
   {
     "name": "Venus",
@@ -75,7 +75,7 @@
       "bump": "./textures/venus-bump.jpg",
       "atmosphere": "./textures/venus-clouds.jpg"
     },
-    "description": "Venus is a rocky planet wrapped in a thick carbon-dioxide atmosphere. Surface temperatures are high enough to melt lead, hotter than Mercury despite the greater distance from the Sun."
+    "description": "Venus is a rocky planet wrapped in a thick carbon-dioxide atmosphere. Surface temperatures are high enough to melt lead, hotter than Mercury due to the greenhouse effect."
   },
   {
     "name": "Earth",
@@ -113,7 +113,7 @@
       "atmosphereAlpha": "./textures/earth-clouds-alpha.jpg",
       "night": "./textures/earth-night.jpg"
     },
-    "description": "Earth is the only known world with liquid-water oceans and life. It's axial tilt and 24-hour rotation give rise to seasons and a protective magnetic field."
+    "description": "Earth is the only known world with liquid-water oceans and life. Its axial tilt and 24-hour rotation give rise to seasons and a protective magnetic field."
   },
   {
     "name": "Moon",
@@ -150,7 +150,7 @@
         "imageAlt": "Overhead view of Tycho Crater"
       }
     ],
-    "description": "The Moon is Earth's only natural satellite, tidally locked so the same face always points home. Its dry, cratered surface still carries the marks of Apollo landings."
+    "description": "Earth's only natural satellite, tidally locked so the same face always points home. Its dry, cratered surface still carries the marks of Apollo landings."
   },
   {
     "name": "Mars",
@@ -271,7 +271,7 @@
         "imageAlt": "Jupiter's Great Red Spot"
       }
     ],
-    "description": "Jupiter is the largest planet, a hydrogen-helium giant with a faint ring system. The Great Red Spot is an anticyclone wider than Earth, and four large Galilean moons orbit nearby."
+    "description": "Jupiter is the largest planet, a hydrogen-helium giant with a faint ring system. Four large Galilean moons orbit nearby, with 100+ smaller moons in its orbit."
   },
   {
     "name": "Saturn",
@@ -313,7 +313,7 @@
         "imageAlt": "Saturn's north-polar hexagon, a teal six-sided storm with a dark central vortex"
       }
     ],
-    "description": "Saturn is a gas giant known for its broad, icy ring system. Low density and a hexagonal storm at the north pole set it apart from the other giants."
+    "description": "Saturn is a gas giant known for its broad, icy ring system. Its pale yellow hue is due to ammonia crystals in the upper atmosphere."
   },
   {
     "name": "Uranus",

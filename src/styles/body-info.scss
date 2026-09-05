@@ -290,8 +290,13 @@
     top: auto;
     bottom: var(--body-info-nav-offset, 9.5rem);
     max-height: min(40vh, calc(100dvh - var(--body-info-nav-offset, 9.5rem) - 6rem));
+    padding: 1.5rem;
     transform: translateX(-50%);
     z-index: 2;
+  }
+
+  .body-info.has-pips:not(.is-minimised) {
+    padding-bottom: 1.125rem;
   }
 
   .body-info.is-minimised {

@@ -8,6 +8,8 @@ const MIN_DIST = 1;
 const MAX_DIST = 25;
 /** Just off the Y pole so lookAt and OrbitControls keep a stable azimuth. */
 const OVERHEAD_POLAR = 0.02;
+/** South of the equator on the dayside arrival pose. */
+const DAYSIDE_LATITUDE_DEG = -2.5; // 2.5° north of the equator
 
 const easeInOut = (t: number): number => t * t * (3 - 2 * t);
 
@@ -50,12 +52,28 @@ const idleFrame = (): FocusFlightFrame => ({
   justFinished: false,
 });
 
-const writeFocusOffset = (
-  body: { getFocusDistance: () => number },
+/**
+ * Camera offset from the body centre: sunward so the dayside faces the
+ * lens, plus a slight drop along the pole.
+ */
+const writeDaysideOffset = (
+  distance: number,
+  planetPos: THREE.Vector3,
+  sunPos: THREE.Vector3,
+  pole: THREE.Vector3,
   target: THREE.Vector3
 ) => {
-  const distance = body.getFocusDistance();
-  target.set(distance, distance / 3, 0);
+  target.subVectors(sunPos, planetPos);
+  if (target.lengthSq() < 1e-10) {
+    target.set(1, 0, 0);
+  } else {
+    target.normalize();
+  }
+  target.multiplyScalar(distance);
+  target.addScaledVector(
+    pole,
+    -distance * Math.tan(THREE.MathUtils.degToRad(DAYSIDE_LATITUDE_DEG))
+  );
 };
 
 const isOverheadFocus = (body: { type: string }): boolean => body.type === "star";
@@ -102,6 +120,8 @@ export class FocusTransition {
   private readonly identityQuat = new THREE.Quaternion();
   private readonly spinUndo = new THREE.Quaternion();
   private readonly axisY = new THREE.Vector3(0, 1, 0);
+  private readonly sunPos = new THREE.Vector3();
+  private readonly poleDir = new THREE.Vector3();
   private panRadius = 0;
 
   constructor(
@@ -194,9 +214,7 @@ export class FocusTransition {
       this.destPos.addVectors(this.destLookAt, this.destOffset);
       this.destUp.set(0, 1, 0);
     } else {
-      writeFocusOffset(toBody, this.offset);
-      toBody.mesh.localToWorld(this.destPos.copy(this.offset));
-      this.destOffset.subVectors(this.destPos, this.destLookAt);
+      this.writeDaysideDestination(toBody);
     }
     const distance = this.startPos.distanceTo(this.destPos);
 
@@ -305,15 +323,13 @@ export class FocusTransition {
     const toBody = this.solarSystem[this.flight.to];
     toBody.mesh.updateWorldMatrix(true, false);
     toBody.mesh.getWorldPosition(this.destLookAt);
-    this.destPos.addVectors(this.destLookAt, this.destOffset);
     const overhead = isOverheadFocus(toBody);
     if (overhead) {
+      this.destPos.addVectors(this.destLookAt, this.destOffset);
       this.destUp.set(0, 1, 0);
     } else {
-      this.destUp
-        .set(0, 1, 0)
-        .transformDirection(toBody.mesh.matrixWorld)
-        .normalize();
+      this.writeDaysideDestination(toBody);
+      this.destUp.copy(this.poleDir);
     }
 
     this.flight.elapsed += dt;
@@ -424,6 +440,30 @@ export class FocusTransition {
   };
 
   /**
+   * Place the camera on the sunlit side of a planet or moon, looking at
+   * its centre. Assumes `destLookAt` is already the body world position
+   * and the mesh world matrix is current.
+   */
+  private writeDaysideDestination = (body: {
+    getFocusDistance: () => number;
+    mesh: THREE.Object3D;
+  }) => {
+    this.solarSystem["Sun"].mesh.getWorldPosition(this.sunPos);
+    this.poleDir
+      .set(0, 1, 0)
+      .transformDirection(body.mesh.matrixWorld)
+      .normalize();
+    writeDaysideOffset(
+      body.getFocusDistance(),
+      this.destLookAt,
+      this.sunPos,
+      this.poleDir,
+      this.destOffset
+    );
+    this.destPos.addVectors(this.destLookAt, this.destOffset);
+  };
+
+  /**
    * Instantly place the camera at the default viewing pose for a body.
    * Used when restoring focus from the URL on load.
    */
@@ -441,12 +481,10 @@ export class FocusTransition {
       this.camera.position.addVectors(this.worldTarget, this.offset);
       this.camera.up.set(0, 1, 0);
     } else {
-      writeFocusOffset(body, this.offset);
-      body.mesh.localToWorld(this.camera.position.copy(this.offset));
-      this.camera.up
-        .set(0, 1, 0)
-        .transformDirection(body.mesh.matrixWorld)
-        .normalize();
+      this.destLookAt.copy(this.worldTarget);
+      this.writeDaysideDestination(body);
+      this.camera.position.copy(this.destPos);
+      this.camera.up.copy(this.poleDir);
     }
     this.camera.lookAt(this.worldTarget);
     this.controls.minDistance = body.getMinDistance();
