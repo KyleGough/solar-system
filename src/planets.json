@@ -138,34 +138,44 @@
         "type": "mountain",
         "y": 0.75,
         "z": 0.45,
-        "fact": "Tallest volcano in the Solar System, about 22 km high."
+        "fact": "Largest volcano and tallest known planetary mountain in the Solar System, rising about 22 km above the surrounding plains. It is a vast shield volcano formed by repeated eruptions of low-viscosity basaltic lava.",
+        "image": "./images/olympus-mons.jpg",
+        "imageAlt": "Overhead view of Olympus Mons"
       },
       {
         "name": "Tharsis Montes",
         "type": "mountain",
         "y": 1.23,
         "z": -0.06,
-        "fact": "Three shield volcanoes on the Tharsis rise, west of Valles Marineris."
+        "fact": "Three enormous shield volcanoes (Ascraeus Mons, Pavonis Mons, and Arsia Mons) aligned along the Tharsis region of Mars.",
+        "image": "./images/tharsis-montes.jpg",
+        "imageAlt": "Topographic map of Tharsis Montes"
       },
       {
         "name": "Valles Marineris",
         "y": 1.29,
         "z": -2.75,
-        "fact": "Canyon system about 4,000 km long, a fifth of the way around Mars."
+        "fact": "Gigantic canyon system stretching roughly 4,000 km across the surface, several times longer and deeper than the Grand Canyon.",
+        "image": "./images/valles-marineris.jpg",
+        "imageAlt": "Overhead view of Valles Marineris"
       },
       {
         "name": "Perseverance",
         "type": "rover",
         "y": -1.96,
         "z": -0.87,
-        "fact": "NASA rover in Jezero Crater since 2021, caching samples for return."
+        "fact": "NASA rover that landed in Jezero Crater in 2021 to search for signs of ancient microbial life and study Mars's geological history. Collects and caches rock samples for future collection missions.",
+        "image": "./images/perseverance.jpg",
+        "imageAlt": "Perseverance rover on the surface of Mars"
       },
       {
         "name": "Curiosity",
         "type": "rover",
         "y": -0.8,
         "z": -0.1,
-        "fact": "NASA rover in Gale Crater since 2012, reading Mars as a former habitat."
+        "fact": "NASA rover exploring Gale Crater since landing in 2012. It studies Martian rocks, soil, atmosphere, and climate using a suite of scientific instruments.",
+        "image": "./images/curiosity.jpg",
+        "imageAlt": "Curiosity rover on the surface of Mars"
       }
     ],
     "description": "Mars is a cold desert planet with the tallest volcano and the longest canyon in the Solar System. Polar ice and ancient riverbeds hint at a wetter past."
@@ -257,7 +267,7 @@
         "name": "Great Dark Spot",
         "y": 0.21,
         "z": -0.18,
-        "fact": "Intermittent anticyclonic storms with a shorter lifetime than Jupiter's spots, forming and dissipating once every few years or so.",
+        "fact": "Intermittent anticyclonic storms with a shorter lifetime than Jupiter's spots.",
         "image": "./images/great-dark-spot.jpg",
         "imageAlt": "Neptune's Great Dark Spot"
       }

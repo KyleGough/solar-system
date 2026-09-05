@@ -66,22 +66,17 @@ const syncPanelDock = () => {
 const syncToolbar = (moveFocus = false) => {
   const panel = panelEl();
   if (!panel) return;
-  const isPoi = panel.classList.contains("is-poi");
 
   const restore = document.getElementById("body-info-restore");
   const minimise = document.getElementById("body-info-minimise");
-  const close = document.getElementById("body-info-close");
   const maximise = document.getElementById("body-info-maximise");
   restore?.toggleAttribute("hidden", !minimised);
-  minimise?.toggleAttribute("hidden", minimised || isPoi);
-  close?.toggleAttribute("hidden", minimised || !isPoi);
+  minimise?.toggleAttribute("hidden", minimised);
   maximise?.toggleAttribute("hidden", !minimised);
 
   if (!moveFocus) return;
   if (minimised) {
     maximise?.focus();
-  } else if (isPoi) {
-    close?.focus();
   } else {
     minimise?.focus();
   }
@@ -192,10 +187,28 @@ const fillPoiImage = (poi: PointOfInterest) => {
   figure.hidden = false;
 };
 
+const appendPip = (
+  root: HTMLElement,
+  label: string,
+  current: boolean,
+  dataset: Record<string, string>
+) => {
+  const button = document.createElement("button");
+  button.type = "button";
+  button.className = "body-info-pip";
+  Object.assign(button.dataset, dataset);
+  button.setAttribute("aria-label", label);
+  button.classList.toggle("is-current", current);
+  if (current) {
+    button.setAttribute("aria-current", "true");
+  }
+  root.append(button);
+};
+
 const fillPips = (
   bodyName: string,
   pois: PointOfInterest[],
-  activeName = ""
+  activeName: string | null = null
 ) => {
   const pips = pipsEl();
   if (!pips) return;
@@ -203,21 +216,16 @@ const fillPips = (
   pipBodyName = bodyName;
   pipList = pois;
   pips.replaceChildren();
-  pips.hidden = pois.length === 0;
-  panelEl()?.classList.toggle("has-pips", pois.length > 0);
+
+  const showPips = pois.length > 0;
+  pips.hidden = !showPips;
+  panelEl()?.classList.toggle("has-pips", showPips);
+  if (!showPips) return;
+
+  appendPip(pips, "Overview", activeName === null, { page: "stats" });
 
   for (const poi of pois) {
-    const button = document.createElement("button");
-    button.type = "button";
-    button.className = "body-info-pip";
-    button.dataset.poi = poi.name;
-    button.setAttribute("aria-label", poi.name);
-    const current = poi.name === activeName;
-    button.classList.toggle("is-current", current);
-    if (current) {
-      button.setAttribute("aria-current", "true");
-    }
-    pips.append(button);
+    appendPip(pips, poi.name, poi.name === activeName, { poi: poi.name });
   }
 };
 
@@ -281,13 +289,6 @@ export const createBodyInfo = (
     setMinimised(true, true);
   });
 
-  const close = document.getElementById("body-info-close");
-  close?.addEventListener("click", () => {
-    if (isIntroActive()) return;
-    onPoiClose?.();
-    syncToolbar(true);
-  });
-
   const expand = () => {
     if (isIntroActive()) return;
     setMinimised(false, true);
@@ -303,12 +304,17 @@ export const createBodyInfo = (
     if (isIntroActive()) return;
     const target = event.target;
     if (!(target instanceof Element)) return;
-    const button = target.closest("button[data-poi]");
+    const button = target.closest("button.body-info-pip");
     if (!(button instanceof HTMLButtonElement)) return;
+    if (button.classList.contains("is-current")) return;
+    if (button.dataset.page === "stats") {
+      onPoiClose?.();
+      return;
+    }
     const name = button.dataset.poi;
-    if (!name || button.classList.contains("is-current")) return;
+    if (!name || !pipBodyName) return;
     const poi = pipList.find((entry) => entry.name === name);
-    if (!poi || !pipBodyName) return;
+    if (!poi) return;
     onPoiPick?.(pipBodyName, poi);
   });
 
