@@ -249,10 +249,10 @@
         0.86,
         0.65
       ],
-      "intensity": 1.38,
-      "scale": 1.034,
+      "intensity": 1.08,
+      "scale": 1.024,
       "height": 0.008,
-      "mie": 0.22
+      "mie": 0.18
     },
     "type": "planet",
     "orbits": "Sun",
