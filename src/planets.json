@@ -47,7 +47,7 @@
     "mass": 4.867e24,
     "distance": 108,
     "period": 224,
-    "daylength": 2802,
+    "daylength": -5832.5,
     "cloudPeriod": 96,
     "atmosphereOpacity": 0.9,
     "atmosphereGlow": {
@@ -70,6 +70,7 @@
     "type": "planet",
     "orbits": "Sun",
     "tilt": 2.64,
+    "inclination": 3.39,
     "traversable": true,
     "textures": {
       "map": "./textures/venus.jpg",
@@ -122,11 +123,13 @@
     "radius": 1737,
     "mass": 7.342e22,
     "distance": 0.38,
-    "period": 0,
-    "daylength": -28,
+    "period": 27.32,
+    "daylength": 655.7,
     "type": "moon",
     "orbits": "Earth",
-    "tilt": 5.8,
+    "tilt": 6.68,
+    "inclination": 5.14,
+    "equatorialOrbit": false,
     "traversable": true,
     "offset": -1.57,
     "textures": {

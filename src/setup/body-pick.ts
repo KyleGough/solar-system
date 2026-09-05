@@ -9,7 +9,7 @@ export const createBodyPicker = (
   const raycaster = new THREE.Raycaster();
   raycaster.layers.enableAll();
   const pointer = new THREE.Vector2();
-  const sun = solarSystem["Sun"].mesh;
+  const sun = solarSystem["Sun"].orbit;
 
   const pick = (clientX: number, clientY: number): string | null => {
     const rect = canvas.getBoundingClientRect();

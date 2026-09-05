@@ -127,7 +127,7 @@ const forLocalMeshes = (
     }
   };
 
-  solarSystem[hostName].mesh.traverse(visitMesh);
+  solarSystem[hostName].origin.traverse(visitMesh);
 };
 
 const setSpotLit = (
