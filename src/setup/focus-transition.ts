@@ -445,7 +445,7 @@ export class FocusTransition {
    * and the mesh world matrix is current.
    */
   private writeDaysideDestination = (body: {
-    getFocusDistance: () => number;
+    getFocusDistance: (camera: THREE.PerspectiveCamera) => number;
     mesh: THREE.Object3D;
   }) => {
     this.solarSystem["Sun"].mesh.getWorldPosition(this.sunPos);
@@ -454,7 +454,7 @@ export class FocusTransition {
       .transformDirection(body.mesh.matrixWorld)
       .normalize();
     writeDaysideOffset(
-      body.getFocusDistance(),
+      body.getFocusDistance(this.camera),
       this.destLookAt,
       this.sunPos,
       this.poleDir,

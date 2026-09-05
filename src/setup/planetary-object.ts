@@ -76,6 +76,27 @@ const degreesToRadians = (degrees: number): number => {
   return (Math.PI * degrees) / 180;
 };
 
+/** Apparent diameter as a fraction of the viewport width on focus. */
+export const FOCUS_VIEWPORT_FILL = 0.95;
+
+/**
+ * Distance from a sphere’s centre so its silhouette spans `fill` of the
+ * viewport width. Uses NDC so the projected pixel width matches that fraction.
+ */
+export const distanceToFillViewport = (
+  radius: number,
+  camera: THREE.PerspectiveCamera,
+  fill = FOCUS_VIEWPORT_FILL
+): number => {
+  const tanVertical = Math.tan(THREE.MathUtils.degToRad(camera.fov * 0.5));
+  const tanHorizontal = tanVertical * Math.max(camera.aspect, 1e-6);
+  const tanLimb = fill * tanHorizontal;
+  if (tanLimb < 1e-6) {
+    return radius * 2.25;
+  }
+  return radius * Math.sqrt(1 + 1 / (tanLimb * tanLimb));
+};
+
 export class PlanetaryObject {
   radius: number; // in km
   distance: number; // in million km
@@ -271,7 +292,8 @@ export class PlanetaryObject {
     sphere.receiveShadow = true;
 
     if (this.type === "star") {
-      // Bloom pass only. Kept off layer 0 so the mix shader does not draw the Sun twice.
+      // Bloom pass only. Kept off layer 0 so the mix shader does not draw
+      // the Sun twice. Disk occlusion is handled in the bloom composite.
       sphere.layers.set(LAYERS.BLOOM);
     }
 
@@ -345,20 +367,29 @@ export class PlanetaryObject {
   };
 
   /**
-   * Camera distance used when this body becomes the focus.
+   * Camera distance from the body centre so the globe (or ring system)
+   * occupies `FOCUS_VIEWPORT_FILL` of the viewport width.
    */
-  getFocusDistance = (): number => {
-    if (this.origin.getObjectByName("rings")) {
-      return this.radius * RING_OUTER * 1.55;
-    }
-    return this.radius * 2.25;
+  getFocusDistance = (camera: THREE.PerspectiveCamera): number => {
+    return Math.max(
+      this.getMinDistance(),
+      distanceToFillViewport(this.getVisualRadius(), camera)
+    );
   };
 
   /**
    * @returns the minimum orbital control camera distance allowed.
    */
   getMinDistance = (): number => {
-    return this.radius * 1.8;
+    return this.radius * 1.2;
+  };
+
+  /** Bounding radius used when framing the body in the viewport. */
+  getVisualRadius = (): number => {
+    if (this.origin.getObjectByName("rings")) {
+      return this.radius * RING_OUTER;
+    }
+    return this.radius;
   };
 
   applyAtmosphereGlow = () => {

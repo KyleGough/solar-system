@@ -65,9 +65,13 @@ window.addEventListener("resize", () => {
   sizes.width = window.innerWidth;
   sizes.height = window.innerHeight;
 
-  // Update camera
-  camera.aspect = sizes.width / sizes.height;
+  // Update cameras. OrbitControls drives fakeCamera; copy() would otherwise
+  // restore the aspect from when the clone was made.
+  const aspect = sizes.width / sizes.height;
+  camera.aspect = aspect;
   camera.updateProjectionMatrix();
+  fakeCamera.aspect = aspect;
+  fakeCamera.updateProjectionMatrix();
 
   // Update renderers
   renderer.setSize(sizes.width, sizes.height);
