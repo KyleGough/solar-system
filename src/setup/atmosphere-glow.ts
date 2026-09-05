@@ -23,8 +23,8 @@ export interface AtmosphereGlowParams {
 export const DEFAULT_MIE_COLOR: [number, number, number] = [1.0, 0.78, 0.48];
 /** Extra outer radius so the fade to zero is not clipped by the mesh. */
 const OUTER_EXTEND = 1.06;
-const INNER_INTENSITY = 0.25;
-const OUTER_INTENSITY = 2.0;
+const INNER_INTENSITY = 0.7;
+const OUTER_INTENSITY = 1.35;
 
 let sharedGeometry: THREE.SphereGeometry | null = null;
 
@@ -65,6 +65,7 @@ const glowFragment = /* glsl */ `
   uniform float uMieBoost;
   uniform float uScatter;
   uniform float uPlanetRatio;
+  uniform float uHeight;
 
   varying vec3 vViewNormal;
   varying vec3 vWorldNormal;
@@ -108,10 +109,7 @@ const glowFragment = /* glsl */ `
     glow += rim * towardSun * uIntensity * (0.4 + uMieBoost * 1.15);
     glow *= mix(1.0, smoothstep(-0.7, -0.05, viewSun), uScatter);
 
-    // Apparent height: 0 at the planet disk, 1 at this shell's mesh.
-    // The outer mesh is larger than the visual atmosphere (OUTER_EXTEND) so
-    // we can fade to zero in that padding. Fading from the surface killed
-    // the whole visible ring — that ring is the only unoccluded outer glow.
+    // Apparent height: 0 against the planet, 1 at this shell's mesh.
     float dist = length(vCenterView);
     float meshR = length(vViewPos - vCenterView);
     float pixelAng = acos(clamp(dot(normalize(vViewPos), normalize(vCenterView)), -1.0, 1.0));
@@ -119,11 +117,15 @@ const glowFragment = /* glsl */ `
     float planetAng = asin(clamp(meshR * uPlanetRatio / max(dist, meshR + 1e-4), 0.0, 0.999));
     float atm = max(meshAng - planetAng, 1e-5);
     float h = clamp((pixelAng - planetAng) / atm, 0.0, 1.0);
-    if (uInner < 0.5) {
-      glow *= 1.0 - smoothstep(0.4, 0.88, h);
-    } else {
-      glow *= 1.0 - smoothstep(0.85, 0.98, h);
+
+    // Densest at the surface, thinning toward space. Small uHeight keeps
+    // a tight inner limb; larger values fade more slowly.
+    float falloff = mix(2.55, 0.85, clamp(uHeight / 0.09, 0.0, 1.0));
+    if (uInner > 0.5) {
+      falloff *= 0.7;
     }
+    glow *= pow(max(1.0 - h, 0.0), falloff);
+    glow *= 1.0 - smoothstep(0.84, 0.97, h);
 
     if (glow < 0.00008) {
       discard;
@@ -159,6 +161,7 @@ const writeUniforms = (
   uniforms.uMieBoost.value = params.mie ?? 0.3;
   uniforms.uScatter.value = THREE.MathUtils.clamp(params.scatter ?? 0, 0, 1);
   uniforms.uPlanetRatio.value = 1 / Math.max(meshScale, 1e-4);
+  uniforms.uHeight.value = Math.max(params.height, 0);
 };
 
 const makeMaterial = (
@@ -182,6 +185,7 @@ const makeMaterial = (
       uMieBoost: { value: 0 },
       uScatter: { value: 0 },
       uPlanetRatio: { value: 1 / Math.max(meshScale, 1e-4) },
+      uHeight: { value: 0 },
     },
     vertexShader: glowVertex,
     fragmentShader: glowFragment,
