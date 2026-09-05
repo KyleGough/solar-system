@@ -1,6 +1,6 @@
 import * as THREE from "three";
 
-export type BodySwatch = {
+type BodySwatch = {
   color: string;
   size: string;
 };

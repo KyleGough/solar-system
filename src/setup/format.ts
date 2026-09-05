@@ -1,7 +1,7 @@
 export const formatKm = (km: number): string =>
   `${Math.round(km).toLocaleString("en-GB")} km`;
 
-export type ScientificMass = {
+type ScientificMass = {
   mantissa: string;
   exponent: number;
 };
