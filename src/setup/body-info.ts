@@ -1,7 +1,7 @@
 import type { Body } from "./planetary-object";
 import type { PointOfInterest } from "./label";
 import planetData from "../planets.json";
-import { isIntroActive } from "./loading";
+import { isIntroActive, onIntroDismiss } from "./loading";
 import {
   formatDistance,
   formatHours,
@@ -27,6 +27,7 @@ const pipsEl = () => document.getElementById("body-info-pips");
 let canvasEl: HTMLElement | null = null;
 let orbitNavEl: HTMLElement | null = null;
 let minimised = false;
+let wantedOpen = false;
 let pipBodyName = "";
 let pipList: PointOfInterest[] = [];
 let onPoiPick: ((bodyName: string, poi: PointOfInterest) => void) | null = null;
@@ -91,14 +92,19 @@ const setMinimised = (next: boolean, moveFocus = false) => {
 };
 
 const setOpen = (open: boolean) => {
+  wantedOpen = open;
   const panel = panelEl();
   if (!panel) return;
-  panel.hidden = !open;
-  if (open) {
+  panel.hidden = !open || isIntroActive();
+  if (open && !isIntroActive()) {
     setMinimised(minimised);
   }
   syncPanelDock();
 };
+
+onIntroDismiss(() => {
+  if (wantedOpen) setOpen(true);
+});
 
 const closePanel = () => {
   setMinimised(false);
