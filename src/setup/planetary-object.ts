@@ -4,6 +4,7 @@ import { createPath } from "./path";
 import { loadTexture } from "./textures";
 import { applyNightLights } from "./night-lights";
 import {
+  applyLimbHaze,
   createAtmosphereGlow,
   type AtmosphereGlowParams,
 } from "./atmosphere-glow";
@@ -120,6 +121,10 @@ export class PlanetaryObject {
     }
 
     if (body.atmosphereGlow) {
+      applyLimbHaze(
+        this.mesh.material as THREE.MeshPhongMaterial,
+        body.atmosphereGlow
+      );
       this.mesh.add(createAtmosphereGlow(this.radius, body.atmosphereGlow));
     }
 
