@@ -3,6 +3,10 @@ import { createRingMesh } from "./rings";
 import { createPath } from "./path";
 import { loadTexture } from "./textures";
 import { applyNightLights } from "./night-lights";
+import {
+  createAtmosphereGlow,
+  type AtmosphereGlowParams,
+} from "./atmosphere-glow";
 import { Label } from "./label";
 import { PointOfInterest } from "./label";
 import { LAYERS } from "../constants";
@@ -26,8 +30,10 @@ export interface Body {
   traversable: boolean;
   offset?: number;
   stats?: Array<[string, string]>;
-  /** 0–1 opacity of the atmosphere mesh. Defaults to 1. */
+  /** 0–1 opacity of the cloud-layer mesh. Defaults to 1. */
   atmosphereOpacity?: number;
+  /** Limb haze for bodies with a visible atmosphere. */
+  atmosphereGlow?: AtmosphereGlowParams;
 }
 
 interface TexturePaths {
@@ -70,6 +76,7 @@ export class PlanetaryObject {
   tilt: number; // degrees
   mesh: THREE.Mesh;
   atmosphereMesh?: THREE.Mesh;
+  glowMesh?: THREE.Object3D;
   path?: THREE.Mesh;
   rng: number;
   map!: THREE.Texture;
@@ -111,6 +118,11 @@ export class PlanetaryObject {
     if (this.atmosphere.map) {
       this.atmosphereMesh = this.createAtmosphereMesh();
       this.mesh.add(this.atmosphereMesh);
+    }
+
+    if (body.atmosphereGlow) {
+      this.glowMesh = createAtmosphereGlow(this.radius, body.atmosphereGlow);
+      this.mesh.add(this.glowMesh);
     }
 
     this.initLabels(body.labels);
@@ -233,6 +245,7 @@ export class PlanetaryObject {
 
     const sphere = new THREE.Mesh(geometry, material);
     sphere.name = "clouds";
+    sphere.renderOrder = 1;
     sphere.receiveShadow = true;
     return sphere;
   };
