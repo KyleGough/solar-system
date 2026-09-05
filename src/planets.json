@@ -48,7 +48,7 @@
     "distance": 108,
     "period": 224,
     "daylength": -5832.5,
-    "cloudPeriod": -96,
+    "cloudPeriod": 96,
     "atmosphereOpacity": 0.9,
     "atmosphereGlow": {
       "color": [
