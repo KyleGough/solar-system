@@ -291,14 +291,15 @@
         0.7
       ],
       "mieColor": [
-        1.0,
-        0.9,
-        0.62
+        0.9176,
+        0.6667,
+        0
       ],
-      "intensity": 0.88,
-      "scale": 1.012,
-      "height": 0.004,
-      "mie": 0.14
+      "intensity": 2.17,
+      "scale": 0.9645,
+      "height": 0,
+      "mie": 0.82,
+      "scatter": 0.79
     },
     "type": "planet",
     "orbits": "Sun",
