@@ -76,7 +76,6 @@ export const createPath = (
   );
   mesh.visible = false;
   mesh.frustumCulled = false;
-  mesh.userData.ignorePick = true;
   mesh.userData.trailOpacity = 0;
   mesh.userData.pathOrbit = orbitRadius;
   mesh.userData.pathBody = bodyRadius;

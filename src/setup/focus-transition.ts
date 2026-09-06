@@ -1,7 +1,7 @@
 import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 import { SolarSystem } from "./solar-system";
-import type { BodyType } from "./catalog";
+import { parentOf, type BodyType } from "./catalog";
 import { localMoonOrbitRadius } from "./scale";
 
 const MIN_DURATION = 0.6;
@@ -19,11 +19,23 @@ const DAYSIDE_LONGITUDE_DEG = 40;
 const easeInOut = (t: number): number => t * t * (3 - 2 * t);
 
 /**
- * Body-to-body travel. Quintic ease-in-out coasts into the destination
- * more than smoothstep (zero first and second derivatives at both ends).
+ * Long-haul body-to-body travel. Quintic ease-in-out coasts into the
+ * destination more than smoothstep (zero first and second derivatives at
+ * both ends).
  */
-const easeTravel = (t: number): number =>
+const easeTravelQuintic = (t: number): number =>
   t < 0.5 ? 16 * t ** 5 : 1 - (-2 * t + 2) ** 5 / 2;
+
+/**
+ * Hops inside one moon system (Earth↔Moon, Phobos↔Mars, Deimos↔Phobos).
+ * Cubic ease-in-out is snappier than quintic on those short transfers.
+ */
+const easeTravelCubic = (t: number): number =>
+  t < 0.5 ? 4 * t ** 3 : 1 - (-2 * t + 2) ** 3 / 2;
+
+/** Planet and its moons, or two moons of the same planet. */
+const sameMoonSystem = (a: string, b: string): boolean =>
+  parentOf(a) === parentOf(b);
 
 const durationFromDistance = (distance: number): number => {
   const t = Math.min(
@@ -52,6 +64,7 @@ type Flight = {
   duration: number;
   swapped: boolean;
   mode: FlightMode;
+  cubicEase: boolean;
 };
 
 const idleFrame = (): FocusFlightFrame => ({
@@ -157,7 +170,6 @@ export class FocusTransition {
     private readonly solarSystem: SolarSystem
   ) {
     this.inertialRig.name = "inertial-focus";
-    this.inertialRig.userData.ignorePick = true;
     this.scene.add(this.inertialRig);
   }
 
@@ -267,6 +279,7 @@ export class FocusTransition {
       }
     }
 
+    const origin = this.flight?.to ?? from;
     this.flight = {
       from: this.flight?.swapped ? this.flight.to : this.flight?.from ?? from,
       to,
@@ -274,6 +287,7 @@ export class FocusTransition {
       duration: durationFromDistance(distance),
       swapped: false,
       mode: "travel",
+      cubicEase: sameMoonSystem(origin, to),
     };
 
     this.controls.enabled = false;
@@ -350,6 +364,7 @@ export class FocusTransition {
       duration,
       swapped: true,
       mode: "pan",
+      cubicEase: false,
     };
 
     this.controls.enabled = false;
@@ -383,7 +398,9 @@ export class FocusTransition {
 
     this.flight.elapsed += dt;
     const progress = Math.min(1, this.flight.elapsed / this.flight.duration);
-    const eased = easeTravel(progress);
+    const eased = this.flight.cubicEase
+      ? easeTravelCubic(progress)
+      : easeTravelQuintic(progress);
 
     this.camera.position.lerpVectors(this.startPos, this.destPos, eased);
     this.currentLookAt.lerpVectors(this.startLookAt, this.destLookAt, eased);

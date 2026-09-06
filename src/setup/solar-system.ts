@@ -14,8 +14,6 @@ export const createSolarSystem = (scene: Scene): SolarSystem => {
 
     const parent = planet.orbits ? solarSystem[planet.orbits] : undefined;
     const object = new PlanetaryObject(planet, parent);
-    object.mesh.userData.bodyName = name;
-    object.mesh.userData.traversable = planet.traversable;
 
     solarSystem[name] = object;
 

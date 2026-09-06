@@ -16,7 +16,7 @@ import { updateIdentity } from "./setup/identity";
 import { createBodyInfo, updateBodyInfo, updatePoiInfo } from "./setup/body-info";
 import { createSelectiveBloom } from "./setup/bloom";
 import { FocusTransition } from "./setup/focus-transition";
-import { createBodyPicker } from "./setup/body-pick";
+import { createHoverTravel } from "./setup/hover-travel";
 import { createOrbitalNav } from "./setup/orbital-nav";
 import { updateOrbitTrails } from "./setup/orbit-trails";
 import { setTrailResolution } from "./setup/path";
@@ -200,10 +200,9 @@ const keepFocusFraming = () => {
   framed.radius = radius;
 };
 
-const picker = createBodyPicker(camera, canvas, solarSystem);
-
 // Assigned after helpers that close over this binding.
 let poiProbe: ReturnType<typeof createPoiProbe>; // eslint-disable-line prefer-const
+let hoverTravel: ReturnType<typeof createHoverTravel>; // eslint-disable-line prefer-const
 
 const hideAllPoi = () => {
   for (const object of Object.values(solarSystem)) {
@@ -290,6 +289,7 @@ const requestFocus = (name: string) => {
   releasePoiSpin();
   options.focus = name;
   canvas.style.cursor = "default";
+  hoverTravel?.hide();
   orbitNav.setFocus(name);
   writeFocusToUrl(name);
 };
@@ -329,54 +329,6 @@ onIntroDismiss(() => {
   const pending = readFocusFromUrl();
   if (pending && pending !== options.focus) {
     requestFocus(pending);
-  }
-});
-
-const onHoverPick = (clientX: number, clientY: number) => {
-  if (isIntroActive()) return;
-  if (focusTransition.isActive()) {
-    canvas.style.cursor = "default";
-    return;
-  }
-
-  if (poiProbe?.isHovering(clientX, clientY)) {
-    canvas.style.cursor = "crosshair";
-    return;
-  }
-
-  const name = picker.pick(clientX, clientY);
-  canvas.style.cursor = name ? "pointer" : "default";
-};
-
-const CLICK_DRAG_PX = 8;
-let pointerDownX = 0;
-let pointerDownY = 0;
-
-canvas.addEventListener("pointermove", (event) => {
-  onHoverPick(event.clientX, event.clientY);
-});
-
-canvas.addEventListener("pointerleave", () => {
-  canvas.style.cursor = "default";
-});
-
-canvas.addEventListener("pointerdown", (event) => {
-  if (event.button !== 0) return;
-  pointerDownX = event.clientX;
-  pointerDownY = event.clientY;
-});
-
-canvas.addEventListener("click", (event) => {
-  if (isIntroActive()) return;
-  if (Math.hypot(event.clientX - pointerDownX, event.clientY - pointerDownY) > CLICK_DRAG_PX) {
-    return;
-  }
-  if (poiProbe?.isHovering(event.clientX, event.clientY)) {
-    return;
-  }
-  const name = picker.pick(event.clientX, event.clientY);
-  if (name) {
-    requestFocus(name);
   }
 });
 
@@ -421,6 +373,15 @@ const gui = createGUI(clock, fakeCamera, lights, (ride) => {
 });
 poiProbe = createPoiProbe(gui, camera, canvas, solarSystem, () => options.focus);
 poiProbe.sync();
+hoverTravel = createHoverTravel({
+  camera,
+  canvas,
+  solarSystem,
+  getFocus: () => options.focus,
+  isTraveling: () => focusTransition.isActive(),
+  isPoiHover: (clientX, clientY) => poiProbe.isHovering(clientX, clientY),
+  onTravel: requestFocus,
+});
 
 (function tick() {
   const wall = performance.now();

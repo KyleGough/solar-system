@@ -48,7 +48,6 @@ export const createPoiProbe = (
   const toCamera = new THREE.Vector3();
 
   const group = new THREE.Group();
-  group.userData.ignorePick = true;
   group.visible = false;
 
   const brassMat = new THREE.MeshBasicMaterial({
@@ -89,10 +88,8 @@ export const createPoiProbe = (
   const readout = new CSS2DObject(readoutEl);
   readout.center.set(0, 0.5);
   readout.position.set(0.12, 0, 0.02);
-  readout.userData.ignorePick = true;
   group.add(readout);
   group.traverse((child) => {
-    child.userData.ignorePick = true;
     child.frustumCulled = false;
   });
 

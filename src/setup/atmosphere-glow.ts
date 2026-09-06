@@ -200,7 +200,6 @@ const decorate = (mesh: THREE.Mesh, name: string): THREE.Mesh => {
   mesh.castShadow = false;
   mesh.receiveShadow = false;
   mesh.raycast = () => {};
-  mesh.userData.ignorePick = true;
   return mesh;
 };
 
@@ -224,6 +223,5 @@ export const createAtmosphereGlow = (
 
   group.add(inner, outer);
   group.raycast = () => {};
-  group.userData.ignorePick = true;
   return group;
 };
