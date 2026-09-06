@@ -60,7 +60,6 @@ export const createOrbitalNav = (
   onSelect: (name: string) => void
 ): OrbitNav => {
   root.replaceChildren();
-  root.setAttribute("aria-label", "Solar system");
 
   const row = document.createElement("div");
   row.className = "orbit-nav-row";

@@ -315,7 +315,6 @@ export const createBodyInfo = (
   orbitNavEl = orbitNav;
   onPoiPick = onPick ?? null;
   onPoiClose = onClose ?? null;
-  canvas.setAttribute("tabindex", "-1");
 
   const minimise = document.getElementById("body-info-minimise");
   minimise?.addEventListener("click", () => {
