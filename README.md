@@ -51,6 +51,7 @@ npm run dev
 - **Europa** - [https://www.johnstonsarchive.net/spaceart/cylmaps.html](https://www.johnstonsarchive.net/spaceart/cylmaps.html)
 - **Triton** - [https://www.go-astronomy.com/planets/neptune-moon-triton.htm](https://www.go-astronomy.com/planets/neptune-moon-triton.htm)
 - **Phobos** - NASA 3D Resources, [Phobos shape model](https://science.nasa.gov/resource/phobos-mars-moon-3d-model/)
+- **Deimos** - NASA/JPL-Caltech, [Deimos shape model](https://science.nasa.gov/resource/deimos-mars-moon-3d-model/)
 - **Points of interest** - NASA public-domain photographs:
   - Apollo 11 landing - NASA AS11-40-5948
   - Tycho Crater - NASA/GSFC/Arizona State University, LRO

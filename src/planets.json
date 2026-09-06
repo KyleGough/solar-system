@@ -254,6 +254,22 @@
     "description": "Phobos is the inner and larger moon of Mars, an irregular, cratered rock that skims just above the atmosphere. It is tidally locked and slowly spiralling inward; in tens of millions of years it will break apart or strike Mars."
   },
   {
+    "name": "Deimos",
+    "radius": 6.2,
+    "mass": 1.51e15,
+    "distance": 0.023463,
+    "period": 1.263,
+    "daylength": 30.31,
+    "type": "moon",
+    "orbits": "Mars",
+    "tilt": 0,
+    "inclination": 1.79,
+    "traversable": true,
+    "offset": 2.4,
+    "model": "./models/deimos.glb",
+    "description": "Deimos is the outer and smaller moon of Mars, a dark, irregular rock that orbits farther out than Phobos. It is tidally locked and slowly receding from Mars."
+  },
+  {
     "name": "Jupiter",
     "radius": 69911,
     "mass": 1.898e27,
