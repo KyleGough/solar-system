@@ -6,8 +6,6 @@ import { applyNightLights } from "./night-lights";
 import { applyDaysideRelief } from "./dayside-relief";
 import {
   createAtmosphereGlow,
-  DEFAULT_MIE_COLOR,
-  updateAtmosphereGlow,
   type AtmosphereGlowParams,
 } from "./atmosphere-glow";
 import { Label } from "./label";
@@ -125,8 +123,6 @@ export class PlanetaryObject {
   nightMap?: THREE.Texture;
   atmosphere: Atmosphere = {};
   atmosphereOpacity?: number;
-  atmosphereGlow?: THREE.Group;
-  atmosphereGlowParams?: Required<AtmosphereGlowParams>;
   labels!: Label;
 
   constructor(body: Body, parent?: PlanetaryObject) {
@@ -182,18 +178,7 @@ export class PlanetaryObject {
     }
 
     if (body.atmosphereGlow) {
-      this.atmosphereGlowParams = {
-        ...body.atmosphereGlow,
-        color: [...body.atmosphereGlow.color],
-        mieColor: [...(body.atmosphereGlow.mieColor ?? DEFAULT_MIE_COLOR)],
-        mie: body.atmosphereGlow.mie ?? 0.3,
-        scatter: body.atmosphereGlow.scatter ?? 0,
-      };
-      this.atmosphereGlow = createAtmosphereGlow(
-        this.radius,
-        this.atmosphereGlowParams
-      );
-      this.mesh.add(this.atmosphereGlow);
+      this.mesh.add(createAtmosphereGlow(this.radius, body.atmosphereGlow));
     }
 
     this.initLabels(body.labels);
@@ -399,14 +384,5 @@ export class PlanetaryObject {
       return this.radius * RING_OUTER;
     }
     return this.radius;
-  };
-
-  applyAtmosphereGlow = () => {
-    if (!this.atmosphereGlow || !this.atmosphereGlowParams) return;
-    updateAtmosphereGlow(
-      this.atmosphereGlow,
-      this.radius,
-      this.atmosphereGlowParams
-    );
   };
 }
