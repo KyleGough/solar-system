@@ -17,19 +17,23 @@ export const setTrailResolution = (width: number, height: number) => {
 const createTrailGeometry = (
   orbitRadius: number,
   bodyRadius: number,
-  color: THREE.Color
+  color: THREE.Color,
+  retrograde: boolean
 ): LineGeometry => {
   const trailAngle = Math.PI * 2 * TRAIL_FRACTION;
   const gap = Math.asin(
     Math.min(0.85, (bodyRadius * 1.45) / Math.max(orbitRadius, bodyRadius * 2))
   );
+  // Prograde bodies advance toward +theta, so the wake is behind at -theta.
+  // Retrograde orbits (negative period) go the other way.
+  const sign = retrograde ? 1 : -1;
 
   const positions: number[] = [];
   const colors: number[] = [];
 
   for (let i = 0; i <= ARC_SEGS; i++) {
     const t = i / ARC_SEGS;
-    const theta = -(gap + trailAngle * (1 - t));
+    const theta = sign * (gap + trailAngle * (1 - t));
     positions.push(
       Math.sin(theta) * orbitRadius,
       0,
@@ -48,7 +52,8 @@ const createTrailGeometry = (
 export const createPath = (
   orbitRadius: number,
   bodyRadius: number,
-  name: string
+  name: string,
+  retrograde = false
 ): THREE.Mesh => {
   const color = bodyColorThree(name);
   const material = new LineMaterial({
@@ -65,13 +70,17 @@ export const createPath = (
   });
   material.uniforms.resolution.value = trailResolution;
 
-  const mesh = new Line2(createTrailGeometry(orbitRadius, bodyRadius, color), material);
+  const mesh = new Line2(
+    createTrailGeometry(orbitRadius, bodyRadius, color, retrograde),
+    material
+  );
   mesh.visible = false;
   mesh.frustumCulled = false;
   mesh.userData.ignorePick = true;
   mesh.userData.trailOpacity = 0;
   mesh.userData.pathOrbit = orbitRadius;
   mesh.userData.pathBody = bodyRadius;
+  mesh.userData.pathRetrograde = retrograde;
   mesh.renderOrder = 2;
   return mesh;
 };
@@ -87,15 +96,18 @@ export const updatePath = (
   trail: THREE.Mesh,
   orbitRadius: number,
   bodyRadius: number,
-  name: string
+  name: string,
+  retrograde = false
 ) => {
   const prevOrbit = trail.userData.pathOrbit as number | undefined;
   const prevBody = trail.userData.pathBody as number | undefined;
+  const prevRetrograde = trail.userData.pathRetrograde as boolean | undefined;
   if (
     prevOrbit !== undefined &&
     prevBody !== undefined &&
     Math.abs(prevOrbit - orbitRadius) < 1e-8 &&
-    Math.abs(prevBody - bodyRadius) < 1e-8
+    Math.abs(prevBody - bodyRadius) < 1e-8 &&
+    prevRetrograde === retrograde
   ) {
     return;
   }
@@ -104,9 +116,11 @@ export const updatePath = (
   trail.geometry = createTrailGeometry(
     orbitRadius,
     bodyRadius,
-    bodyColorThree(name)
+    bodyColorThree(name),
+    retrograde
   );
   old.dispose();
   trail.userData.pathOrbit = orbitRadius;
   trail.userData.pathBody = bodyRadius;
+  trail.userData.pathRetrograde = retrograde;
 };

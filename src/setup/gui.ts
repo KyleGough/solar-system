@@ -75,14 +75,6 @@ export const createGUI = (
     syncRunButton(running);
   };
 
-  const speedController = gui
-    .add(options, "speed", SPEED_STEPS)
-    .name("Speed")
-    .onChange(() => {
-      options.speed = Number(options.speed);
-      syncSpeedButton();
-    });
-
   gui
     .add(options, "radiusExponent", DEFAULT_RADIUS_EXPONENT, 1, 0.01)
     .name("Size exponent");
@@ -106,7 +98,6 @@ export const createGUI = (
   speedButton?.addEventListener("click", () => {
     if (isIntroActive()) return;
     options.speed = nextSpeed(options.speed);
-    speedController.updateDisplay();
     syncSpeedButton();
   });
 
