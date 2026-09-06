@@ -7,13 +7,23 @@ import {
   DEFAULT_RADIUS_EXPONENT,
 } from "./scale";
 
+export const BASE_SPEED = 0.125;
+export const SPEED_STEPS = [1, 2, 5, 10, 20] as const;
+
 export const options = {
   showPaths: true,
   focus: "Sun",
   clock: true,
-  speed: 0.125,
+  speed: 1,
   radiusExponent: DEFAULT_RADIUS_EXPONENT,
   distanceExponent: DEFAULT_DISTANCE_EXPONENT,
+};
+
+const formatSpeed = (speed: number) => `x${Number(speed)}`;
+
+const nextSpeed = (current: number) => {
+  const index = SPEED_STEPS.findIndex((step) => step === Number(current));
+  return SPEED_STEPS[(index + 1) % SPEED_STEPS.length];
 };
 
 export const createGUI = (
@@ -44,6 +54,17 @@ export const createGUI = (
     }
   };
 
+  const syncSpeedButton = () => {
+    const button = document.getElementById("btn-speed");
+    if (!button) return;
+    const value = formatSpeed(options.speed);
+    button.setAttribute("aria-label", `Simulation speed ${value}`);
+    const readout = button.querySelector(".hud-ctrl-value");
+    if (readout) {
+      readout.textContent = value;
+    }
+  };
+
   const applyRunState = (running: boolean) => {
     options.clock = running;
     if (running) {
@@ -54,7 +75,13 @@ export const createGUI = (
     syncRunButton(running);
   };
 
-  gui.add(options, "speed", 0, 5, 0.01).name("Speed");
+  const speedController = gui
+    .add(options, "speed", SPEED_STEPS)
+    .name("Speed")
+    .onChange(() => {
+      options.speed = Number(options.speed);
+      syncSpeedButton();
+    });
 
   gui
     .add(options, "radiusExponent", DEFAULT_RADIUS_EXPONENT, 1, 0.01)
@@ -73,6 +100,14 @@ export const createGUI = (
   runButton?.addEventListener("click", () => {
     if (isIntroActive()) return;
     applyRunState(!options.clock);
+  });
+
+  const speedButton = document.getElementById("btn-speed");
+  speedButton?.addEventListener("click", () => {
+    if (isIntroActive()) return;
+    options.speed = nextSpeed(options.speed);
+    speedController.updateDisplay();
+    syncSpeedButton();
   });
 
   const labelsButton = document.getElementById("btn-labels");
