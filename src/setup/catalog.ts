@@ -52,7 +52,7 @@ export interface Body {
 
 export const bodies: readonly Body[] = planetData as Body[];
 
-export const bodyByName: ReadonlyMap<string, Body> = new Map(
+const bodyByName: ReadonlyMap<string, Body> = new Map(
   bodies.map((body) => [body.name, body])
 );
 

@@ -107,7 +107,6 @@ export class Label {
     this.elements.forEach((label) => {
       label.visible = true;
       label.layers.enable(LAYERS.POILabel);
-      label.element.style.removeProperty("display");
       label.element.style.removeProperty("opacity");
     });
   };

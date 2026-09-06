@@ -2,7 +2,7 @@ import * as THREE from "three";
 import { onLoaded, setLoadProgress } from "./loading";
 import { applyGlossToRoughness } from "./height-normal";
 
-export type TextureRole = "color" | "data" | "glossRoughness";
+type TextureRole = "color" | "data" | "glossRoughness";
 
 let textureCount = 0;
 let texturesLoaded = 0;

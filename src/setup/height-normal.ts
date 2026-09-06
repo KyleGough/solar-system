@@ -3,11 +3,6 @@ import * as THREE from "three";
 /** Oceans keep a soft sheen; land stays matte. */
 const OCEAN_ROUGHNESS = 0.55;
 const LAND_ROUGHNESS = 1.0;
-/** Point-light GGX still blows out water; scale the specular lobe. */
-const OCEAN_SPECULAR_SCALE = 0.12;
-
-const OUTGOING_LIGHT =
-  "vec3 outgoingLight = totalDiffuse + totalSpecular + totalEmissiveRadiance;";
 
 const canvasFromImageData = (imageData: ImageData): HTMLCanvasElement => {
   const canvas = document.createElement("canvas");
@@ -55,26 +50,4 @@ export const applyGlossToRoughness = (texture: THREE.Texture) => {
   texture.wrapS = THREE.RepeatWrapping;
   texture.wrapT = THREE.ClampToEdgeWrapping;
   texture.needsUpdate = true;
-};
-
-/**
- * Dim the sun glint on glossy (ocean) texels only. Land stays at full
- * Standard specular, which is already ~0 at roughness 1.
- */
-export const applySoftOceanSpecular = (
-  material: THREE.MeshStandardMaterial
-) => {
-  const priorCompile = material.onBeforeCompile;
-  const priorKey = material.customProgramCacheKey.bind(material);
-  const oceanMask = `1.0 - smoothstep(${OCEAN_ROUGHNESS.toFixed(2)}, ${LAND_ROUGHNESS.toFixed(2)}, roughnessFactor)`;
-  const scaled = `totalSpecular *= mix(1.0, ${OCEAN_SPECULAR_SCALE.toFixed(2)}, ${oceanMask});`;
-
-  material.customProgramCacheKey = () => `${priorKey()}|soft-ocean-spec`;
-  material.onBeforeCompile = (shader, renderer) => {
-    priorCompile.call(material, shader, renderer);
-    shader.fragmentShader = shader.fragmentShader.replace(
-      OUTGOING_LIGHT,
-      `${scaled}\n${OUTGOING_LIGHT}`
-    );
-  };
 };

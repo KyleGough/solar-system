@@ -7,8 +7,7 @@ import { applyNightLights } from "./night-lights";
 import { applyDaysideRelief } from "./dayside-relief";
 import { createAtmosphereGlow } from "./atmosphere-glow";
 import type { Body, BodyType, TexturePaths } from "./catalog";
-import { Label } from "./label";
-import { PointOfInterest } from "./label";
+import { Label, type PointOfInterest } from "./label";
 import { LAYERS } from "../constants";
 import {
   DEFAULT_DISTANCE_EXPONENT,
@@ -29,13 +28,13 @@ const degreesToRadians = (degrees: number): number => {
 };
 
 /** Apparent diameter as a fraction of the viewport width on focus. */
-export const FOCUS_VIEWPORT_FILL = 0.95;
+const FOCUS_VIEWPORT_FILL = 0.95;
 
 /**
  * Distance from a sphere’s centre so its silhouette spans `fill` of the
  * viewport width. Uses NDC so the projected pixel width matches that fraction.
  */
-export const distanceToFillViewport = (
+const distanceToFillViewport = (
   radius: number,
   camera: THREE.PerspectiveCamera,
   fill = FOCUS_VIEWPORT_FILL
@@ -386,7 +385,7 @@ export class PlanetaryObject {
   };
 
   /** Fixed framing used before viewport-width fitting. */
-  getLegacyFocusDistance = (): number => {
+  private getLegacyFocusDistance = (): number => {
     if (this.origin.getObjectByName("rings")) {
       return this.radius * RING_OUTER * 1.55;
     }

@@ -20,7 +20,7 @@ export interface AtmosphereGlowParams {
   scatter?: number;
 }
 
-export const DEFAULT_MIE_COLOR: [number, number, number] = [1.0, 0.78, 0.48];
+const DEFAULT_MIE_COLOR: [number, number, number] = [1.0, 0.78, 0.48];
 /** Extra outer radius so the fade to zero is not clipped by the mesh. */
 const OUTER_EXTEND = 1.06;
 const INNER_INTENSITY = 0.7;
