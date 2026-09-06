@@ -90,23 +90,28 @@ export const createGUI = (
   });
 
   const spinButton = document.getElementById("btn-spin");
-  spinButton?.addEventListener("click", () => {
-    if (isIntroActive()) return;
-    const ride = spinButton.getAttribute("aria-pressed") !== "true";
-    setToggle(spinButton, ride);
-    onRideSpin?.(ride);
-  });
-
   const settingsButton = document.getElementById("btn-settings");
   if (!import.meta.env.DEV) {
+    spinButton?.remove();
     settingsButton?.remove();
-  } else if (settingsButton) {
-    settingsButton.removeAttribute("hidden");
-    settingsButton.addEventListener("click", () => {
-      if (isIntroActive()) return;
-      gui.show(gui._hidden);
-      setToggle(settingsButton, !gui._hidden);
-    });
+  } else {
+    if (spinButton) {
+      spinButton.removeAttribute("hidden");
+      spinButton.addEventListener("click", () => {
+        if (isIntroActive()) return;
+        const ride = spinButton.getAttribute("aria-pressed") !== "true";
+        setToggle(spinButton, ride);
+        onRideSpin?.(ride);
+      });
+    }
+    if (settingsButton) {
+      settingsButton.removeAttribute("hidden");
+      settingsButton.addEventListener("click", () => {
+        if (isIntroActive()) return;
+        gui.show(gui._hidden);
+        setToggle(settingsButton, !gui._hidden);
+      });
+    }
   }
 
   return gui;
