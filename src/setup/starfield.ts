@@ -1,7 +1,32 @@
 import * as THREE from "three";
 
-const STAR_COUNT = 2200;
+const STAR_COUNT = 2000;
 const DISTANCE = 400;
+
+const createStarSprite = (): THREE.CanvasTexture => {
+  const size = 64;
+  const canvas = document.createElement("canvas");
+  canvas.width = size;
+  canvas.height = size;
+  const ctx = canvas.getContext("2d");
+  if (!ctx) {
+    throw new Error("Could not create star sprite");
+  }
+
+  const center = size / 2;
+  const gradient = ctx.createRadialGradient(center, center, 0, center, center, center);
+  gradient.addColorStop(0, "rgba(255,255,255,1)");
+  gradient.addColorStop(0.18, "rgba(255,255,255,0.42)");
+  gradient.addColorStop(0.42, "rgba(255,255,255,0.1)");
+  gradient.addColorStop(1, "rgba(255,255,255,0)");
+  ctx.fillStyle = gradient;
+  ctx.fillRect(0, 0, size, size);
+
+  const texture = new THREE.CanvasTexture(canvas);
+  texture.colorSpace = THREE.NoColorSpace;
+  texture.needsUpdate = true;
+  return texture;
+};
 
 export const createStarfield = (): THREE.Points => {
   const positions = new Float32Array(STAR_COUNT * 3);
@@ -18,7 +43,7 @@ export const createStarfield = (): THREE.Points => {
     positions[i * 3 + 1] = DISTANCE * Math.cos(theta);
     positions[i * 3 + 2] = DISTANCE * sinT * Math.sin(phi);
     mix.lerpColors(warm, cool, Math.random());
-    const mag = 0.35 + Math.random() * 0.65;
+    const mag = 0.18 + Math.random() * 0.38;
     colors[i * 3] = mix.r * mag;
     colors[i * 3 + 1] = mix.g * mag;
     colors[i * 3 + 2] = mix.b * mag;
@@ -29,10 +54,11 @@ export const createStarfield = (): THREE.Points => {
   geometry.setAttribute("color", new THREE.Float32BufferAttribute(colors, 3));
 
   const material = new THREE.PointsMaterial({
-    size: 1.6,
+    size: 4,
+    map: createStarSprite(),
     vertexColors: true,
     transparent: true,
-    opacity: 0.85,
+    opacity: 0.75,
     sizeAttenuation: false,
     depthWrite: false,
     toneMapped: false,
