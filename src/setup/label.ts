@@ -105,7 +105,10 @@ export class Label {
    */
   showPOI = () => {
     this.elements.forEach((label) => {
+      label.visible = true;
       label.layers.enable(LAYERS.POILabel);
+      label.element.style.removeProperty("display");
+      label.element.style.removeProperty("opacity");
     });
   };
 
@@ -114,7 +117,11 @@ export class Label {
    */
   hidePOI = () => {
     this.elements.forEach((label) => {
+      label.visible = false;
       label.layers.disable(LAYERS.POILabel);
+      label.element.style.opacity = "0";
+      label.element.style.pointerEvents = "none";
+      label.element.setAttribute("tabindex", "-1");
     });
   };
 

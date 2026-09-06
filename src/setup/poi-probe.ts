@@ -170,7 +170,10 @@ export const createPoiProbe = (
     pointer.x = ((clientX - rect.left) / rect.width) * 2 - 1;
     pointer.y = -((clientY - rect.top) / rect.height) * 2 + 1;
     raycaster.setFromCamera(pointer, camera);
-    const hits = raycaster.intersectObject(object.mesh, false);
+    const hits = raycaster.intersectObject(
+      object.mesh,
+      !(object.mesh as THREE.Mesh).isMesh
+    );
     if (!hits[0]) return null;
     return hitPoint.copy(hits[0].point);
   };

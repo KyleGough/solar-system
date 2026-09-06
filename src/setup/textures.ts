@@ -17,6 +17,9 @@ const markLoaded = () => {
   }
 };
 
+/** Count a finished texture, cubemap face, or glTF model toward the intro bar. */
+export const markAssetLoaded = markLoaded;
+
 /**
  * Color maps are sRGB albedo. Data maps (normals, bump, roughness, alpha)
  * stay linear.

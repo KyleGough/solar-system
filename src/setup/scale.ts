@@ -141,25 +141,39 @@ const sceneSize = (
     state.distanceExponent
   );
 
+  const keepOutsideParent = (radius: number, distance: number): number => {
+    if (body.type !== "moon" || !parent) {
+      return distance;
+    }
+    return Math.max(distance, parent.radius + radius * 2);
+  };
+
   const weight = moonLocalWeight(body, state);
   if (weight <= 0 || !parent) {
-    return { radius: overviewR, distance: overviewD };
+    return {
+      radius: overviewR,
+      distance: keepOutsideParent(overviewR, overviewD),
+    };
   }
 
+  const radius = lerp(
+    overviewR,
+    localRadius(body.catalogRadius, parent.catalogRadius, parent.radius),
+    weight
+  );
   return {
-    radius: lerp(
-      overviewR,
-      localRadius(body.catalogRadius, parent.catalogRadius, parent.radius),
-      weight
-    ),
-    distance: lerp(
-      overviewD,
-      localDistance(
-        body.catalogDistance,
-        parent.catalogRadius,
-        parent.radius
-      ),
-      weight
+    radius,
+    distance: keepOutsideParent(
+      radius,
+      lerp(
+        overviewD,
+        localDistance(
+          body.catalogDistance,
+          parent.catalogRadius,
+          parent.radius
+        ),
+        weight
+      )
     ),
   };
 };

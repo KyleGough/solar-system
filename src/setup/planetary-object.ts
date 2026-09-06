@@ -2,6 +2,7 @@ import * as THREE from "three";
 import { createRingMesh, RING_OUTER, setRingPlanetRadius } from "./rings";
 import { createPath, updatePath } from "./path";
 import { loadTexture } from "./textures";
+import { decorateModelMeshes, fitModelToRadius, loadGltf } from "./models";
 import { applyNightLights } from "./night-lights";
 import { applyDaysideRelief } from "./dayside-relief";
 import { createAtmosphereGlow } from "./atmosphere-glow";
@@ -75,7 +76,7 @@ export class PlanetaryObject {
   equator: THREE.Group;
   /** This body’s orbital plane (inclination). Parent of origin and path. */
   orbit: THREE.Group;
-  mesh: THREE.Mesh;
+  mesh: THREE.Object3D;
   atmosphereMesh?: THREE.Mesh;
   path?: THREE.Mesh;
   rng: number;
@@ -111,10 +112,18 @@ export class PlanetaryObject {
       body.equatorialOrbit ?? (type === "moon" || type === "ring");
     this.rng = body.offset ?? Math.random() * 2 * Math.PI;
 
-    this.loadTextures(body.textures);
-
     if (type === "ring" && !parent) {
       throw new Error(`Ring "${body.name}" must be constructed with its parent`);
+    }
+
+    if (body.model) {
+      this.mesh = this.createModelMesh(body.model);
+    } else {
+      if (!body.textures) {
+        throw new Error(`Body "${body.name}" needs textures or a model`);
+      }
+      this.loadTextures(body.textures);
+      this.mesh = this.createMesh(parent);
     }
 
     this.orbit = new THREE.Group();
@@ -132,7 +141,6 @@ export class PlanetaryObject {
     }
     this.origin.add(this.equator);
 
-    this.mesh = this.createMesh(parent);
     this.equator.add(this.mesh);
 
     if (this.orbits && this.distance > 0 && type !== "ring") {
@@ -180,7 +188,7 @@ export class PlanetaryObject {
     if (this.type !== "ring") {
       return;
     }
-    setRingPlanetRadius(this.mesh, parentRadius, this.ringSourceRadius);
+    setRingPlanetRadius(this.mesh as THREE.Mesh, parentRadius, this.ringSourceRadius);
   };
 
   /**
@@ -222,6 +230,21 @@ export class PlanetaryObject {
       this.atmosphere.alpha = loadTexture(textures.atmosphereAlpha, "data");
     }
   }
+
+  /**
+   * Wrapper group sized like a globe of `meshLocalRadius`. The glTF is fitted
+   * into that sphere when it arrives so later `mesh.scale` still works.
+   */
+  private createModelMesh = (path: string): THREE.Group => {
+    const root = new THREE.Group();
+    root.name = this.name;
+    loadGltf(path, (scene) => {
+      fitModelToRadius(scene, this.meshLocalRadius);
+      decorateModelMeshes(scene, root);
+      root.add(scene);
+    });
+    return root;
+  };
 
   /**
    * Creates the main mesh object with textures.

@@ -24,7 +24,10 @@ export interface Body {
   daylength: number;
   /** Hours for one cloud-layer rotation. Faster than daylength so weather drifts. */
   cloudPeriod?: number;
-  textures: TexturePaths;
+  /** Sphere albedo maps. Omit when `model` supplies the surface. */
+  textures?: TexturePaths;
+  /** glTF path for irregular bodies, scaled to `radius`. */
+  model?: string;
   type: BodyType;
   tilt: number;
   /** Orbital inclination in degrees to the parent’s orbital plane. */
