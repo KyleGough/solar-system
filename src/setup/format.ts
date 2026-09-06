@@ -47,6 +47,11 @@ export const formatPeriodDuration = (days: number): string => {
 
 export const formatHours = (hours: number): string => {
   const abs = Math.abs(hours);
+  if (abs > 240) {
+    const days = Math.round(abs / 24);
+    const unit = days === 1 ? "day" : "days";
+    return retrograde(`${days} ${unit}`, hours);
+  }
   const formatted = Number.isInteger(abs)
     ? abs.toLocaleString("en-GB")
     : abs.toLocaleString("en-GB", {
