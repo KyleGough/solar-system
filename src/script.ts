@@ -26,6 +26,11 @@ import {
   writeFocusToUrl,
 } from "./setup/focus-url";
 import { LAYERS } from "./constants";
+import {
+  applySceneScale,
+  outerOrbitRadius,
+  type ScaleState,
+} from "./setup/scale";
 import type { PointOfInterest } from "./setup/label";
 
 THREE.ColorManagement.enabled = true;
@@ -88,6 +93,13 @@ const urlFocus = readFocusFromUrl();
 if (urlFocus) {
   options.focus = urlFocus;
 }
+
+applySceneScale(solarSystem, {
+  radiusExponent: options.radiusExponent,
+  distanceExponent: options.distanceExponent,
+  focus: options.focus,
+  flight: null,
+});
 updateIdentity(options.focus);
 updateBodyInfo(options.focus);
 
@@ -120,6 +132,57 @@ const focusTransition = new FocusTransition(
   controls,
   solarSystem
 );
+
+const currentScaleState = (dt = 0): ScaleState => ({
+  radiusExponent: options.radiusExponent,
+  distanceExponent: options.distanceExponent,
+  focus: options.focus,
+  flight: focusTransition.travelScale(dt),
+});
+
+const fitCameraToScale = () => {
+  const extent = outerOrbitRadius(solarSystem);
+  const maxDistance = Math.max(MAX_CAMERA_DISTANCE, extent * 1.75);
+  const far = Math.max(1000, extent * 8);
+  controls.maxDistance = maxDistance;
+  if (camera.far !== far) {
+    camera.far = far;
+    fakeCamera.far = far;
+    camera.updateProjectionMatrix();
+    fakeCamera.updateProjectionMatrix();
+  }
+};
+
+fitCameraToScale();
+
+const framed = {
+  name: options.focus,
+  radius: solarSystem[options.focus].getVisualRadius(),
+};
+
+const keepFocusFraming = () => {
+  const body = solarSystem[options.focus];
+  const radius = body.getVisualRadius();
+  if (
+    options.focus !== framed.name ||
+    focusTransition.isActive() ||
+    body.type === "star"
+  ) {
+    framed.name = options.focus;
+    framed.radius = radius;
+    return;
+  }
+  if (framed.radius > 1e-8 && Math.abs(radius - framed.radius) > 1e-8) {
+    // Ride-spin parents the camera to the globe; mesh.scale already dollies.
+    if (camera.parent !== body.mesh) {
+      fakeCamera.position.multiplyScalar(radius / framed.radius);
+    }
+    controls.minDistance = body.getOrbitMinDistance(
+      camera.parent === body.mesh
+    );
+  }
+  framed.radius = radius;
+};
 
 const picker = createBodyPicker(camera, canvas, solarSystem);
 
@@ -344,6 +407,10 @@ poiProbe.sync();
 
   elapsedTime += clock.getDelta() * options.speed;
 
+  applySceneScale(solarSystem, currentScaleState(wallDt));
+  fitCameraToScale();
+  keepFocusFraming();
+
   // Update the solar system objects
   for (const object of Object.values(solarSystem)) {
     object.tick(elapsedTime);
@@ -376,6 +443,7 @@ poiProbe.sync();
 
   updateOrbitTrails(solarSystem, wallDt, {
     showAll: options.showPaths,
+    focus: options.focus,
     flying: frame.active && !frame.justFinished && frame.mode === "travel",
     from: frame.from,
     to: frame.to,

@@ -1,6 +1,6 @@
 import * as THREE from "three";
-import { createRingMesh, RING_OUTER } from "./rings";
-import { createPath } from "./path";
+import { createRingMesh, RING_OUTER, setRingPlanetRadius } from "./rings";
+import { createPath, updatePath } from "./path";
 import { loadTexture } from "./textures";
 import { applyNightLights } from "./night-lights";
 import { applyDaysideRelief } from "./dayside-relief";
@@ -9,6 +9,12 @@ import type { Body, BodyType, TexturePaths } from "./catalog";
 import { Label } from "./label";
 import { PointOfInterest } from "./label";
 import { LAYERS } from "../constants";
+import {
+  DEFAULT_DISTANCE_EXPONENT,
+  DEFAULT_RADIUS_EXPONENT,
+  overviewDistance,
+  overviewRadius,
+} from "./scale";
 
 interface Atmosphere {
   map?: THREE.Texture;
@@ -16,14 +22,6 @@ interface Atmosphere {
 }
 
 const timeFactor = 8 * Math.PI * 2; // 1s real-time => 8h simulation time
-
-const normaliseRadius = (radius: number): number => {
-  return Math.sqrt(radius) / 500;
-};
-
-const normaliseDistance = (distance: number): number => {
-  return Math.pow(distance, 0.4);
-};
 
 const degreesToRadians = (degrees: number): number => {
   return (Math.PI * degrees) / 180;
@@ -51,8 +49,18 @@ export const distanceToFillViewport = (
 };
 
 export class PlanetaryObject {
-  radius: number; // in km
-  distance: number; // in million km
+  name: string;
+  /** Catalog radius in km. */
+  catalogRadius: number;
+  /** Catalog orbital distance in million km. */
+  catalogDistance: number;
+  /** Current scene-space globe radius. */
+  radius: number;
+  /** Current scene-space orbital radius. */
+  distance: number;
+  /** Sphere geometry radius; mesh.scale maps this to `radius`. */
+  readonly meshLocalRadius: number;
+  private readonly ringSourceRadius: number;
   period: number; // in days
   daylength: number; // in hours
   cloudPeriod?: number; // in hours
@@ -84,8 +92,13 @@ export class PlanetaryObject {
     const { radius, distance, period, daylength, cloudPeriod, orbits, type, tilt } =
       body;
 
-    this.radius = normaliseRadius(radius);
-    this.distance = normaliseDistance(distance);
+    this.name = body.name;
+    this.catalogRadius = radius;
+    this.catalogDistance = distance;
+    this.radius = overviewRadius(radius, DEFAULT_RADIUS_EXPONENT);
+    this.distance = overviewDistance(distance, DEFAULT_DISTANCE_EXPONENT);
+    this.meshLocalRadius = this.radius;
+    this.ringSourceRadius = type === "ring" && parent ? parent.radius : 0;
     this.period = period;
     this.daylength = daylength;
     this.cloudPeriod = cloudPeriod;
@@ -138,6 +151,37 @@ export class PlanetaryObject {
 
     this.initLabels(body.labels);
   }
+
+  /**
+   * Resize the globe and orbit to the current scene scale. Geometry stays
+   * at `meshLocalRadius`; uniform mesh scale carries the rest.
+   */
+  setSceneSize = (radius: number, distance: number) => {
+    const radiusChanged = Math.abs(this.radius - radius) > 1e-10;
+    const distanceChanged = Math.abs(this.distance - distance) > 1e-10;
+    if (!radiusChanged && !distanceChanged) {
+      return;
+    }
+    this.radius = radius;
+    this.distance = distance;
+    if (this.type === "ring") {
+      return;
+    }
+    if (radiusChanged && this.meshLocalRadius > 0) {
+      this.mesh.scale.setScalar(radius / this.meshLocalRadius);
+    }
+    if (this.path) {
+      updatePath(this.path, this.distance, this.radius, this.name);
+    }
+  };
+
+  /** Keep the ring disk outside the parent globe as that globe's scene size changes. */
+  setRingScale = (parentRadius: number) => {
+    if (this.type !== "ring") {
+      return;
+    }
+    setRingPlanetRadius(this.mesh, parentRadius, this.ringSourceRadius);
+  };
 
   /**
    * Creates label objects for each point-of-interest.
@@ -331,6 +375,17 @@ export class PlanetaryObject {
    */
   getMinDistance = (): number => {
     return this.radius * 1.8;
+  };
+
+  /**
+   * OrbitControls min distance in the camera parent's local units. Ride-spin
+   * parents to the mesh, so the limit must be in geometry space, not scene space.
+   */
+  getOrbitMinDistance = (parentedToMesh: boolean): number => {
+    if (parentedToMesh && this.meshLocalRadius > 0) {
+      return this.meshLocalRadius * 1.8;
+    }
+    return this.getMinDistance();
   };
 
   /** Bounding radius used when framing the body in the viewport. */

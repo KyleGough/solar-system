@@ -115,3 +115,16 @@ export const createRingMesh = (
 
   return rings;
 };
+
+export const setRingPlanetRadius = (
+  mesh: THREE.Mesh,
+  planetRadius: number,
+  sourceRadius: number
+) => {
+  if (sourceRadius <= 0) {
+    return;
+  }
+  mesh.scale.setScalar(planetRadius / sourceRadius);
+  const material = mesh.material as THREE.ShaderMaterial;
+  material.uniforms.uPlanetRadius.value = planetRadius;
+};

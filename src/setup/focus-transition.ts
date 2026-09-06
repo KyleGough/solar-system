@@ -2,6 +2,7 @@ import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 import { SolarSystem } from "./solar-system";
 import type { BodyType } from "./catalog";
+import { localMoonOrbitRadius } from "./scale";
 
 const MIN_DURATION = 0.6;
 const MAX_DURATION = 4.0;
@@ -159,6 +160,23 @@ export class FocusTransition {
   destination = (): string | null => this.flight?.to ?? null;
 
   /**
+   * Current travel blend for scene scale. `progress` is 0 at takeoff, 1 at
+   * landing; pan flights do not change moon scale.
+   */
+  travelScale = (
+    dt = 0
+  ): { from: string; to: string; progress: number } | null => {
+    if (!this.flight || this.flight.mode !== "travel") {
+      return null;
+    }
+    return {
+      from: this.flight.from,
+      to: this.flight.to,
+      progress: Math.min(1, (this.flight.elapsed + dt) / this.flight.duration),
+    };
+  };
+
+  /**
    * Keep the camera beside the focused body as it orbits, without inheriting
    * axial spin. Call after bodies tick, while not flying.
    */
@@ -190,6 +208,7 @@ export class FocusTransition {
       return;
     }
     this.applyRig(focusName);
+    this.syncOrbitMinDistance(focusName);
   };
 
   begin = (from: string, to: string): boolean => {
@@ -232,7 +251,13 @@ export class FocusTransition {
     } else {
       this.writeDaysideDestination(toBody);
     }
-    const distance = this.startPos.distanceTo(this.destPos);
+    let distance = this.startPos.distanceTo(this.destPos);
+    if (toBody.type === "moon" && toBody.orbits) {
+      const parent = this.solarSystem[toBody.orbits];
+      if (parent) {
+        distance = Math.max(distance, localMoonOrbitRadius(toBody, parent));
+      }
+    }
 
     this.flight = {
       from: this.flight?.swapped ? this.flight.to : this.flight?.from ?? from,
@@ -446,9 +471,8 @@ export class FocusTransition {
       return;
     }
 
-    const toBody = this.solarSystem[this.flight.to];
-    this.controls.minDistance = toBody.getMinDistance();
     this.applyRig(this.flight.to);
+    this.syncOrbitMinDistance(this.flight.to);
     this.controls.enabled = true;
     this.controls.update();
     this.camera.copy(this.fakeCamera);
@@ -503,8 +527,8 @@ export class FocusTransition {
       this.camera.up.copy(this.poleDir);
     }
     this.camera.lookAt(this.worldTarget);
-    this.controls.minDistance = body.getMinDistance();
     this.applyRig(name);
+    this.syncOrbitMinDistance(name);
   };
 
   /**
@@ -531,6 +555,13 @@ export class FocusTransition {
     this.fakeCamera.up.set(0, 1, 0);
     this.camera.up.set(0, 1, 0);
     this.controls.target.set(0, 0, 0);
+  };
+
+  private syncOrbitMinDistance = (focusName: string) => {
+    const body = this.solarSystem[focusName];
+    this.controls.minDistance = body.getOrbitMinDistance(
+      this.camera.parent === body.mesh
+    );
   };
 
   /**

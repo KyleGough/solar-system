@@ -137,9 +137,9 @@ export const createPoiProbe = (
     }
 
     attachTo(object);
-    group.scale.setScalar(object.radius);
+    group.scale.setScalar(object.meshLocalRadius);
     poiLocalPosition(
-      object.radius * SURFACE_LIFT,
+      object.meshLocalRadius * SURFACE_LIFT,
       state.y,
       state.z,
       group.position
