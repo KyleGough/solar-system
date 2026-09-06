@@ -9,7 +9,7 @@ import {
 } from "./setup/lights";
 import { createStarfield } from "./setup/starfield";
 import { createSolarSystem } from "./setup/solar-system";
-import { createGUI, options } from "./setup/gui";
+import { BASE_SPEED, createGUI, options } from "./setup/gui";
 import { createPoiProbe } from "./setup/poi-probe";
 import { isIntroActive, onIntroDismiss } from "./setup/loading";
 import { updateIdentity } from "./setup/identity";
@@ -427,7 +427,7 @@ poiProbe.sync();
   const wallDt = Math.min(0.05, (wall - lastWall) / 1000);
   lastWall = wall;
 
-  elapsedTime += clock.getDelta() * options.speed;
+  elapsedTime += clock.getDelta() * BASE_SPEED * options.speed;
 
   applySceneScale(solarSystem, currentScaleState(wallDt));
   fitCameraToScale();

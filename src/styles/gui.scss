@@ -98,6 +98,16 @@
   stroke: none;
 }
 
+.hud-ctrl-value {
+  font-family: "IBM Plex Mono", ui-monospace, monospace;
+  font-size: 0.6875rem;
+  font-weight: 400;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.02em;
+  line-height: 1;
+  color: inherit;
+}
+
 .hud-ctrl .icon-play {
   display: none;
 }
@@ -122,7 +132,8 @@
     0 0 0 3px var(--hud-brass);
 }
 
-.hud-ctrl[aria-pressed="true"] .hud-ctrl-disc {
+.hud-ctrl[aria-pressed="true"] .hud-ctrl-disc,
+.hud-ctrl.hud-ctrl-readout .hud-ctrl-disc {
   color: var(--hud-brass);
   transform: scale(1.18);
   box-shadow:
@@ -155,7 +166,9 @@
 }
 
 .hud-ctrl[aria-pressed="true"]:hover .hud-ctrl-label,
-.hud-ctrl[aria-pressed="true"]:focus-visible .hud-ctrl-label {
+.hud-ctrl[aria-pressed="true"]:focus-visible .hud-ctrl-label,
+.hud-ctrl-readout:hover .hud-ctrl-label,
+.hud-ctrl-readout:focus-visible .hud-ctrl-label {
   color: var(--hud-brass);
 }
 
@@ -183,6 +196,10 @@
   .hud-ctrl-label {
     font-size: 0.625rem;
     letter-spacing: 0.04em;
+  }
+
+  .hud-ctrl-value {
+    font-size: 0.625rem;
   }
 
   .hud-ctrl:hover .hud-ctrl-label {

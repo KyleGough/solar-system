@@ -251,7 +251,7 @@
     "traversable": true,
     "offset": 0,
     "model": "./models/phobos.glb",
-    "description": "Phobos is the inner and larger moon of Mars, an irregular, cratered rock that skims just above the atmosphere. It is tidally locked and slowly spiralling inward; in tens of millions of years it will break apart or strike Mars."
+    "description": "Phobos is the inner and larger moon of Mars, an irregular, cratered rock that skims just above the atmosphere. It is tidally locked and slowly spiralling inward; in tens of millions of years it will break apart."
   },
   {
     "name": "Deimos",

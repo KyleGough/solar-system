@@ -141,7 +141,12 @@ export class PlanetaryObject {
     this.equator.add(this.mesh);
 
     if (this.orbits && this.distance > 0 && type !== "ring") {
-      this.path = createPath(this.distance, this.radius, body.name);
+      this.path = createPath(
+        this.distance,
+        this.radius,
+        body.name,
+        this.period < 0
+      );
       this.orbit.add(this.path);
     }
 
@@ -179,7 +184,13 @@ export class PlanetaryObject {
       this.mesh.scale.setScalar(radius / this.meshLocalRadius);
     }
     if (this.path) {
-      updatePath(this.path, this.distance, this.radius, this.name);
+      updatePath(
+        this.path,
+        this.distance,
+        this.radius,
+        this.name,
+        this.period < 0
+      );
     }
   };
 
