@@ -157,7 +157,6 @@ export class FocusTransition {
     private readonly solarSystem: SolarSystem
   ) {
     this.inertialRig.name = "inertial-focus";
-    this.inertialRig.userData.ignorePick = true;
     this.scene.add(this.inertialRig);
   }
 
