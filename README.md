@@ -30,11 +30,11 @@ npm run dev
 
 ## Screenshots
 
-<img width="2560" height="1287" alt="Mars" src="https://github.com/user-attachments/assets/75501202-2021-446b-a0a6-34db18a30922" />
-<img width="2560" height="1287" alt="Solar System Model" src="https://github.com/user-attachments/assets/84b4c0e6-51f7-4a39-a33f-f72042f21a54" />
-<img width="2560" height="1287" alt="Earth" src="https://github.com/user-attachments/assets/bc4d3c77-1e48-4a79-a2d2-43fc2030e0ec" />
-<img width="2560" height="1287" alt="Moon" src="https://github.com/user-attachments/assets/d2fd0ce8-ea86-448f-a91a-c2db5d5f2b63" />
-<img width="2560" height="1287" alt="Neptune" src="https://github.com/user-attachments/assets/57d17e91-0202-4b98-8f56-974b9e42f765" />
+<img width="2560" height="1287" alt="Mars" src="https://github.com/user-attachments/assets/e6c0e138-a92f-4e12-bf39-585d35c00838" />
+<img width="2560" height="1287" alt="Earth" src="https://github.com/user-attachments/assets/44b6c3bf-19cc-4ddb-8132-30e475e3b36c" />
+<img width="2560" height="1287" alt="Moon" src="https://github.com/user-attachments/assets/da05d226-1286-4d04-95cd-efd1432c9fb1" />
+<img width="2560" height="1287" alt="Neptune" src="https://github.com/user-attachments/assets/1766f4ba-ae3c-4ae1-870f-6eadb01570ed" />
+<img width="2560" height="1287" alt="Saturn" src="https://github.com/user-attachments/assets/545d1fb4-3ef6-454a-89a1-132f9a3298f8" />
 
 ## Credits
 
