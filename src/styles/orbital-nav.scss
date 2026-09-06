@@ -159,7 +159,7 @@
   display: flex;
   align-items: flex-start;
   justify-content: center;
-  gap: 2px;
+  gap: 24px;
   min-height: 40px;
   margin-top: -4px;
   opacity: 0;
@@ -207,6 +207,10 @@
 
   .orbit-nav-body:hover:not(.is-current) .orbit-nav-label {
     opacity: 0;
+  }
+
+  .orbit-nav-moons {
+    gap: 12px;
   }
 }
 
