@@ -102,9 +102,35 @@ const setOpen = (open: boolean) => {
   syncPanelDock();
 };
 
-onIntroDismiss(() => {
-  if (wantedOpen) setOpen(true);
-});
+const prefersReducedMotion = () =>
+  window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+const revealAfterIntro = () => {
+  if (!wantedOpen) return;
+  const panel = panelEl();
+  const fade = panel !== null && !prefersReducedMotion();
+  if (panel && fade) {
+    panel.classList.add("is-entering");
+  }
+  setOpen(true);
+  if (!panel || !fade) return;
+
+  const finishEnter = () => {
+    panel.classList.remove("is-entering");
+    panel.removeEventListener("animationend", onEnterEnd);
+    window.clearTimeout(fallback);
+  };
+  const onEnterEnd = (event: AnimationEvent) => {
+    if (event.target !== panel || event.animationName !== "body-info-enter") {
+      return;
+    }
+    finishEnter();
+  };
+  const fallback = window.setTimeout(finishEnter, 400);
+  panel.addEventListener("animationend", onEnterEnd);
+};
+
+onIntroDismiss(revealAfterIntro);
 
 const closePanel = () => {
   setMinimised(false);

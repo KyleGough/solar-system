@@ -27,6 +27,21 @@
   -webkit-font-smoothing: antialiased;
 }
 
+.body-info.is-entering {
+  opacity: 0;
+  animation: body-info-enter 250ms cubic-bezier(0.25, 1, 0.5, 1) forwards;
+}
+
+@keyframes body-info-enter {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
 .body-info-toolbar {
   position: absolute;
   top: 0.85rem;
@@ -270,6 +285,11 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
+  .body-info.is-entering {
+    opacity: 1;
+    animation: none;
+  }
+
   .body-info-pip::after {
     transition: none;
   }

@@ -88,14 +88,16 @@ const dismissIntro = () => {
   loadContainer.removeEventListener("click", dismissIntro);
   window.removeEventListener("keydown", onKeyDismiss);
 
+  // Unhide HUD during the overlay fade so the info panel can ease in with it.
+  document.body.classList.remove("intro-open");
+  for (const callback of dismissCallbacks) {
+    callback();
+  }
+  dismissCallbacks.length = 0;
+
   const finish = () => {
     loadContainer.hidden = true;
-    document.body.classList.remove("intro-open");
     setBackgroundInert(false);
-    for (const callback of dismissCallbacks) {
-      callback();
-    }
-    dismissCallbacks.length = 0;
   };
 
   if (prefersReducedMotion()) {
