@@ -206,7 +206,7 @@ const glowMesh = (group: THREE.Group, name: string): THREE.Mesh => {
   return mesh;
 };
 
-export const updateAtmosphereGlow = (
+const updateAtmosphereGlow = (
   group: THREE.Group,
   radius: number,
   params: AtmosphereGlowParams

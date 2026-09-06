@@ -1,12 +1,9 @@
-import planetData from "../planets.json";
-import type { Body } from "./planetary-object";
+import { traversableBodies } from "./catalog";
 
 const DEFAULT_TITLE = "Solar System Model";
 
 const bySlug = new Map(
-  (planetData as Body[])
-    .filter((body) => body.traversable)
-    .map((body) => [body.name.toLowerCase(), body.name])
+  traversableBodies.map((body) => [body.name.toLowerCase(), body.name])
 );
 
 const slugOf = (name: string): string => name.toLowerCase();

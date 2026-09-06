@@ -1,36 +1,6 @@
-import planetData from "../planets.json";
-import type { Body } from "./planetary-object";
+import { moonsByParent, parentOf, primaries, type Body } from "./catalog";
 import { isIntroActive } from "./loading";
 import { BODY_SWATCH, FALLBACK_SWATCH } from "./swatch";
-
-const bodies = planetData as Body[];
-
-const primaries: Body[] = bodies
-  .filter(
-    (body) => body.traversable && (body.type === "star" || body.type === "planet")
-  )
-  .sort((a, b) => a.distance - b.distance);
-
-const moonsByParent = new Map<string, Body[]>();
-
-for (const body of bodies) {
-  if (body.type !== "moon" || !body.traversable || !body.orbits) continue;
-  const list = moonsByParent.get(body.orbits) ?? [];
-  list.push(body);
-  moonsByParent.set(body.orbits, list);
-}
-
-for (const list of moonsByParent.values()) {
-  list.sort((a, b) => Math.abs(a.distance) - Math.abs(b.distance));
-}
-
-const bodyByName = new Map(bodies.map((body) => [body.name, body]));
-
-const parentOf = (name: string): string => {
-  const body = bodyByName.get(name);
-  if (body?.type === "moon" && body.orbits) return body.orbits;
-  return name;
-};
 
 const keyboardSequence = (focus: string): string[] => {
   const parent = parentOf(focus);

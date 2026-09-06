@@ -1,6 +1,5 @@
-import type { Body } from "./planetary-object";
+import { getBody, type Body } from "./catalog";
 import type { PointOfInterest } from "./label";
-import planetData from "../planets.json";
 import { isIntroActive, onIntroDismiss } from "./loading";
 import {
   formatDistance,
@@ -11,7 +10,6 @@ import {
   formatTilt,
 } from "./format";
 
-const bodies = planetData as Body[];
 const DOCK_BOTTOM_QUERY = "(width < 1450px)";
 const NAV_GAP = 12;
 
@@ -266,7 +264,7 @@ const fillPips = (
 };
 
 export const updateBodyInfo = (name: string): void => {
-  const body = bodies.find((entry) => entry.name === name);
+  const body = getBody(name);
   if (!body || !body.traversable) return;
 
   const kicker = kickerEl();
@@ -287,7 +285,7 @@ export const updateBodyInfo = (name: string): void => {
 };
 
 export const updatePoiInfo = (bodyName: string, poi: PointOfInterest): void => {
-  const body = bodies.find((entry) => entry.name === bodyName);
+  const body = getBody(bodyName);
   if (!body || !body.traversable) return;
 
   const kicker = kickerEl();

@@ -1,6 +1,7 @@
 import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 import { SolarSystem } from "./solar-system";
+import type { BodyType } from "./catalog";
 
 const MIN_DURATION = 0.6;
 const MAX_DURATION = 4.0;
@@ -90,7 +91,8 @@ const writeDaysideOffset = (
   );
 };
 
-const isOverheadFocus = (body: { type: string }): boolean => body.type === "star";
+const isOverheadFocus = (body: { type: BodyType }): boolean =>
+  body.type === "star";
 
 const writeOverheadOffset = (
   maxDistance: number,
