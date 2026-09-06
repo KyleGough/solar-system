@@ -185,7 +185,7 @@ const statsFor = (body: Body): Array<[string, string | Node]> => {
     rows.push(["Day length", formatHours(body.daylength)]);
   }
 
-  if (body.type !== "star") {
+  if (body.type !== "star" && body.tilt) {
     rows.push(["Axial tilt", formatTilt(body.tilt)]);
   }
 

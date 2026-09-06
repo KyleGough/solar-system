@@ -12,6 +12,7 @@ export const BODY_SWATCH: Record<string, BodySwatch> = {
   Earth: { color: "oklch(0.62 0.1 230)", size: "12px" },
   Mars: { color: "oklch(0.58 0.12 40)", size: "11px" },
   Phobos: { color: "oklch(0.52 0.03 55)", size: "8px" },
+  Deimos: { color: "oklch(0.44 0.02 50)", size: "7px" },
   Jupiter: { color: "oklch(0.72 0.1 65)", size: "18px" },
   Saturn: { color: "oklch(0.78 0.08 85)", size: "16px" },
   Uranus: { color: "oklch(0.72 0.08 200)", size: "14px" },
