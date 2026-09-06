@@ -6,7 +6,7 @@ An interactive 3D model of the Sun, planets, and major moons. Travel between bod
 
 ## How to explore
 
-- Double-click a body to travel to it.
+- Click a body to travel to it.
 - Use the orbit nav to jump between the Sun, planets, and major moons.
 - **Labels** shows or hides points of interest. **Trails** shows or hides orbit paths. **Spin** rides the focused body's rotation. **Controls** opens simulation settings.
 - The info panel shows a short description and stats for the focused body.

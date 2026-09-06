@@ -263,6 +263,10 @@ const onHoverPick = (clientX: number, clientY: number) => {
   canvas.style.cursor = name ? "pointer" : "default";
 };
 
+const CLICK_DRAG_PX = 8;
+let pointerDownX = 0;
+let pointerDownY = 0;
+
 canvas.addEventListener("pointermove", (event) => {
   onHoverPick(event.clientX, event.clientY);
 });
@@ -271,8 +275,20 @@ canvas.addEventListener("pointerleave", () => {
   canvas.style.cursor = "default";
 });
 
-canvas.addEventListener("dblclick", (event) => {
+canvas.addEventListener("pointerdown", (event) => {
+  if (event.button !== 0) return;
+  pointerDownX = event.clientX;
+  pointerDownY = event.clientY;
+});
+
+canvas.addEventListener("click", (event) => {
   if (isIntroActive()) return;
+  if (Math.hypot(event.clientX - pointerDownX, event.clientY - pointerDownY) > CLICK_DRAG_PX) {
+    return;
+  }
+  if (poiProbe?.isHovering(event.clientX, event.clientY)) {
+    return;
+  }
   const name = picker.pick(event.clientX, event.clientY);
   if (name) {
     requestFocus(name);
