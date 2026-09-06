@@ -15,7 +15,15 @@ const DAYSIDE_LATITUDE_DEG = 2.5; // 2.5° north of the equator
 /** Yaw off the Sun–planet line so a sliver of night sits on the left limb. */
 const DAYSIDE_LONGITUDE_DEG = 40;
 
+/** Surface pan: symmetric smoothstep. */
 const easeInOut = (t: number): number => t * t * (3 - 2 * t);
+
+/**
+ * Body-to-body travel. Quintic ease-in-out coasts into the destination
+ * more than smoothstep (zero first and second derivatives at both ends).
+ */
+const easeTravel = (t: number): number =>
+  t < 0.5 ? 16 * t ** 5 : 1 - (-2 * t + 2) ** 5 / 2;
 
 const durationFromDistance = (distance: number): number => {
   const t = Math.min(
@@ -375,7 +383,7 @@ export class FocusTransition {
 
     this.flight.elapsed += dt;
     const progress = Math.min(1, this.flight.elapsed / this.flight.duration);
-    const eased = easeInOut(progress);
+    const eased = easeTravel(progress);
 
     this.camera.position.lerpVectors(this.startPos, this.destPos, eased);
     this.currentLookAt.lerpVectors(this.startLookAt, this.destLookAt, eased);
