@@ -27,7 +27,7 @@ const EARTH_SCENE_DISTANCE = Math.pow(
 const lerp = (a: number, b: number, t: number): number => a + (b - a) * t;
 const smoothstep = (t: number): number => t * t * (3 - 2 * t);
 
-export type ScaleFlight = {
+type ScaleFlight = {
   from: string;
   to: string;
   progress: number;
@@ -71,7 +71,7 @@ export const overviewDistance = (
 };
 
 /** True size relative to a parent whose scene radius is already known. */
-export const localRadius = (
+const localRadius = (
   radiusKm: number,
   parentRadiusKm: number,
   parentSceneRadius: number
@@ -89,7 +89,7 @@ export const localRadius = (
  */
 const LOCAL_MOON_DISTANCE_EXPONENT = 0.75;
 
-export const localDistance = (
+const localDistance = (
   distanceMkm: number,
   parentRadiusKm: number,
   parentSceneRadius: number
@@ -141,25 +141,39 @@ const sceneSize = (
     state.distanceExponent
   );
 
+  const keepOutsideParent = (radius: number, distance: number): number => {
+    if (body.type !== "moon" || !parent) {
+      return distance;
+    }
+    return Math.max(distance, parent.radius + radius * 2);
+  };
+
   const weight = moonLocalWeight(body, state);
   if (weight <= 0 || !parent) {
-    return { radius: overviewR, distance: overviewD };
+    return {
+      radius: overviewR,
+      distance: keepOutsideParent(overviewR, overviewD),
+    };
   }
 
+  const radius = lerp(
+    overviewR,
+    localRadius(body.catalogRadius, parent.catalogRadius, parent.radius),
+    weight
+  );
   return {
-    radius: lerp(
-      overviewR,
-      localRadius(body.catalogRadius, parent.catalogRadius, parent.radius),
-      weight
-    ),
-    distance: lerp(
-      overviewD,
-      localDistance(
-        body.catalogDistance,
-        parent.catalogRadius,
-        parent.radius
-      ),
-      weight
+    radius,
+    distance: keepOutsideParent(
+      radius,
+      lerp(
+        overviewD,
+        localDistance(
+          body.catalogDistance,
+          parent.catalogRadius,
+          parent.radius
+        ),
+        weight
+      )
     ),
   };
 };

@@ -2,12 +2,12 @@ import * as THREE from "three";
 import { createRingMesh, RING_OUTER, setRingPlanetRadius } from "./rings";
 import { createPath, updatePath } from "./path";
 import { loadTexture } from "./textures";
+import { decorateModelMeshes, fitModelToRadius, loadGltf } from "./models";
 import { applyNightLights } from "./night-lights";
 import { applyDaysideRelief } from "./dayside-relief";
 import { createAtmosphereGlow } from "./atmosphere-glow";
 import type { Body, BodyType, TexturePaths } from "./catalog";
-import { Label } from "./label";
-import { PointOfInterest } from "./label";
+import { Label, type PointOfInterest } from "./label";
 import { LAYERS } from "../constants";
 import {
   DEFAULT_DISTANCE_EXPONENT,
@@ -21,6 +21,15 @@ interface Atmosphere {
   alpha?: THREE.Texture;
 }
 
+interface SurfaceMaps {
+  map: THREE.Texture;
+  bumpMap?: THREE.Texture;
+  normalMap?: THREE.Texture;
+  roughnessMap?: THREE.Texture;
+  nightMap?: THREE.Texture;
+  atmosphere?: Atmosphere;
+}
+
 const timeFactor = 8 * Math.PI * 2; // 1s real-time => 8h simulation time
 
 const degreesToRadians = (degrees: number): number => {
@@ -28,20 +37,19 @@ const degreesToRadians = (degrees: number): number => {
 };
 
 /** Apparent diameter as a fraction of the viewport width on focus. */
-export const FOCUS_VIEWPORT_FILL = 0.95;
+const FOCUS_VIEWPORT_FILL = 0.95;
 
 /**
  * Distance from a sphere’s centre so its silhouette spans `fill` of the
  * viewport width. Uses NDC so the projected pixel width matches that fraction.
  */
-export const distanceToFillViewport = (
+const distanceToFillViewport = (
   radius: number,
-  camera: THREE.PerspectiveCamera,
-  fill = FOCUS_VIEWPORT_FILL
+  camera: THREE.PerspectiveCamera
 ): number => {
   const tanVertical = Math.tan(THREE.MathUtils.degToRad(camera.fov * 0.5));
   const tanHorizontal = tanVertical * Math.max(camera.aspect, 1e-6);
-  const tanLimb = fill * tanHorizontal;
+  const tanLimb = FOCUS_VIEWPORT_FILL * tanHorizontal;
   if (tanLimb < 1e-6) {
     return radius * 2.25;
   }
@@ -66,8 +74,6 @@ export class PlanetaryObject {
   cloudPeriod?: number; // in hours
   orbits?: string;
   type: BodyType;
-  tilt: number; // radians
-  inclination: number; // radians
   equatorialOrbit: boolean;
   /** Inertial frame at the body centre. No axial tilt, no day spin. */
   origin: THREE.Group;
@@ -75,17 +81,10 @@ export class PlanetaryObject {
   equator: THREE.Group;
   /** This body’s orbital plane (inclination). Parent of origin and path. */
   orbit: THREE.Group;
-  mesh: THREE.Mesh;
+  mesh: THREE.Object3D;
   atmosphereMesh?: THREE.Mesh;
   path?: THREE.Mesh;
   rng: number;
-  map!: THREE.Texture;
-  bumpMap?: THREE.Texture;
-  normalMap?: THREE.Texture;
-  roughnessMap?: THREE.Texture;
-  nightMap?: THREE.Texture;
-  atmosphere: Atmosphere = {};
-  atmosphereOpacity?: number;
   labels!: Label;
 
   constructor(body: Body, parent?: PlanetaryObject) {
@@ -102,24 +101,31 @@ export class PlanetaryObject {
     this.period = period;
     this.daylength = daylength;
     this.cloudPeriod = cloudPeriod;
-    this.atmosphereOpacity = body.atmosphereOpacity;
     this.orbits = orbits;
     this.type = type;
-    this.tilt = degreesToRadians(tilt);
-    this.inclination = degreesToRadians(body.inclination ?? 0);
     this.equatorialOrbit =
       body.equatorialOrbit ?? (type === "moon" || type === "ring");
     this.rng = body.offset ?? Math.random() * 2 * Math.PI;
-
-    this.loadTextures(body.textures);
 
     if (type === "ring" && !parent) {
       throw new Error(`Ring "${body.name}" must be constructed with its parent`);
     }
 
+    let atmosphere: Atmosphere | undefined;
+    if (body.model) {
+      this.mesh = this.createModelMesh(body.model);
+    } else {
+      if (!body.textures) {
+        throw new Error(`Body "${body.name}" needs textures or a model`);
+      }
+      const maps = this.loadTextures(body.textures);
+      atmosphere = maps.atmosphere;
+      this.mesh = this.createMesh(maps, parent);
+    }
+
     this.orbit = new THREE.Group();
     this.orbit.name = `${body.name}-orbit`;
-    this.orbit.rotation.x = this.inclination;
+    this.orbit.rotation.x = degreesToRadians(body.inclination ?? 0);
 
     this.origin = new THREE.Group();
     this.origin.name = `${body.name}-origin`;
@@ -128,11 +134,10 @@ export class PlanetaryObject {
     this.equator = new THREE.Group();
     this.equator.name = `${body.name}-equator`;
     if (type !== "ring") {
-      this.equator.rotation.x = this.tilt;
+      this.equator.rotation.x = degreesToRadians(tilt);
     }
     this.origin.add(this.equator);
 
-    this.mesh = this.createMesh(parent);
     this.equator.add(this.mesh);
 
     if (this.orbits && this.distance > 0 && type !== "ring") {
@@ -140,8 +145,11 @@ export class PlanetaryObject {
       this.orbit.add(this.path);
     }
 
-    if (this.atmosphere.map) {
-      this.atmosphereMesh = this.createAtmosphereMesh();
+    if (atmosphere?.map) {
+      this.atmosphereMesh = this.createAtmosphereMesh(
+        atmosphere,
+        body.atmosphereOpacity
+      );
       this.mesh.add(this.atmosphereMesh);
     }
 
@@ -180,7 +188,7 @@ export class PlanetaryObject {
     if (this.type !== "ring") {
       return;
     }
-    setRingPlanetRadius(this.mesh, parentRadius, this.ringSourceRadius);
+    setRingPlanetRadius(this.mesh as THREE.Mesh, parentRadius, this.ringSourceRadius);
   };
 
   /**
@@ -201,73 +209,92 @@ export class PlanetaryObject {
    * Prepare and load textures.
    * @param textures - Object of texture paths to load.
    */
-  private loadTextures(textures: TexturePaths) {
-    this.map = loadTexture(textures.map);
+  private loadTextures(textures: TexturePaths): SurfaceMaps {
+    const maps: SurfaceMaps = { map: loadTexture(textures.map) };
     if (textures.bump) {
-      this.bumpMap = loadTexture(textures.bump, "data");
+      maps.bumpMap = loadTexture(textures.bump, "data");
     }
     if (textures.normal) {
-      this.normalMap = loadTexture(textures.normal, "data");
+      maps.normalMap = loadTexture(textures.normal, "data");
     }
     if (textures.specular) {
-      this.roughnessMap = loadTexture(textures.specular, "glossRoughness");
+      maps.roughnessMap = loadTexture(textures.specular, "glossRoughness");
     }
     if (textures.night) {
-      this.nightMap = loadTexture(textures.night);
+      maps.nightMap = loadTexture(textures.night);
     }
-    if (textures.atmosphere) {
-      this.atmosphere.map = loadTexture(textures.atmosphere);
+    if (textures.atmosphere || textures.atmosphereAlpha) {
+      maps.atmosphere = {};
+      if (textures.atmosphere) {
+        maps.atmosphere.map = loadTexture(textures.atmosphere);
+      }
+      if (textures.atmosphereAlpha) {
+        maps.atmosphere.alpha = loadTexture(textures.atmosphereAlpha, "data");
+      }
     }
-    if (textures.atmosphereAlpha) {
-      this.atmosphere.alpha = loadTexture(textures.atmosphereAlpha, "data");
-    }
+    return maps;
   }
+
+  /**
+   * Wrapper group sized like a globe of `meshLocalRadius`. The glTF is fitted
+   * into that sphere when it arrives so later `mesh.scale` still works.
+   */
+  private createModelMesh = (path: string): THREE.Group => {
+    const root = new THREE.Group();
+    root.name = this.name;
+    loadGltf(path, (scene) => {
+      fitModelToRadius(scene, this.meshLocalRadius);
+      decorateModelMeshes(scene, root);
+      root.add(scene);
+    });
+    return root;
+  };
 
   /**
    * Creates the main mesh object with textures.
    * @returns celestial body mesh.
    */
-  private createMesh = (parent?: PlanetaryObject) => {
+  private createMesh = (maps: SurfaceMaps, parent?: PlanetaryObject) => {
     if (this.type === "ring") {
-      return createRingMesh(this.map, parent!.radius);
+      return createRingMesh(maps.map, parent!.radius);
     }
 
     const geometry = new THREE.SphereGeometry(this.radius, 64, 64);
     let material;
     if (this.type === "star") {
       material = new THREE.MeshBasicMaterial({
-        map: this.map,
+        map: maps.map,
         toneMapped: false,
         color: new THREE.Color(2.5, 2.5, 2.5),
       });
     } else {
       material = new THREE.MeshStandardMaterial({
-        map: this.map,
-        roughness: this.roughnessMap ? 1 : 0.9,
+        map: maps.map,
+        roughness: maps.roughnessMap ? 1 : 0.9,
         metalness: 0,
         toneMapped: true,
       });
 
-      if (this.bumpMap) {
-        material.bumpMap = this.bumpMap;
+      if (maps.bumpMap) {
+        material.bumpMap = maps.bumpMap;
         material.bumpScale = this.radius / 50;
       }
 
-      if (this.normalMap) {
-        material.normalMap = this.normalMap;
+      if (maps.normalMap) {
+        material.normalMap = maps.normalMap;
         material.normalScale.set(1.4, 1.4);
       }
 
-      if (this.roughnessMap) {
-        material.roughnessMap = this.roughnessMap;
+      if (maps.roughnessMap) {
+        material.roughnessMap = maps.roughnessMap;
       }
 
-      if (this.bumpMap || this.normalMap) {
+      if (maps.bumpMap || maps.normalMap) {
         applyDaysideRelief(material);
       }
 
-      if (this.nightMap) {
-        applyNightLights(material, this.nightMap);
+      if (maps.nightMap) {
+        applyNightLights(material, maps.nightMap);
       }
     }
 
@@ -288,20 +315,20 @@ export class PlanetaryObject {
    * Creates the cloud-layer mesh. Kept as a child so it follows orbit and
    * inherits axial tilt; tick() applies a separate spin so weather drifts.
    */
-  private createAtmosphereMesh = () => {
+  private createAtmosphereMesh = (atmosphere: Atmosphere, opacity?: number) => {
     const geometry = new THREE.SphereGeometry(this.radius + 0.0005, 64, 64);
 
     const material = new THREE.MeshStandardMaterial({
-      map: this.atmosphere?.map,
+      map: atmosphere.map,
       transparent: true,
-      opacity: this.atmosphereOpacity ?? 1,
+      opacity: opacity ?? 1,
       depthWrite: false,
       roughness: 1,
       metalness: 0,
     });
 
-    if (this.atmosphere.alpha) {
-      material.alphaMap = this.atmosphere.alpha;
+    if (atmosphere.alpha) {
+      material.alphaMap = atmosphere.alpha;
     }
 
     const sphere = new THREE.Mesh(geometry, material);
@@ -363,7 +390,7 @@ export class PlanetaryObject {
   };
 
   /** Fixed framing used before viewport-width fitting. */
-  getLegacyFocusDistance = (): number => {
+  private getLegacyFocusDistance = (): number => {
     if (this.origin.getObjectByName("rings")) {
       return this.radius * RING_OUTER * 1.55;
     }

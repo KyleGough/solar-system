@@ -119,15 +119,9 @@ const setShadowMapSize = (light: THREE.SpotLight, size: number) => {
 const forLocalMeshes = (
   solarSystem: SolarSystem,
   hostName: string,
-  visit: (mesh: THREE.Mesh) => void
+  visit: (object: THREE.Object3D) => void
 ) => {
-  const visitMesh = (object: THREE.Object3D) => {
-    if ((object as THREE.Mesh).isMesh) {
-      visit(object as THREE.Mesh);
-    }
-  };
-
-  solarSystem[hostName].origin.traverse(visitMesh);
+  solarSystem[hostName].origin.traverse(visit);
 };
 
 const setSpotLit = (
@@ -135,13 +129,13 @@ const setSpotLit = (
   hostName: string,
   enabled: boolean
 ) => {
-  forLocalMeshes(solarSystem, hostName, (mesh) => {
+  forLocalMeshes(solarSystem, hostName, (object) => {
     if (enabled) {
-      mesh.layers.enable(LAYERS.SUN_SPOT);
-      mesh.layers.disable(0);
+      object.layers.enable(LAYERS.SUN_SPOT);
+      object.layers.disable(0);
     } else {
-      mesh.layers.disable(LAYERS.SUN_SPOT);
-      mesh.layers.enable(0);
+      object.layers.disable(LAYERS.SUN_SPOT);
+      object.layers.enable(0);
     }
   });
 };
@@ -176,6 +170,13 @@ export const applyShadowCasters = (solarSystem: SolarSystem) => {
       body.type !== "star" && heliocentricDistance(name, solarSystem) <= limit;
     body.mesh.castShadow = enabled;
     body.mesh.receiveShadow = enabled;
+    body.mesh.traverse((object) => {
+      if (!(object as THREE.Mesh).isMesh) {
+        return;
+      }
+      object.castShadow = enabled;
+      object.receiveShadow = enabled;
+    });
   }
 };
 

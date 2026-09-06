@@ -49,6 +49,8 @@ scene.add(starfield);
 const starfieldCenter = new THREE.Vector3();
 const labelWorldPos = new THREE.Vector3();
 const labelLocalPos = new THREE.Vector3();
+const cameraWorldPos = new THREE.Vector3();
+const focusWorldPos = new THREE.Vector3();
 
 // Lights
 const lights = createLights();
@@ -145,7 +147,21 @@ const fitCameraToScale = () => {
   const maxDistance = Math.max(MAX_CAMERA_DISTANCE, extent * 1.75);
   const far = Math.max(1000, extent * 8);
   controls.maxDistance = maxDistance;
-  if (camera.far !== far) {
+
+  const focus = solarSystem[options.focus];
+  camera.getWorldPosition(cameraWorldPos);
+  focus.mesh.getWorldPosition(focusWorldPos);
+  const parent = camera.parent;
+  if (parent) {
+    parent.worldToLocal(cameraWorldPos);
+    parent.worldToLocal(focusWorldPos);
+  }
+  const viewDist = Math.max(cameraWorldPos.distanceTo(focusWorldPos), 1e-5);
+  const near = Math.min(0.008, Math.max(1e-5, viewDist * 0.05));
+
+  if (camera.far !== far || camera.near !== near) {
+    camera.near = near;
+    fakeCamera.near = near;
     camera.far = far;
     fakeCamera.far = far;
     camera.updateProjectionMatrix();
@@ -189,12 +205,17 @@ const picker = createBodyPicker(camera, canvas, solarSystem);
 // Assigned after helpers that close over this binding.
 let poiProbe: ReturnType<typeof createPoiProbe>; // eslint-disable-line prefer-const
 
-const swapFocusUi = (from: string, to: string) => {
+const hideAllPoi = () => {
+  for (const object of Object.values(solarSystem)) {
+    object.labels.hidePOI();
+    object.labels.setActive(null);
+  }
+};
+
+const swapFocusUi = (to: string) => {
   releasePoiSpin();
-  solarSystem[from].labels.hidePOI();
-  solarSystem[from].labels.setActive(null);
+  hideAllPoi();
   solarSystem[to].labels.showPOI();
-  solarSystem[to].labels.setActive(null);
   updateIdentity(to);
   updateBodyInfo(to);
   poiProbe?.sync();
@@ -296,6 +317,7 @@ if (urlFocus) {
   writeFocusToUrl(urlFocus);
 }
 
+hideAllPoi();
 solarSystem[options.focus].labels.showPOI();
 
 onFocusUrlChange((name) => {
@@ -454,31 +476,35 @@ poiProbe.sync();
     frame.mode === "travel" &&
     (frame.justCrossedMidpoint || frame.justFinished)
   ) {
-    swapFocusUi(frame.from, frame.to);
+    swapFocusUi(frame.to);
   }
 
-  if (frame.active && !frame.justFinished && frame.mode === "travel") {
-    const fade =
-      frame.progress < 0.5
-        ? 1 - frame.progress / 0.5
-        : (frame.progress - 0.5) / 0.5;
-    setUiOpacity(fade);
+  const travelLabels =
+    frame.active && !frame.justFinished && frame.mode === "travel";
+  const travelFade = travelLabels
+    ? frame.progress < 0.5
+      ? 1 - frame.progress / 0.5
+      : (frame.progress - 0.5) / 0.5
+    : 1;
+  if (travelLabels) {
+    setUiOpacity(travelFade);
+  } else if (frame.justFinished) {
+    setUiOpacity(1);
+  }
 
-    const labelBodyName = frame.progress < 0.5 ? frame.from : frame.to;
-    const labelBody = solarSystem[labelBodyName];
-    camera.getWorldPosition(labelWorldPos);
+  const activeLabelName = travelLabels
+    ? frame.progress < 0.5
+      ? frame.from
+      : frame.to
+    : options.focus;
+
+  camera.getWorldPosition(labelWorldPos);
+  for (const [name, object] of Object.entries(solarSystem)) {
+    if (object.labels.elements.length === 0) continue;
     labelLocalPos.copy(labelWorldPos);
-    labelBody.mesh.worldToLocal(labelLocalPos);
-    labelBody.labels.update(labelLocalPos, fade);
-  } else {
-    if (frame.justFinished) {
-      setUiOpacity(1);
-    }
-    const labelBody = solarSystem[options.focus];
-    camera.getWorldPosition(labelWorldPos);
-    labelLocalPos.copy(labelWorldPos);
-    labelBody.mesh.worldToLocal(labelLocalPos);
-    labelBody.labels.update(labelLocalPos);
+    object.mesh.worldToLocal(labelLocalPos);
+    const fade = name === activeLabelName ? travelFade : 0;
+    object.labels.update(labelLocalPos, fade);
   }
 
   poiProbe.update(camera);

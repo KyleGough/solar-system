@@ -34,6 +34,9 @@ export const formatDistance = (millionKm: number): string => {
 
 export const formatPeriodDuration = (days: number): string => {
   const abs = Math.abs(days);
+  if (abs < 1) {
+    return formatHours(days * 24);
+  }
   if (abs >= 365) {
     const years = abs / 365.25;
     const rounded = years >= 10 ? years.toFixed(0) : years.toFixed(1);

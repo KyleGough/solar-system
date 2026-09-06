@@ -20,7 +20,7 @@ export interface AtmosphereGlowParams {
   scatter?: number;
 }
 
-export const DEFAULT_MIE_COLOR: [number, number, number] = [1.0, 0.78, 0.48];
+const DEFAULT_MIE_COLOR: [number, number, number] = [1.0, 0.78, 0.48];
 /** Extra outer radius so the fade to zero is not clipped by the mesh. */
 const OUTER_EXTEND = 1.06;
 const INNER_INTENSITY = 0.7;
@@ -168,23 +168,17 @@ const makeMaterial = (
   params: AtmosphereGlowParams,
   inner: boolean
 ): THREE.ShaderMaterial => {
-  const meshScale = inner
-    ? innerScaleFactor(params.scale)
-    : outerScaleFactor(params.scale);
-
-  return new THREE.ShaderMaterial({
+  const material = new THREE.ShaderMaterial({
     uniforms: {
-      uColor: { value: new THREE.Color().fromArray(params.color) },
-      uSunset: {
-        value: new THREE.Color().fromArray(params.mieColor ?? DEFAULT_MIE_COLOR),
-      },
+      uColor: { value: new THREE.Color() },
+      uSunset: { value: new THREE.Color() },
       uIntensity: { value: 0 },
       uPower: { value: 0 },
       uBias: { value: inner ? 0.0 : 0.63 },
       uInner: { value: inner ? 1 : 0 },
       uMieBoost: { value: 0 },
       uScatter: { value: 0 },
-      uPlanetRatio: { value: 1 / Math.max(meshScale, 1e-4) },
+      uPlanetRatio: { value: 1 },
       uHeight: { value: 0 },
     },
     vertexShader: glowVertex,
@@ -196,27 +190,8 @@ const makeMaterial = (
     depthTest: true,
     toneMapped: false,
   });
-};
-
-const glowMesh = (group: THREE.Group, name: string): THREE.Mesh => {
-  const mesh = group.getObjectByName(name);
-  if (!(mesh instanceof THREE.Mesh)) {
-    throw new Error(`Missing atmosphere glow mesh "${name}"`);
-  }
-  return mesh;
-};
-
-const updateAtmosphereGlow = (
-  group: THREE.Group,
-  radius: number,
-  params: AtmosphereGlowParams
-) => {
-  const inner = glowMesh(group, "atmosphere-glow-inner");
-  const outer = glowMesh(group, "atmosphere-glow-outer");
-  writeUniforms((inner.material as THREE.ShaderMaterial).uniforms, params, true);
-  writeUniforms((outer.material as THREE.ShaderMaterial).uniforms, params, false);
-  inner.scale.setScalar(radius * innerScaleFactor(params.scale));
-  outer.scale.setScalar(radius * outerScaleFactor(params.scale));
+  writeUniforms(material.uniforms, params, inner);
+  return material;
 };
 
 const decorate = (mesh: THREE.Mesh, name: string): THREE.Mesh => {
@@ -244,10 +219,11 @@ export const createAtmosphereGlow = (
     new THREE.Mesh(getGeometry(), makeMaterial(params, false)),
     "atmosphere-glow-outer"
   );
+  inner.scale.setScalar(radius * innerScaleFactor(params.scale));
+  outer.scale.setScalar(radius * outerScaleFactor(params.scale));
 
   group.add(inner, outer);
   group.raycast = () => {};
   group.userData.ignorePick = true;
-  updateAtmosphereGlow(group, radius, params);
   return group;
 };

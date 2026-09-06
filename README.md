@@ -1,6 +1,6 @@
 # Solar System Model
 
-An interactive 3D model of the Sun, planets, and major moons. Travel between bodies, read a few facts, and toggle view layers. Built with [Three.js](https://threejs.org/).
+An interactive 3D model of the Sun, planets, and major moons. Travel between bodies, read a few facts, and toggle view layers. Built with Three.js.
 
 **Live demo:** [kylegough.github.io/solar-system](https://kylegough.github.io/solar-system/)
 
@@ -50,6 +50,7 @@ npm run dev
 - **Io** - [https://phys.org/news/2014-12-solar-worlds-distant-exoplanets.html](https://phys.org/news/2014-12-solar-worlds-distant-exoplanets.html)
 - **Europa** - [https://www.johnstonsarchive.net/spaceart/cylmaps.html](https://www.johnstonsarchive.net/spaceart/cylmaps.html)
 - **Triton** - [https://www.go-astronomy.com/planets/neptune-moon-triton.htm](https://www.go-astronomy.com/planets/neptune-moon-triton.htm)
+- **Phobos** - NASA 3D Resources, [Phobos shape model](https://science.nasa.gov/resource/phobos-mars-moon-3d-model/)
 - **Points of interest** - NASA public-domain photographs:
   - Apollo 11 landing - NASA AS11-40-5948
   - Tycho Crater - NASA/GSFC/Arizona State University, LRO

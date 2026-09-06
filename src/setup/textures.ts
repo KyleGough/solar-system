@@ -2,7 +2,7 @@ import * as THREE from "three";
 import { onLoaded, setLoadProgress } from "./loading";
 import { applyGlossToRoughness } from "./height-normal";
 
-export type TextureRole = "color" | "data" | "glossRoughness";
+type TextureRole = "color" | "data" | "glossRoughness";
 
 let textureCount = 0;
 let texturesLoaded = 0;
@@ -16,6 +16,9 @@ const markLoaded = () => {
     onLoaded();
   }
 };
+
+/** Count a finished texture, cubemap face, or glTF model toward the intro bar. */
+export const markAssetLoaded = markLoaded;
 
 /**
  * Color maps are sRGB albedo. Data maps (normals, bump, roughness, alpha)

@@ -19,7 +19,12 @@ export const createSolarSystem = (scene: Scene): SolarSystem => {
 
     solarSystem[name] = object;
 
-    textureCount += Object.keys(planet.textures).length;
+    if (planet.textures) {
+      textureCount += Object.keys(planet.textures).length;
+    }
+    if (planet.model) {
+      textureCount += 1;
+    }
 
     if (object.orbits) {
       const host = solarSystem[object.orbits];
