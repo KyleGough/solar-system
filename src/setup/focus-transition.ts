@@ -8,8 +8,10 @@ const MIN_DIST = 1;
 const MAX_DIST = 25;
 /** Just off the Y pole so lookAt and OrbitControls keep a stable azimuth. */
 const OVERHEAD_POLAR = 0.02;
-/** South of the equator on the dayside arrival pose. */
-const DAYSIDE_LATITUDE_DEG = -2.5; // 2.5° north of the equator
+/** North of the equator on the dayside arrival pose. */
+const DAYSIDE_LATITUDE_DEG = 2.5; // 2.5° north of the equator
+/** Yaw off the Sun–planet line so a sliver of night sits on the left limb. */
+const DAYSIDE_LONGITUDE_DEG = 40;
 
 const easeInOut = (t: number): number => t * t * (3 - 2 * t);
 
@@ -52,9 +54,11 @@ const idleFrame = (): FocusFlightFrame => ({
   justFinished: false,
 });
 
+const daysideEast = new THREE.Vector3();
+
 /**
  * Camera offset from the body centre: sunward so the dayside faces the
- * lens, plus a slight drop along the pole.
+ * lens, a slight polar lift, and a yaw so night sits on the left limb.
  */
 const writeDaysideOffset = (
   distance: number,
@@ -69,10 +73,20 @@ const writeDaysideOffset = (
   } else {
     target.normalize();
   }
+  daysideEast.crossVectors(target, pole);
+  if (daysideEast.lengthSq() > 1e-10) {
+    daysideEast.normalize();
+  } else {
+    daysideEast.set(0, 0, 0);
+  }
   target.multiplyScalar(distance);
   target.addScaledVector(
     pole,
     -distance * Math.tan(THREE.MathUtils.degToRad(DAYSIDE_LATITUDE_DEG))
+  );
+  target.addScaledVector(
+    daysideEast,
+    distance * Math.tan(THREE.MathUtils.degToRad(DAYSIDE_LONGITUDE_DEG))
   );
 };
 
