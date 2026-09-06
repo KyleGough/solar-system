@@ -39,8 +39,10 @@ npm run dev
 
 ## Credits
 
-- **The Sun, Jupiter, Saturn, Uranus, and Neptune** - [https://www.solarsystemscope.com/textures/](https://www.solarsystemscope.com/textures/)
+- **The Sun, Gas giants, Ice giants** - [https://www.solarsystemscope.com/textures/](https://www.solarsystemscope.com/textures/)
 - **Terrestrial Planets** - [https://planetpixelemporium.com/planets.html](https://planetpixelemporium.com/planets.html)
+- **Mercury** - NASA/JHUAPL/Carnegie Institution, [MESSENGER](https://messenger.jhuapl.edu/)
+- **Earth night lights** - NASA Black Marble 2016 (Suomi NPP VIIRS) - [https://www.visibleearth.nasa.gov/images/144898](https://www.visibleearth.nasa.gov/images/144898)
 - **Moon** - [https://svs.gsfc.nasa.gov/4720](https://svs.gsfc.nasa.gov/4720)
 - **Ganymede** - [https://www.deviantart.com/askaniy/art/Ganymede-Texture-Map-11K-808732114](https://www.deviantart.com/askaniy/art/Ganymede-Texture-Map-11K-808732114)
 - **Titan** - [https://planet-texture-maps.fandom.com/wiki/Titan](https://planet-texture-maps.fandom.com/wiki/Titan)
@@ -48,3 +50,14 @@ npm run dev
 - **Io** - [https://phys.org/news/2014-12-solar-worlds-distant-exoplanets.html](https://phys.org/news/2014-12-solar-worlds-distant-exoplanets.html)
 - **Europa** - [https://www.johnstonsarchive.net/spaceart/cylmaps.html](https://www.johnstonsarchive.net/spaceart/cylmaps.html)
 - **Triton** - [https://www.go-astronomy.com/planets/neptune-moon-triton.htm](https://www.go-astronomy.com/planets/neptune-moon-triton.htm)
+- **Points of interest** - NASA public-domain photographs:
+  - Apollo 11 landing - NASA AS11-40-5948
+  - Tycho Crater - NASA/GSFC/Arizona State University, LRO
+  - Olympus Mons - NASA/JPL, Viking 1 ([PIA02982](https://science.nasa.gov/photojournal/color-mosaic-of-olympus-mons/))
+  - Tharsis Montes - NASA/JPL/GSFC, Mars Global Surveyor MOLA
+  - Valles Marineris - NASA/JPL-Caltech, Viking
+  - Perseverance - NASA/JPL-Caltech/MSSS ([Selfie with Ingenuity](https://science.nasa.gov/resource/perseverances-selfie-with-ingenuity/))
+  - Curiosity - NASA/JPL-Caltech/MSSS ([PIA19807](https://www.jpl.nasa.gov/images/pia19807-curiosity-low-angle-self-portrait-at-buckskin-drilling-site-on-mount-sharp/))
+  - Great Red Spot - NASA/JPL, Voyager 1 ([PIA00014](https://www.jpl.nasa.gov/images/pia00014-jupiter-great-red-spot/))
+  - Saturn's hexagon - NASA/JPL-Caltech/Space Science Institute, Cassini
+  - Great Dark Spot - NASA/JPL, Voyager 2 ([PIA00064](https://photojournal.jpl.nasa.gov/catalog/PIA00064))
