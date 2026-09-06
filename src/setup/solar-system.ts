@@ -1,6 +1,6 @@
 import type { Scene } from "three";
-import planetData from "../planets.json";
-import { Body, PlanetaryObject } from "./planetary-object";
+import { bodies } from "./catalog";
+import { PlanetaryObject } from "./planetary-object";
 import { setTextureCount } from "./textures";
 
 export type SolarSystem = Record<string, PlanetaryObject>;
@@ -9,9 +9,7 @@ export const createSolarSystem = (scene: Scene): SolarSystem => {
   const solarSystem: SolarSystem = {};
   let textureCount = 0;
 
-  const planets: Body[] = (planetData as Body[]).map((planet) => ({ ...planet }));
-
-  for (const planet of planets) {
+  for (const planet of bodies) {
     const name = planet.name;
 
     const parent = planet.orbits ? solarSystem[planet.orbits] : undefined;

@@ -1,8 +1,5 @@
-import type { Body } from "./planetary-object";
+import { getBody } from "./catalog";
 import type { PointOfInterest } from "./label";
-import planetData from "../planets.json";
-
-const bodies = planetData as Body[];
 
 const kickerEl = () => document.getElementById("identity-kicker");
 const titleEl = () => document.getElementById("identity-title");
@@ -13,7 +10,7 @@ const poiTypeLabel = (type?: string): string => {
 };
 
 export const updateIdentity = (name: string, poi?: PointOfInterest): void => {
-  const body = bodies.find((entry) => entry.name === name);
+  const body = getBody(name);
   if (!body) return;
   const kicker = kickerEl();
   const title = titleEl();

@@ -4,56 +4,11 @@ import { createPath } from "./path";
 import { loadTexture } from "./textures";
 import { applyNightLights } from "./night-lights";
 import { applyDaysideRelief } from "./dayside-relief";
-import {
-  createAtmosphereGlow,
-  type AtmosphereGlowParams,
-} from "./atmosphere-glow";
+import { createAtmosphereGlow } from "./atmosphere-glow";
+import type { Body, BodyType, TexturePaths } from "./catalog";
 import { Label } from "./label";
 import { PointOfInterest } from "./label";
 import { LAYERS } from "../constants";
-
-export interface Body {
-  name: string;
-  radius: number;
-  /** Mass in kilograms. Omitted for non-physical bodies such as rings. */
-  mass?: number;
-  distance: number;
-  period: number;
-  daylength: number;
-  /** Hours for one cloud-layer rotation. Faster than daylength so weather drifts. */
-  cloudPeriod?: number;
-  textures: TexturePaths;
-  type: string;
-  tilt: number;
-  /** Orbital inclination in degrees to the parent’s orbital plane. */
-  inclination?: number;
-  /**
-   * If true, this orbit is attached to the parent’s equator (tilted, not
-   * spinning). Moons and rings default to that; planets use the parent’s
-   * inertial frame so inclination is measured from the ecliptic.
-   */
-  equatorialOrbit?: boolean;
-  orbits?: string;
-  labels?: PointOfInterest[];
-  description?: string;
-  traversable: boolean;
-  offset?: number;
-  stats?: Array<[string, string]>;
-  /** 0–1 opacity of the cloud-layer mesh. Defaults to 1. */
-  atmosphereOpacity?: number;
-  /** Limb haze for bodies with a visible atmosphere. */
-  atmosphereGlow?: AtmosphereGlowParams;
-}
-
-interface TexturePaths {
-  map: string;
-  bump?: string;
-  normal?: string;
-  atmosphere?: string;
-  atmosphereAlpha?: string;
-  specular?: string;
-  night?: string;
-}
 
 interface Atmosphere {
   map?: THREE.Texture;
@@ -102,7 +57,7 @@ export class PlanetaryObject {
   daylength: number; // in hours
   cloudPeriod?: number; // in hours
   orbits?: string;
-  type: string;
+  type: BodyType;
   tilt: number; // radians
   inclination: number; // radians
   equatorialOrbit: boolean;
