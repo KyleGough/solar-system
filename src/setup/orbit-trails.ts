@@ -20,19 +20,48 @@ const hostOf = (name: string, solarSystem: SolarSystem): string => {
   return name;
 };
 
-const addFlightBody = (
+const isOverviewFocus = (name: string, solarSystem: SolarSystem): boolean => {
+  const body = solarSystem[name];
+  return !body || body.type === "star";
+};
+
+/** Planet plus its moons, or a moon’s parent plus siblings. */
+const addSystem = (
   lit: Set<string>,
   name: string,
   solarSystem: SolarSystem
 ) => {
-  if (!name || !solarSystem[name]?.path) {
+  if (!name) {
     return;
   }
-  lit.add(name);
   const host = hostOf(name, solarSystem);
-  if (host !== name && solarSystem[host]?.path) {
+  if (solarSystem[host]?.path) {
     lit.add(host);
   }
+  for (const [bodyName, body] of Object.entries(solarSystem)) {
+    if (body.type === "moon" && body.orbits === host && body.path) {
+      lit.add(bodyName);
+    }
+  }
+};
+
+const inFocusedSystem = (
+  name: string,
+  solarSystem: SolarSystem,
+  focus: string
+): boolean => {
+  if (isOverviewFocus(focus, solarSystem)) {
+    return true;
+  }
+  const host = hostOf(focus, solarSystem);
+  const body = solarSystem[name];
+  if (body.type === "planet") {
+    return name === host;
+  }
+  if (body.type === "moon") {
+    return body.orbits === host;
+  }
+  return false;
 };
 
 export const updateOrbitTrails = (
@@ -40,6 +69,7 @@ export const updateOrbitTrails = (
   dt: number,
   state: {
     showAll: boolean;
+    focus: string;
     flying: boolean;
     from: string;
     to: string;
@@ -60,12 +90,12 @@ export const updateOrbitTrails = (
 
   const lit = new Set<string>();
   if (state.flying) {
-    addFlightBody(lit, state.from, solarSystem);
-    addFlightBody(lit, state.to, solarSystem);
+    addSystem(lit, state.from, solarSystem);
+    addSystem(lit, state.to, solarSystem);
   } else if (lingerLeft > 0) {
-    addFlightBody(lit, lingerTo, solarSystem);
+    addSystem(lit, lingerTo, solarSystem);
     if (lingerLeft > LINGER * 0.45) {
-      addFlightBody(lit, lingerFrom, solarSystem);
+      addSystem(lit, lingerFrom, solarSystem);
     }
   }
 
@@ -77,11 +107,12 @@ export const updateOrbitTrails = (
     }
 
     let target = 0;
-    if (state.showAll && object.type === "planet") {
-      target = TOGGLE_PLANET;
-    }
-    if (state.showAll && object.type === "moon") {
-      target = TOGGLE_MOON;
+    if (state.showAll && inFocusedSystem(name, solarSystem, state.focus)) {
+      if (object.type === "planet") {
+        target = TOGGLE_PLANET;
+      } else if (object.type === "moon") {
+        target = TOGGLE_MOON;
+      }
     }
     if (lit.has(name)) {
       target = Math.max(target, FLIGHT);

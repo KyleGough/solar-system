@@ -70,6 +70,8 @@ export const createPath = (
   mesh.frustumCulled = false;
   mesh.userData.ignorePick = true;
   mesh.userData.trailOpacity = 0;
+  mesh.userData.pathOrbit = orbitRadius;
+  mesh.userData.pathBody = bodyRadius;
   mesh.renderOrder = 2;
   return mesh;
 };
@@ -79,4 +81,32 @@ export const setTrailOpacity = (trail: THREE.Mesh, opacity: number) => {
   material.opacity = opacity;
   trail.userData.trailOpacity = opacity;
   trail.visible = opacity > 0.01;
+};
+
+export const updatePath = (
+  trail: THREE.Mesh,
+  orbitRadius: number,
+  bodyRadius: number,
+  name: string
+) => {
+  const prevOrbit = trail.userData.pathOrbit as number | undefined;
+  const prevBody = trail.userData.pathBody as number | undefined;
+  if (
+    prevOrbit !== undefined &&
+    prevBody !== undefined &&
+    Math.abs(prevOrbit - orbitRadius) < 1e-8 &&
+    Math.abs(prevBody - bodyRadius) < 1e-8
+  ) {
+    return;
+  }
+
+  const old = trail.geometry;
+  trail.geometry = createTrailGeometry(
+    orbitRadius,
+    bodyRadius,
+    bodyColorThree(name)
+  );
+  old.dispose();
+  trail.userData.pathOrbit = orbitRadius;
+  trail.userData.pathBody = bodyRadius;
 };

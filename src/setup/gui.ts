@@ -2,12 +2,18 @@ import * as dat from "lil-gui";
 import { LAYERS } from "../constants";
 import type { Lights } from "./lights";
 import { isIntroActive } from "./loading";
+import {
+  DEFAULT_DISTANCE_EXPONENT,
+  DEFAULT_RADIUS_EXPONENT,
+} from "./scale";
 
 export const options = {
   showPaths: true,
   focus: "Sun",
   clock: true,
   speed: 0.125,
+  radiusExponent: DEFAULT_RADIUS_EXPONENT,
+  distanceExponent: DEFAULT_DISTANCE_EXPONENT,
 };
 
 export const createGUI = (
@@ -49,6 +55,13 @@ export const createGUI = (
   };
 
   gui.add(options, "speed", 0, 5, 0.01).name("Speed");
+
+  gui
+    .add(options, "radiusExponent", DEFAULT_RADIUS_EXPONENT, 1, 0.01)
+    .name("Size exponent");
+  gui
+    .add(options, "distanceExponent", 0.2, 1, 0.01)
+    .name("Distance exponent");
 
   gui
     .add(lights.ambientLight, "intensity", 0, 1, 0.01)
