@@ -5,6 +5,10 @@ import { loadTexture } from "./textures";
 import { decorateModelMeshes, fitModelToRadius, loadGltf } from "./models";
 import { applyNightLights } from "./night-lights";
 import { applyDaysideRelief } from "./dayside-relief";
+import {
+  applyCloudShadows,
+  type CloudShadowUniforms,
+} from "./cloud-shadows";
 import { createAtmosphereGlow } from "./atmosphere-glow";
 import type { Body, BodyType, TexturePaths } from "./catalog";
 import { Label, type PointOfInterest } from "./label";
@@ -86,6 +90,7 @@ export class PlanetaryObject {
   path?: THREE.Mesh;
   rng: number;
   labels!: Label;
+  private cloudShadowUniforms?: CloudShadowUniforms;
 
   constructor(body: Body, parent?: PlanetaryObject) {
     const { radius, distance, period, daylength, cloudPeriod, orbits, type, tilt } =
@@ -304,6 +309,14 @@ export class PlanetaryObject {
         applyDaysideRelief(material);
       }
 
+      // Before night lights so that pass still matches the stock combine line.
+      if (maps.atmosphere?.alpha) {
+        this.cloudShadowUniforms = applyCloudShadows(
+          material,
+          maps.atmosphere.alpha
+        );
+      }
+
       if (maps.nightMap) {
         applyNightLights(material, maps.nightMap);
       }
@@ -385,6 +398,10 @@ export class PlanetaryObject {
     if (this.atmosphereMesh && this.cloudPeriod) {
       this.atmosphereMesh.rotation.y =
         this.getRotation(elapsedTime, this.cloudPeriod) - rotation;
+    }
+
+    if (this.cloudShadowUniforms && this.atmosphereMesh) {
+      this.cloudShadowUniforms.cloudSpin.value = this.atmosphereMesh.rotation.y;
     }
   };
 
