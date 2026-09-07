@@ -309,16 +309,16 @@ export class PlanetaryObject {
         applyDaysideRelief(material);
       }
 
-      // Before night lights so that pass still matches the stock combine line.
+      if (maps.nightMap) {
+        applyNightLights(material, maps.nightMap);
+      }
+
+      // After night lights: darkens final outgoingLight; dayFactor spares cities.
       if (maps.atmosphere?.alpha) {
         this.cloudShadowUniforms = applyCloudShadows(
           material,
           maps.atmosphere.alpha
         );
-      }
-
-      if (maps.nightMap) {
-        applyNightLights(material, maps.nightMap);
       }
     }
 
