@@ -7,13 +7,15 @@ import type { SolarSystem } from "./solar-system";
 
 const BRASS = new THREE.Color(0xe0b45c);
 const STARFIELD_BASE_OPACITY = 0.75;
-const STARFIELD_DIM_OPACITY = 0.22;
+const STARFIELD_DIM_OPACITY = 0.18;
+const BACKGROUND_BASE = 1;
+const BACKGROUND_DIM = 0.22;
 const ARC_SEGS = 64;
-const ARC_LINE_WIDTH = 1.35;
-const WAKE_COUNT = 96;
-const WAKE_LIFE = 0.55;
-const LIMB_START = 0.68;
-const LIMB_END = 0.98;
+const ARC_LINE_WIDTH = 2.8;
+const WAKE_COUNT = 120;
+const WAKE_LIFE = 0.6;
+const LIMB_START = 0.58;
+const LIMB_END = 0.96;
 
 const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
 
@@ -72,12 +74,12 @@ const limbRevealFragment = /* glsl */ `
     float cover = (1.0 - peel) * (1.0 - terminator * 0.92);
 
     float limbGlow = terminator * (1.0 - smoothstep(0.35, 1.0, uReveal));
-    float alpha = max(cover * 0.92, limbGlow * 0.55) * uStrength;
+    float alpha = max(cover * 0.97, limbGlow * 0.75) * uStrength;
     if (alpha < 0.01) {
       discard;
     }
 
-    vec3 color = mix(uInk, uBrass, limbGlow);
+    vec3 color = mix(uInk, uBrass, clamp(limbGlow * 1.4, 0.0, 1.0));
     gl_FragColor = vec4(color, alpha);
   }
 `;
@@ -117,6 +119,7 @@ export const createTravelEffects = (
 ): TravelEffectsHandle => {
   const starMat = starfield.material as THREE.PointsMaterial;
   starMat.opacity = STARFIELD_BASE_OPACITY;
+  scene.backgroundIntensity = BACKGROUND_BASE;
 
   const fromPos = new THREE.Vector3();
   const toPos = new THREE.Vector3();
@@ -155,7 +158,7 @@ export const createTravelEffects = (
     vertexColors: true,
     transparent: true,
     opacity: 0,
-    depthTest: true,
+    depthTest: false,
     depthWrite: false,
     toneMapped: false,
   });
@@ -164,13 +167,14 @@ export const createTravelEffects = (
   const arc = new Line2(arcGeometry, arcMaterial);
   arc.visible = false;
   arc.frustumCulled = false;
-  arc.renderOrder = 3;
+  arc.renderOrder = 10;
   scene.add(arc);
 
   const writeArc = () => {
     solarSystem["Sun"].mesh.getWorldPosition(sunPos);
     solarSystem[fromName].mesh.getWorldPosition(fromPos);
     solarSystem[toName].mesh.getWorldPosition(toPos);
+    camera.getWorldPosition(camPos);
 
     dirA.subVectors(fromPos, sunPos);
     dirB.subVectors(toPos, sunPos);
@@ -194,12 +198,17 @@ export const createTravelEffects = (
           .addScaledVector(dirB, Math.sin(t * omega) / sinOmega);
       }
       arcPoint.multiplyScalar(radius).add(sunPos);
+      // Bow the chord toward the camera so it reads as an instrument mark
+      // in the view rather than lying flat among orbit trails.
+      const lift = 0.18 * Math.sin(Math.PI * t);
+      arcPoint.lerp(camPos, lift);
+
       arcPositions[i * 3] = arcPoint.x;
       arcPositions[i * 3 + 1] = arcPoint.y;
       arcPositions[i * 3 + 2] = arcPoint.z;
 
       const tip = Math.sin(Math.PI * t);
-      const fade = tip * tip;
+      const fade = 0.35 + 0.65 * tip * tip;
       arcColors[i * 3] = BRASS.r * fade;
       arcColors[i * 3 + 1] = BRASS.g * fade;
       arcColors[i * 3 + 2] = BRASS.b * fade;
@@ -268,19 +277,20 @@ export const createTravelEffects = (
   );
   wakeGeometry.setAttribute("color", new THREE.BufferAttribute(wakeColors, 3));
   const wakeMaterial = new THREE.PointsMaterial({
-    size: 2.2,
+    size: 3.6,
     vertexColors: true,
     transparent: true,
-    opacity: 0.85,
+    opacity: 1,
     sizeAttenuation: false,
     depthWrite: false,
+    depthTest: false,
     toneMapped: false,
     blending: THREE.AdditiveBlending,
   });
   const wakePoints = new THREE.Points(wakeGeometry, wakeMaterial);
   wakePoints.frustumCulled = false;
   wakePoints.visible = false;
-  wakePoints.renderOrder = 2;
+  wakePoints.renderOrder = 9;
   scene.add(wakePoints);
 
   const particles: WakeParticle[] = Array.from({ length: WAKE_COUNT }, () => ({
@@ -396,9 +406,9 @@ export const createTravelEffects = (
       wakePositions[i * 3] = p.x;
       wakePositions[i * 3 + 1] = p.y;
       wakePositions[i * 3 + 2] = p.z;
-      wakeColors[i * 3] = BRASS.r * fade * 0.55;
-      wakeColors[i * 3 + 1] = BRASS.g * fade * 0.45;
-      wakeColors[i * 3 + 2] = BRASS.b * fade * 0.28;
+      wakeColors[i * 3] = BRASS.r * fade * 1.1;
+      wakeColors[i * 3 + 1] = BRASS.g * fade * 0.9;
+      wakeColors[i * 3 + 2] = BRASS.b * fade * 0.55;
       any = true;
     }
 
@@ -412,6 +422,7 @@ export const createTravelEffects = (
   const endEffects = () => {
     running = false;
     starMat.opacity = STARFIELD_BASE_OPACITY;
+    scene.backgroundIntensity = BACKGROUND_BASE;
     arc.visible = false;
     arcMaterial.opacity = 0;
     detachLimb();
@@ -431,6 +442,7 @@ export const createTravelEffects = (
     wakePrevValid = false;
 
     starMat.opacity = STARFIELD_BASE_OPACITY;
+    scene.backgroundIntensity = BACKGROUND_BASE;
     arc.visible = false;
     arcMaterial.opacity = 0;
 
@@ -454,6 +466,9 @@ export const createTravelEffects = (
       if (starMat.opacity !== STARFIELD_BASE_OPACITY) {
         starMat.opacity = STARFIELD_BASE_OPACITY;
       }
+      if (scene.backgroundIntensity !== BACKGROUND_BASE) {
+        scene.backgroundIntensity = BACKGROUND_BASE;
+      }
       return;
     }
 
@@ -469,12 +484,14 @@ export const createTravelEffects = (
       if (longHaul) {
         writeArc();
         const v = veilOpacity(p);
-        arcMaterial.opacity = v * 0.85;
+        arcMaterial.opacity = v * 0.95;
         arc.visible = v > 0.01;
         const dim = starfieldDim(p);
         starMat.opacity =
           STARFIELD_BASE_OPACITY +
           (STARFIELD_DIM_OPACITY - STARFIELD_BASE_OPACITY) * dim;
+        scene.backgroundIntensity =
+          BACKGROUND_BASE + (BACKGROUND_DIM - BACKGROUND_BASE) * dim;
       }
 
       if (limbMesh.parent) {
@@ -485,10 +502,16 @@ export const createTravelEffects = (
         } else {
           limbMesh.visible = true;
           const t = Math.min(1, (p - LIMB_START) / (LIMB_END - LIMB_START));
-          // Fade the veil in, then peel dayside open from the terminator.
-          const strength = t < 0.22 ? t / 0.22 : 1 - Math.max(0, (t - 0.85) / 0.15);
-          const reveal = t < 0.22 ? 0 : easeOutCubic((t - 0.22) / 0.78);
-          limbMaterial.uniforms.uStrength.value = Math.min(1, Math.max(0, strength));
+          // Fade the veil in, hold terminator, then peel dayside open.
+          const strength =
+            t < 0.18
+              ? t / 0.18
+              : 1 - Math.max(0, (t - 0.82) / 0.18);
+          const reveal = t < 0.2 ? 0 : easeOutCubic((t - 0.2) / 0.8);
+          limbMaterial.uniforms.uStrength.value = Math.min(
+            1,
+            Math.max(0, strength)
+          );
           limbMaterial.uniforms.uReveal.value = reveal;
         }
       }
