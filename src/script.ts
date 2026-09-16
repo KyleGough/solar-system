@@ -20,6 +20,7 @@ import { createHoverTravel } from "./setup/hover-travel";
 import { createOrbitalNav } from "./setup/orbital-nav";
 import { updateOrbitTrails } from "./setup/orbit-trails";
 import { setTrailResolution } from "./setup/path";
+import { createTravelEffects } from "./setup/travel-effects";
 import {
   onFocusUrlChange,
   readFocusFromUrl,
@@ -84,6 +85,7 @@ window.addEventListener("resize", () => {
   renderer.setSize(sizes.width, sizes.height);
   renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
   setTrailResolution(sizes.width, sizes.height);
+  travelEffects.setResolution(sizes.width, sizes.height);
   selectiveBloom.setSize(sizes.width, sizes.height);
   labelRenderer.setSize(sizes.width, sizes.height);
 });
@@ -134,6 +136,14 @@ const focusTransition = new FocusTransition(
   controls,
   solarSystem
 );
+
+const travelEffects = createTravelEffects(
+  scene,
+  camera,
+  starfield,
+  solarSystem
+);
+travelEffects.setResolution(sizes.width, sizes.height);
 
 const currentScaleState = (dt = 0): ScaleState => ({
   radiusExponent: options.radiusExponent,
@@ -281,11 +291,13 @@ const requestFocus = (name: string) => {
     return;
   }
 
-  const started = focusTransition.begin(options.focus, name);
+  const from = options.focus;
+  const started = focusTransition.begin(from, name);
   if (!started) {
     return;
   }
 
+  travelEffects.begin(from, name);
   releasePoiSpin();
   options.focus = name;
   canvas.style.cursor = "default";
@@ -439,6 +451,14 @@ hoverTravel = createHoverTravel({
   ) {
     swapFocusUi(frame.to);
   }
+
+  travelEffects.update({
+    progress: frame.progress,
+    dt: wallDt,
+    active: frame.active,
+    justFinished: frame.justFinished,
+    mode: frame.mode,
+  });
 
   const travelLabels =
     frame.active && !frame.justFinished && frame.mode === "travel";
