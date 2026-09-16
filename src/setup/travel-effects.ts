@@ -9,12 +9,14 @@ const BRASS = new THREE.Color(0xe0b45c);
 const STARFIELD_BASE_OPACITY = 0.75;
 const STARFIELD_DIM_OPACITY = 0.18;
 const BACKGROUND_BASE = 1;
-const BACKGROUND_DIM = 0.22;
+const BACKGROUND_DIM = 0.12;
+const EXPOSURE_BASE = 1.15;
+const EXPOSURE_DIM = 0.55;
 const ARC_SEGS = 64;
-const ARC_LINE_WIDTH = 2.8;
+const ARC_LINE_WIDTH = 3.2;
 const WAKE_COUNT = 120;
-const WAKE_LIFE = 0.6;
-const LIMB_START = 0.58;
+const WAKE_LIFE = 0.65;
+const LIMB_START = 0.55;
 const LIMB_END = 0.96;
 
 const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
@@ -32,9 +34,10 @@ const veilOpacity = (progress: number): number => {
 };
 
 const starfieldDim = (progress: number): number => {
-  // Deepest at mid-flight; full restore by landing.
-  const mid = 1 - Math.abs(progress - 0.5) * 2;
-  return mid * mid;
+  // Fast settle into a dark mid-course veil; restore on approach.
+  if (progress < 0.1) return progress / 0.1;
+  if (progress < 0.62) return 1;
+  return Math.max(0, 1 - (progress - 0.62) / 0.38);
 };
 
 const limbRevealVertex = /* glsl */ `
@@ -115,11 +118,14 @@ export const createTravelEffects = (
   scene: THREE.Scene,
   camera: THREE.Camera,
   starfield: THREE.Points,
-  solarSystem: SolarSystem
+  solarSystem: SolarSystem,
+  renderer: THREE.WebGLRenderer
 ): TravelEffectsHandle => {
   const starMat = starfield.material as THREE.PointsMaterial;
   starMat.opacity = STARFIELD_BASE_OPACITY;
   scene.backgroundIntensity = BACKGROUND_BASE;
+  const exposureBase = renderer.toneMappingExposure || EXPOSURE_BASE;
+  renderer.toneMappingExposure = exposureBase;
 
   const fromPos = new THREE.Vector3();
   const toPos = new THREE.Vector3();
@@ -277,7 +283,7 @@ export const createTravelEffects = (
   );
   wakeGeometry.setAttribute("color", new THREE.BufferAttribute(wakeColors, 3));
   const wakeMaterial = new THREE.PointsMaterial({
-    size: 3.6,
+    size: 5.5,
     vertexColors: true,
     transparent: true,
     opacity: 1,
@@ -423,6 +429,7 @@ export const createTravelEffects = (
     running = false;
     starMat.opacity = STARFIELD_BASE_OPACITY;
     scene.backgroundIntensity = BACKGROUND_BASE;
+    renderer.toneMappingExposure = exposureBase;
     arc.visible = false;
     arcMaterial.opacity = 0;
     detachLimb();
@@ -443,6 +450,7 @@ export const createTravelEffects = (
 
     starMat.opacity = STARFIELD_BASE_OPACITY;
     scene.backgroundIntensity = BACKGROUND_BASE;
+    renderer.toneMappingExposure = exposureBase;
     arc.visible = false;
     arcMaterial.opacity = 0;
 
@@ -469,6 +477,9 @@ export const createTravelEffects = (
       if (scene.backgroundIntensity !== BACKGROUND_BASE) {
         scene.backgroundIntensity = BACKGROUND_BASE;
       }
+      if (renderer.toneMappingExposure !== exposureBase) {
+        renderer.toneMappingExposure = exposureBase;
+      }
       return;
     }
 
@@ -492,6 +503,8 @@ export const createTravelEffects = (
           (STARFIELD_DIM_OPACITY - STARFIELD_BASE_OPACITY) * dim;
         scene.backgroundIntensity =
           BACKGROUND_BASE + (BACKGROUND_DIM - BACKGROUND_BASE) * dim;
+        renderer.toneMappingExposure =
+          exposureBase + (EXPOSURE_DIM - exposureBase) * dim;
       }
 
       if (limbMesh.parent) {

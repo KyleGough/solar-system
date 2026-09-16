@@ -85,7 +85,7 @@ window.addEventListener("resize", () => {
   renderer.setSize(sizes.width, sizes.height);
   renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
   setTrailResolution(sizes.width, sizes.height);
-  travelEffects.setResolution(sizes.width, sizes.height);
+  travelEffects?.setResolution(sizes.width, sizes.height);
   selectiveBloom.setSize(sizes.width, sizes.height);
   labelRenderer.setSize(sizes.width, sizes.height);
 });
@@ -137,13 +137,8 @@ const focusTransition = new FocusTransition(
   solarSystem
 );
 
-const travelEffects = createTravelEffects(
-  scene,
-  camera,
-  starfield,
-  solarSystem
-);
-travelEffects.setResolution(sizes.width, sizes.height);
+// Assigned after the WebGL renderer exists (needs toneMappingExposure).
+let travelEffects: ReturnType<typeof createTravelEffects>; // eslint-disable-line prefer-const
 
 const currentScaleState = (dt = 0): ScaleState => ({
   radiusExponent: options.radiusExponent,
@@ -369,6 +364,15 @@ renderer.shadowMap.enabled = true;
 renderer.shadowMap.type = THREE.VSMShadowMap;
 
 const selectiveBloom = createSelectiveBloom(renderer, scene, camera, sizes);
+
+travelEffects = createTravelEffects(
+  scene,
+  camera,
+  starfield,
+  solarSystem,
+  renderer
+);
+travelEffects.setResolution(sizes.width, sizes.height);
 
 // Animate
 const clock = new THREE.Clock();
