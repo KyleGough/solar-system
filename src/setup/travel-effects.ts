@@ -13,11 +13,11 @@ const BACKGROUND_DIM = 0.12;
 const EXPOSURE_BASE = 1.15;
 const EXPOSURE_DIM = 0.55;
 const ARC_SEGS = 64;
-const ARC_LINE_WIDTH = 3.2;
-const WAKE_COUNT = 120;
-const WAKE_LIFE = 0.65;
-const LIMB_START = 0.55;
-const LIMB_END = 0.96;
+const ARC_LINE_WIDTH = 4.0;
+const WAKE_COUNT = 64;
+const WAKE_LIFE = 0.7;
+const LIMB_START = 0.48;
+const LIMB_END = 0.95;
 
 const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
 
@@ -55,6 +55,7 @@ const limbRevealVertex = /* glsl */ `
 `;
 
 const limbRevealFragment = /* glsl */ `
+  precision mediump float;
   uniform float uReveal;
   uniform float uStrength;
   uniform vec3 uBrass;
@@ -66,23 +67,19 @@ const limbRevealFragment = /* glsl */ `
 
   void main() {
     vec3 n = normalize(vWorldNormal);
-    // Sun sits at the scene origin; bodies orbit around it.
     vec3 sunDir = normalize(-vPlanetCenter);
     float ndotl = dot(n, sunDir);
 
-    // Thin terminator first; dayside peels open toward the subsolar point.
-    float terminator = exp(-ndotl * ndotl * 48.0);
-    float dayside = smoothstep(-0.12, 0.55, ndotl);
-    float peel = smoothstep(0.0, 1.0, uReveal * 1.15 - (1.0 - dayside) * 0.85);
-    float cover = (1.0 - peel) * (1.0 - terminator * 0.92);
+    float terminator = exp(-ndotl * ndotl * 36.0);
+    float dayside = smoothstep(-0.15, 0.5, ndotl);
+    float peel = smoothstep(0.0, 1.0, uReveal * 1.2 - (1.0 - dayside) * 0.9);
+    float cover = (1.0 - peel) * (1.0 - terminator * 0.85);
 
-    float limbGlow = terminator * (1.0 - smoothstep(0.35, 1.0, uReveal));
-    float alpha = max(cover * 0.97, limbGlow * 0.75) * uStrength;
-    if (alpha < 0.01) {
-      discard;
-    }
+    float limbGlow = terminator * (1.0 - smoothstep(0.2, 0.9, uReveal));
+    float alpha = max(cover * 0.99, limbGlow * 0.9) * uStrength;
+    if (alpha < 0.008) discard;
 
-    vec3 color = mix(uInk, uBrass, clamp(limbGlow * 1.4, 0.0, 1.0));
+    vec3 color = mix(uInk, uBrass, clamp(limbGlow * 1.7, 0.0, 1.0));
     gl_FragColor = vec4(color, alpha);
   }
 `;
@@ -159,7 +156,7 @@ export const createTravelEffects = (
   arcGeometry.setColors(arcColors);
 
   const arcMaterial = new LineMaterial({
-    color: 0xffffff,
+    color: BRASS.getHex(),
     linewidth: ARC_LINE_WIDTH,
     vertexColors: true,
     transparent: true,
@@ -206,7 +203,7 @@ export const createTravelEffects = (
       arcPoint.multiplyScalar(radius).add(sunPos);
       // Bow the chord toward the camera so it reads as an instrument mark
       // in the view rather than lying flat among orbit trails.
-      const lift = 0.18 * Math.sin(Math.PI * t);
+      const lift = 0.28 * Math.sin(Math.PI * t);
       arcPoint.lerp(camPos, lift);
 
       arcPositions[i * 3] = arcPoint.x;
@@ -273,53 +270,51 @@ export const createTravelEffects = (
     body.mesh.add(limbMesh);
   };
 
-  // --- Wake trail ---
-  const wakePositions = new Float32Array(WAKE_COUNT * 3);
-  const wakeColors = new Float32Array(WAKE_COUNT * 3);
-  const wakeGeometry = new THREE.BufferGeometry();
-  wakeGeometry.setAttribute(
-    "position",
-    new THREE.BufferAttribute(wakePositions, 3)
-  );
-  wakeGeometry.setAttribute("color", new THREE.BufferAttribute(wakeColors, 3));
-  const wakeMaterial = new THREE.PointsMaterial({
-    size: 5.5,
-    vertexColors: true,
-    transparent: true,
-    opacity: 1,
-    sizeAttenuation: false,
-    depthWrite: false,
-    depthTest: false,
-    toneMapped: false,
-    blending: THREE.AdditiveBlending,
-  });
-  const wakePoints = new THREE.Points(wakeGeometry, wakeMaterial);
-  wakePoints.frustumCulled = false;
-  wakePoints.visible = false;
-  wakePoints.renderOrder = 9;
-  scene.add(wakePoints);
+  // --- Wake trail (mesh sparks — more reliable than Points on software GL) ---
+  const wakeGeo = new THREE.SphereGeometry(1, 6, 6);
+  const wakeGroup = new THREE.Group();
+  wakeGroup.name = "travel-wake";
+  wakeGroup.visible = false;
+  wakeGroup.renderOrder = 9;
+  scene.add(wakeGroup);
 
-  const particles: WakeParticle[] = Array.from({ length: WAKE_COUNT }, () => ({
-    alive: false,
-    age: 0,
-    life: WAKE_LIFE,
-    x: 0,
-    y: 0,
-    z: 0,
-    vx: 0,
-    vy: 0,
-    vz: 0,
-  }));
+  type WakeMesh = WakeParticle & {
+    mesh: THREE.Mesh<THREE.SphereGeometry, THREE.MeshBasicMaterial>;
+  };
+  const particles: WakeMesh[] = Array.from({ length: WAKE_COUNT }, () => {
+    const mat = new THREE.MeshBasicMaterial({
+      color: BRASS,
+      transparent: true,
+      opacity: 0.9,
+      depthWrite: false,
+      depthTest: false,
+      toneMapped: false,
+      blending: THREE.AdditiveBlending,
+    });
+    const mesh = new THREE.Mesh(wakeGeo, mat);
+    mesh.visible = false;
+    mesh.frustumCulled = false;
+    wakeGroup.add(mesh);
+    return {
+      alive: false,
+      age: 0,
+      life: WAKE_LIFE,
+      x: 0,
+      y: 0,
+      z: 0,
+      vx: 0,
+      vy: 0,
+      vz: 0,
+      mesh,
+    };
+  });
 
   const resetWake = () => {
     for (const p of particles) {
       p.alive = false;
+      p.mesh.visible = false;
     }
-    wakePositions.fill(0);
-    wakeColors.fill(0);
-    wakeGeometry.attributes.position.needsUpdate = true;
-    wakeGeometry.attributes.color.needsUpdate = true;
-    wakePoints.visible = false;
+    wakeGroup.visible = false;
     wakePrevValid = false;
   };
 
@@ -329,16 +324,17 @@ export const createTravelEffects = (
     camUp.set(0, 1, 0).transformDirection(camera.matrixWorld).normalize();
     camRight.crossVectors(camDir, camUp).normalize();
 
-    const spread = Math.min(0.6, Math.max(0.04, speed * 0.35));
-    const behindBase = Math.min(0.9, Math.max(0.06, speed * 0.5));
+    const spread = Math.min(0.9, Math.max(0.08, speed * 0.45));
+    const behindBase = Math.min(1.4, Math.max(0.1, speed * 0.6));
+    const radius = Math.min(0.11, Math.max(0.016, speed * 0.045));
 
     let spawned = 0;
     for (let i = 0; i < WAKE_COUNT && spawned < count; i++) {
       const p = particles[i];
       if (p.alive) continue;
       const lateral = (Math.random() - 0.5) * spread;
-      const vertical = (Math.random() - 0.5) * spread * 0.6;
-      const behind = behindBase * (0.6 + Math.random() * 0.8);
+      const vertical = (Math.random() - 0.5) * spread * 0.7;
+      const behind = behindBase * (0.5 + Math.random() * 0.9);
       p.x =
         camPos.x -
         camDir.x * behind +
@@ -354,13 +350,16 @@ export const createTravelEffects = (
         camDir.z * behind +
         camRight.z * lateral +
         camUp.z * vertical;
-      const drift = speed * (0.4 + Math.random() * 0.7);
-      p.vx = -camDir.x * drift + (Math.random() - 0.5) * spread * 0.4;
-      p.vy = -camDir.y * drift + (Math.random() - 0.5) * spread * 0.4;
-      p.vz = -camDir.z * drift + (Math.random() - 0.5) * spread * 0.4;
+      const drift = speed * (0.35 + Math.random() * 0.8);
+      p.vx = -camDir.x * drift + (Math.random() - 0.5) * spread * 0.5;
+      p.vy = -camDir.y * drift + (Math.random() - 0.5) * spread * 0.5;
+      p.vz = -camDir.z * drift + (Math.random() - 0.5) * spread * 0.5;
       p.age = 0;
       p.life = WAKE_LIFE * (0.7 + Math.random() * 0.5);
       p.alive = true;
+      p.mesh.visible = true;
+      p.mesh.scale.setScalar(radius * (0.55 + Math.random()));
+      p.mesh.position.set(p.x, p.y, p.z);
       spawned++;
     }
   };
@@ -371,57 +370,40 @@ export const createTravelEffects = (
     const speed = dt > 1e-6 ? moved / dt : 0;
     const moving = flying && moved > 1e-5;
 
-    if (flying && progress < 0.78 && moving) {
-      const rate = (1 - progress / 0.78) * 18;
-      const n = Math.min(8, Math.max(1, Math.round(rate * dt * 60)));
+    if (flying && progress < 0.8 && moving) {
+      const rate = (1 - progress / 0.8) * 24;
+      const n = Math.min(10, Math.max(1, Math.round(rate * dt * 60)));
       spawnWake(n, speed);
-      wakePoints.visible = true;
+      wakeGroup.visible = true;
     }
 
     wakePrev.copy(camPos);
     wakePrevValid = true;
 
     let any = false;
-    for (let i = 0; i < WAKE_COUNT; i++) {
-      const p = particles[i];
+    for (const p of particles) {
       if (!p.alive) {
-        wakePositions[i * 3] = 0;
-        wakePositions[i * 3 + 1] = 0;
-        wakePositions[i * 3 + 2] = 0;
-        wakeColors[i * 3] = 0;
-        wakeColors[i * 3 + 1] = 0;
-        wakeColors[i * 3 + 2] = 0;
+        p.mesh.visible = false;
         continue;
       }
       p.age += dt;
       if (p.age >= p.life) {
         p.alive = false;
-        wakePositions[i * 3] = 0;
-        wakePositions[i * 3 + 1] = 0;
-        wakePositions[i * 3 + 2] = 0;
-        wakeColors[i * 3] = 0;
-        wakeColors[i * 3 + 1] = 0;
-        wakeColors[i * 3 + 2] = 0;
+        p.mesh.visible = false;
         continue;
       }
       p.x += p.vx * dt;
       p.y += p.vy * dt;
       p.z += p.vz * dt;
       const t = p.age / p.life;
-      const fade = (1 - t) * (1 - t);
-      wakePositions[i * 3] = p.x;
-      wakePositions[i * 3 + 1] = p.y;
-      wakePositions[i * 3 + 2] = p.z;
-      wakeColors[i * 3] = BRASS.r * fade * 1.1;
-      wakeColors[i * 3 + 1] = BRASS.g * fade * 0.9;
-      wakeColors[i * 3 + 2] = BRASS.b * fade * 0.55;
+      p.mesh.position.set(p.x, p.y, p.z);
+      p.mesh.visible = true;
+      p.mesh.material.opacity = (1 - t) * (1 - t) * 0.95;
       any = true;
     }
 
-    wakeGeometry.attributes.position.needsUpdate = true;
-    wakeGeometry.attributes.color.needsUpdate = true;
     if (!any && !flying) {
-      wakePoints.visible = false;
+      wakeGroup.visible = false;
     }
   };
 
