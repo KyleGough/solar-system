@@ -1,8 +1,7 @@
 import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 import { SolarSystem } from "./solar-system";
-import { isParentOrbiter } from "./catalog";
-import { parentOf, type BodyType } from "./catalog";
+import { isParentOrbiter, parentOf, type BodyType } from "./catalog";
 import { localMoonOrbitRadius } from "./scale";
 
 const MIN_DURATION = 0.6;
