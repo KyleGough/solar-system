@@ -1,8 +1,14 @@
 import * as THREE from "three";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader";
+import { DRACOLoader } from "three/examples/jsm/loaders/DRACOLoader";
 import { markAssetLoaded } from "./textures";
 
 const loader = new GLTFLoader();
+const dracoLoader = new DRACOLoader();
+// Served from Vite publicDir (`static/`), same as textures/models.
+dracoLoader.setDecoderPath("./draco/gltf/");
+loader.setDRACOLoader(dracoLoader);
+
 const box = new THREE.Box3();
 const sphere = new THREE.Sphere();
 
