@@ -2,7 +2,11 @@ import planetData from "../planets.json";
 import type { AtmosphereGlowParams } from "./atmosphere-glow";
 import type { PointOfInterest } from "./label";
 
-export type BodyType = "star" | "planet" | "moon" | "ring";
+export type BodyType = "star" | "planet" | "moon" | "satellite" | "ring";
+
+/** Moons and artificial satellites that orbit a parent body. */
+export const isParentOrbiter = (type: BodyType): boolean =>
+  type === "moon" || type === "satellite";
 
 export interface TexturePaths {
   map: string;
@@ -17,6 +21,11 @@ export interface TexturePaths {
 export interface Body {
   name: string;
   radius: number;
+  /**
+   * Optional scene size in km when the true `radius` is too small to frame
+   * (e.g. spacecraft). HUD stats still use `radius`.
+   */
+  visualRadius?: number;
   /** Mass in kilograms. Omitted for non-physical bodies such as rings. */
   mass?: number;
   distance: number;
@@ -33,9 +42,24 @@ export interface Body {
   /** Orbital inclination in degrees to the parent’s orbital plane. */
   inclination?: number;
   /**
+   * Longitude of the ascending node (Ω) in degrees. Rotates the line of
+   * nodes in the parent reference plane before applying inclination.
+   */
+  longitudeOfAscendingNode?: number;
+  /**
+   * Days for the ascending node to precess 360°. Negative values regress
+   * westward (as with low-Earth orbits under J₂).
+   */
+  nodalPrecessionPeriod?: number;
+  /**
+   * If true, focused local orbit distance is linear in parent radii instead
+   * of the default power compression. Used for low orbits such as the ISS.
+   */
+  trueScaleOrbit?: boolean;
+  /**
    * If true, this orbit is attached to the parent’s equator (tilted, not
-   * spinning). Moons and rings default to that; planets use the parent’s
-   * inertial frame so inclination is measured from the ecliptic.
+   * spinning). Moons, satellites, and rings default to that; planets use
+   * the parent’s inertial frame so inclination is measured from the ecliptic.
    */
   equatorialOrbit?: boolean;
   orbits?: string;
@@ -70,7 +94,7 @@ export const primaries: readonly Body[] = traversableBodies
 const moonLists = new Map<string, Body[]>();
 
 for (const body of traversableBodies) {
-  if (body.type !== "moon" || !body.orbits) continue;
+  if (!isParentOrbiter(body.type) || !body.orbits) continue;
   const list = moonLists.get(body.orbits) ?? [];
   list.push(body);
   moonLists.set(body.orbits, list);
@@ -82,9 +106,9 @@ for (const list of moonLists.values()) {
 
 export const moonsByParent: ReadonlyMap<string, readonly Body[]> = moonLists;
 
-/** Nav parent: a moon’s host planet, otherwise the body itself. */
+/** Nav parent: a moon/satellite’s host planet, otherwise the body itself. */
 export const parentOf = (name: string): string => {
   const body = bodyByName.get(name);
-  if (body?.type === "moon" && body.orbits) return body.orbits;
+  if (body && isParentOrbiter(body.type) && body.orbits) return body.orbits;
   return name;
 };

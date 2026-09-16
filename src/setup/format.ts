@@ -1,5 +1,12 @@
-export const formatKm = (km: number): string =>
-  `${Math.round(km).toLocaleString("en-GB")} km`;
+export const formatKm = (km: number): string => {
+  if (km > 0 && km < 1) {
+    const meters = km * 1000;
+    const rounded =
+      meters >= 10 ? Math.round(meters) : Number(meters.toFixed(1));
+    return `${rounded.toLocaleString("en-GB")} m`;
+  }
+  return `${Math.round(km).toLocaleString("en-GB")} km`;
+};
 
 type ScientificMass = {
   mantissa: string;

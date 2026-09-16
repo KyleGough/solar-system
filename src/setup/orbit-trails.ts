@@ -1,3 +1,4 @@
+import { isParentOrbiter } from "./catalog";
 import { setTrailOpacity } from "./path";
 import type { SolarSystem } from "./solar-system";
 
@@ -14,7 +15,7 @@ const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
 
 const hostOf = (name: string, solarSystem: SolarSystem): string => {
   const body = solarSystem[name];
-  if (body?.type === "moon" && body.orbits) {
+  if (body && isParentOrbiter(body.type) && body.orbits) {
     return body.orbits;
   }
   return name;
@@ -39,7 +40,7 @@ const addSystem = (
     lit.add(host);
   }
   for (const [bodyName, body] of Object.entries(solarSystem)) {
-    if (body.type === "moon" && body.orbits === host && body.path) {
+    if (isParentOrbiter(body.type) && body.orbits === host && body.path) {
       lit.add(bodyName);
     }
   }
@@ -58,7 +59,7 @@ const inFocusedSystem = (
   if (body.type === "planet") {
     return name === host;
   }
-  if (body.type === "moon") {
+  if (isParentOrbiter(body.type)) {
     return body.orbits === host;
   }
   return false;
@@ -110,7 +111,7 @@ export const updateOrbitTrails = (
     if (state.showAll && inFocusedSystem(name, solarSystem, state.focus)) {
       if (object.type === "planet") {
         target = TOGGLE_PLANET;
-      } else if (object.type === "moon") {
+      } else if (isParentOrbiter(object.type)) {
         target = TOGGLE_MOON;
       }
     }

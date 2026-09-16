@@ -1,6 +1,7 @@
 import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 import { SolarSystem } from "./solar-system";
+import { isParentOrbiter } from "./catalog";
 import { parentOf, type BodyType } from "./catalog";
 import { localMoonOrbitRadius } from "./scale";
 
@@ -272,7 +273,7 @@ export class FocusTransition {
       this.writeDaysideDestination(toBody);
     }
     let distance = this.startPos.distanceTo(this.destPos);
-    if (toBody.type === "moon" && toBody.orbits) {
+    if (isParentOrbiter(toBody.type) && toBody.orbits) {
       const parent = this.solarSystem[toBody.orbits];
       if (parent) {
         distance = Math.max(distance, localMoonOrbitRadius(toBody, parent));

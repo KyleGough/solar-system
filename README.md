@@ -14,6 +14,7 @@ An interactive 3D model of the Sun, planets, and major moons. Travel between bod
 ## Capabilities
 
 - The Sun, Mercury, Venus, Earth, Mars, Jupiter, Saturn, Uranus, and Neptune, plus major moons
+- The International Space Station in low Earth orbit
 - Rings, orbit trails, and a bloom effect on the Sun
 - Points of interest on some bodies
 - Night lights on Earth
@@ -51,6 +52,7 @@ npm run dev
 - **Triton** - [https://www.go-astronomy.com/planets/neptune-moon-triton.htm](https://www.go-astronomy.com/planets/neptune-moon-triton.htm)
 - **Phobos** - NASA 3D Resources, [Phobos shape model](https://science.nasa.gov/resource/phobos-mars-moon-3d-model/)
 - **Deimos** - NASA/JPL-Caltech, [Deimos shape model](https://science.nasa.gov/resource/deimos-mars-moon-3d-model/)
+- **ISS** - NASA 3D Resources, [International Space Station (ISS) (B)](https://science.nasa.gov/3d-resources/international-space-station-iss-b/)
 - **Points of interest** - NASA public-domain photographs:
   - Apollo 11 landing - NASA AS11-40-5948
   - Tycho Crater - NASA/GSFC/Arizona State University, LRO

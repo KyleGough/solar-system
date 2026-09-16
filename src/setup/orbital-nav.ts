@@ -89,7 +89,7 @@ export const createOrbitalNav = (
     const moons = moonsByParent.get(planet.name) ?? [];
     if (moons.length > 0) {
       moonsWrap.setAttribute("role", "group");
-      moonsWrap.setAttribute("aria-label", `Moons of ${planet.name}`);
+      moonsWrap.setAttribute("aria-label", `Orbiters of ${planet.name}`);
       for (const moon of moons) {
         const moonButton = createBodyButton(moon, "is-moon");
         moonButton.tabIndex = -1;

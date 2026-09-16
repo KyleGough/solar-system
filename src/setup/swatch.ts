@@ -10,6 +10,7 @@ export const BODY_SWATCH: Record<string, BodySwatch> = {
   Mercury: { color: "oklch(0.62 0.03 70)", size: "10px" },
   Venus: { color: "oklch(0.78 0.08 95)", size: "12px" },
   Earth: { color: "oklch(0.62 0.1 230)", size: "12px" },
+  ISS: { color: "oklch(0.78 0.04 240)", size: "7px" },
   Mars: { color: "oklch(0.58 0.12 40)", size: "11px" },
   Phobos: { color: "oklch(0.52 0.03 55)", size: "8px" },
   Deimos: { color: "oklch(0.44 0.02 50)", size: "7px" },

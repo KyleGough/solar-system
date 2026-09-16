@@ -181,7 +181,14 @@ const statsFor = (body: Body): Array<[string, string | Node]> => {
     rows.push(["Orbital inclination", formatTilt(body.inclination)]);
   }
 
-  if (body.type !== "moon" && body.type !== "star") {
+  if (body.longitudeOfAscendingNode != null) {
+    rows.push([
+      "Ascending node",
+      formatTilt(body.longitudeOfAscendingNode),
+    ]);
+  }
+
+  if (body.type !== "moon" && body.type !== "satellite" && body.type !== "star") {
     rows.push(["Day length", formatHours(body.daylength)]);
   }
 

@@ -7,6 +7,7 @@ import { applyNightLights } from "./night-lights";
 import { applyDaysideRelief } from "./dayside-relief";
 import { createAtmosphereGlow } from "./atmosphere-glow";
 import type { Body, BodyType, TexturePaths } from "./catalog";
+import { isParentOrbiter } from "./catalog";
 import { Label, type PointOfInterest } from "./label";
 import { LAYERS } from "../constants";
 import {
@@ -75,6 +76,8 @@ export class PlanetaryObject {
   orbits?: string;
   type: BodyType;
   equatorialOrbit: boolean;
+  /** Catalog flag: use linear parent-radii distance when focused. */
+  trueScaleOrbit: boolean;
   /** Inertial frame at the body centre. No axial tilt, no day spin. */
   origin: THREE.Group;
   /** Axial tilt only. Parent of the globe; moons/rings may attach here. */
@@ -86,15 +89,18 @@ export class PlanetaryObject {
   path?: THREE.Mesh;
   rng: number;
   labels!: Label;
+  private readonly longitudeOfAscendingNode: number;
+  private readonly nodalPrecessionPeriod?: number;
 
   constructor(body: Body, parent?: PlanetaryObject) {
-    const { radius, distance, period, daylength, cloudPeriod, orbits, type, tilt } =
+    const { distance, period, daylength, cloudPeriod, orbits, type, tilt } =
       body;
+    const sceneRadiusKm = body.visualRadius ?? body.radius;
 
     this.name = body.name;
-    this.catalogRadius = radius;
+    this.catalogRadius = sceneRadiusKm;
     this.catalogDistance = distance;
-    this.radius = overviewRadius(radius, DEFAULT_RADIUS_EXPONENT);
+    this.radius = overviewRadius(sceneRadiusKm, DEFAULT_RADIUS_EXPONENT);
     this.distance = overviewDistance(distance, DEFAULT_DISTANCE_EXPONENT);
     this.meshLocalRadius = this.radius;
     this.ringSourceRadius = type === "ring" && parent ? parent.radius : 0;
@@ -104,8 +110,14 @@ export class PlanetaryObject {
     this.orbits = orbits;
     this.type = type;
     this.equatorialOrbit =
-      body.equatorialOrbit ?? (type === "moon" || type === "ring");
+      body.equatorialOrbit ??
+      (isParentOrbiter(type) || type === "ring");
+    this.trueScaleOrbit = body.trueScaleOrbit === true;
     this.rng = body.offset ?? Math.random() * 2 * Math.PI;
+    this.longitudeOfAscendingNode = degreesToRadians(
+      body.longitudeOfAscendingNode ?? 0
+    );
+    this.nodalPrecessionPeriod = body.nodalPrecessionPeriod;
 
     if (type === "ring" && !parent) {
       throw new Error(`Ring "${body.name}" must be constructed with its parent`);
@@ -125,6 +137,9 @@ export class PlanetaryObject {
 
     this.orbit = new THREE.Group();
     this.orbit.name = `${body.name}-orbit`;
+    // YXZ: Ω about the parent pole, then inclination about the line of nodes.
+    this.orbit.rotation.order = "YXZ";
+    this.orbit.rotation.y = this.longitudeOfAscendingNode;
     this.orbit.rotation.x = degreesToRadians(body.inclination ?? 0);
 
     this.origin = new THREE.Group();
@@ -366,6 +381,12 @@ export class PlanetaryObject {
     const rotation = this.getRotation(elapsedTime);
     const orbitRotation = this.getOrbitRotation(elapsedTime);
     const orbit = orbitRotation + this.rng;
+
+    if (this.nodalPrecessionPeriod) {
+      const precession =
+        (elapsedTime * timeFactor) / (this.nodalPrecessionPeriod * 24);
+      this.orbit.rotation.y = this.longitudeOfAscendingNode + precession;
+    }
 
     // Move the inertial origin; the globe only spins in place.
     this.origin.position.x = Math.sin(orbit) * this.distance;

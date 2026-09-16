@@ -1,5 +1,6 @@
 import * as THREE from "three";
 import { RING_OUTER } from "./rings";
+import { isParentOrbiter } from "./catalog";
 import type { SolarSystem } from "./solar-system";
 import { LAYERS } from "../constants";
 
@@ -100,7 +101,7 @@ const hasTransitCasters = (
   solarSystem: SolarSystem
 ): boolean => {
   return Object.values(solarSystem).some(
-    (body) => body.orbits === hostName && body.type === "moon"
+    (body) => body.orbits === hostName && isParentOrbiter(body.type)
   );
 };
 

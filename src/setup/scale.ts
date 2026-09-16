@@ -1,4 +1,4 @@
-import { getBody, parentOf } from "./catalog";
+import { getBody, isParentOrbiter, parentOf } from "./catalog";
 import type { SolarSystem } from "./solar-system";
 import type { PlanetaryObject } from "./planetary-object";
 
@@ -85,33 +85,39 @@ const localRadius = (
 /**
  * Focused moon orbit as a power of true parent-radii distance. 1 would be
  * linear (Moon at ~60 Earth radii); 0.75 keeps the order of magnitude
- * without the full empty gap.
+ * without the full empty gap. Bodies with `trueScaleOrbit` always use 1.
  */
 const LOCAL_MOON_DISTANCE_EXPONENT = 0.75;
 
 const localDistance = (
   distanceMkm: number,
   parentRadiusKm: number,
-  parentSceneRadius: number
+  parentSceneRadius: number,
+  exponent: number = LOCAL_MOON_DISTANCE_EXPONENT
 ): number => {
   if (parentRadiusKm <= 0) {
     return 0;
   }
   const parentRadii = (distanceMkm * 1_000_000) / parentRadiusKm;
-  return Math.pow(parentRadii, LOCAL_MOON_DISTANCE_EXPONENT) * parentSceneRadius;
+  return Math.pow(parentRadii, exponent) * parentSceneRadius;
 };
 
 export const localMoonOrbitRadius = (
   moon: PlanetaryObject,
   parent: PlanetaryObject
 ): number =>
-  localDistance(moon.catalogDistance, parent.catalogRadius, parent.radius);
+  localDistance(
+    moon.catalogDistance,
+    parent.catalogRadius,
+    parent.radius,
+    moon.trueScaleOrbit ? 1 : LOCAL_MOON_DISTANCE_EXPONENT
+  );
 
 const moonLocalWeight = (
   moon: PlanetaryObject,
   state: ScaleState
 ): number => {
-  if (moon.type !== "moon" || !moon.orbits) {
+  if (!isParentOrbiter(moon.type) || !moon.orbits) {
     return 0;
   }
 
@@ -141,8 +147,17 @@ const sceneSize = (
     state.distanceExponent
   );
 
-  const keepOutsideParent = (radius: number, distance: number): number => {
-    if (body.type !== "moon" || !parent) {
+  const keepOutsideParent = (
+    radius: number,
+    distance: number,
+    allowTrueScale: boolean
+  ): number => {
+    if (!isParentOrbiter(body.type) || !parent) {
+      return distance;
+    }
+    // Focused true-scale LEO must keep catalog altitude; overview still
+    // clamps so tiny orbits are not buried inside the parent globe.
+    if (allowTrueScale && body.trueScaleOrbit) {
       return distance;
     }
     return Math.max(distance, parent.radius + radius * 2);
@@ -152,7 +167,7 @@ const sceneSize = (
   if (weight <= 0 || !parent) {
     return {
       radius: overviewR,
-      distance: keepOutsideParent(overviewR, overviewD),
+      distance: keepOutsideParent(overviewR, overviewD, false),
     };
   }
 
@@ -161,6 +176,7 @@ const sceneSize = (
     localRadius(body.catalogRadius, parent.catalogRadius, parent.radius),
     weight
   );
+  const localExponent = body.trueScaleOrbit ? 1 : LOCAL_MOON_DISTANCE_EXPONENT;
   return {
     radius,
     distance: keepOutsideParent(
@@ -170,10 +186,12 @@ const sceneSize = (
         localDistance(
           body.catalogDistance,
           parent.catalogRadius,
-          parent.radius
+          parent.radius,
+          localExponent
         ),
         weight
-      )
+      ),
+      true
     ),
   };
 };

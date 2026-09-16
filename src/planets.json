@@ -158,6 +158,37 @@
     "description": "Earth's only natural satellite, tidally locked so the same face always points home. Its dry, cratered surface still carries the marks of the Apollo landings."
   },
   {
+    "name": "ISS",
+    "radius": 0.055,
+    "visualRadius": 40,
+    "mass": 450000,
+    "distance": 0.006791,
+    "period": 0.06436,
+    "daylength": 1.545,
+    "type": "satellite",
+    "orbits": "Earth",
+    "tilt": 0,
+    "inclination": 51.64,
+    "longitudeOfAscendingNode": 120,
+    "nodalPrecessionPeriod": -72,
+    "trueScaleOrbit": true,
+    "equatorialOrbit": true,
+    "traversable": true,
+    "offset": 0.8,
+    "model": "./models/iss.glb",
+    "stats": [
+      [
+        "Altitude",
+        "420 km"
+      ],
+      [
+        "Crew",
+        "Varies"
+      ]
+    ],
+    "description": "The International Space Station is a crewed laboratory in low Earth orbit. It circles the planet about every 93 minutes on a 51.6° inclined path, with its orbital plane slowly regressing under Earth's equatorial bulge."
+  },
+  {
     "name": "Mars",
     "radius": 3389.5,
     "mass": 6.417e23,
