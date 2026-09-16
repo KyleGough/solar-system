@@ -272,6 +272,15 @@ export const createTravelEffects = (
 
   // --- Wake trail (mesh sparks — more reliable than Points on software GL) ---
   const wakeGeo = new THREE.SphereGeometry(1, 6, 6);
+  const wakeMat = new THREE.MeshBasicMaterial({
+    color: BRASS,
+    transparent: true,
+    opacity: 0.9,
+    depthWrite: false,
+    depthTest: false,
+    toneMapped: false,
+    blending: THREE.AdditiveBlending,
+  });
   const wakeGroup = new THREE.Group();
   wakeGroup.name = "travel-wake";
   wakeGroup.visible = false;
@@ -282,16 +291,7 @@ export const createTravelEffects = (
     mesh: THREE.Mesh<THREE.SphereGeometry, THREE.MeshBasicMaterial>;
   };
   const particles: WakeMesh[] = Array.from({ length: WAKE_COUNT }, () => {
-    const mat = new THREE.MeshBasicMaterial({
-      color: BRASS,
-      transparent: true,
-      opacity: 0.9,
-      depthWrite: false,
-      depthTest: false,
-      toneMapped: false,
-      blending: THREE.AdditiveBlending,
-    });
-    const mesh = new THREE.Mesh(wakeGeo, mat);
+    const mesh = new THREE.Mesh(wakeGeo, wakeMat);
     mesh.visible = false;
     mesh.frustumCulled = false;
     wakeGroup.add(mesh);
@@ -371,8 +371,8 @@ export const createTravelEffects = (
     const moving = flying && moved > 1e-5;
 
     if (flying && progress < 0.8 && moving) {
-      const rate = (1 - progress / 0.8) * 24;
-      const n = Math.min(10, Math.max(1, Math.round(rate * dt * 60)));
+      const rate = (1 - progress / 0.8) * 18;
+      const n = Math.min(6, Math.max(1, Math.round(rate * dt * 60)));
       spawnWake(n, speed);
       wakeGroup.visible = true;
     }
@@ -381,6 +381,7 @@ export const createTravelEffects = (
     wakePrevValid = true;
 
     let any = false;
+    let maxFade = 0;
     for (const p of particles) {
       if (!p.alive) {
         p.mesh.visible = false;
@@ -396,11 +397,14 @@ export const createTravelEffects = (
       p.y += p.vy * dt;
       p.z += p.vz * dt;
       const t = p.age / p.life;
+      const fade = (1 - t) * (1 - t);
+      maxFade = Math.max(maxFade, fade);
       p.mesh.position.set(p.x, p.y, p.z);
       p.mesh.visible = true;
-      p.mesh.material.opacity = (1 - t) * (1 - t) * 0.95;
       any = true;
     }
+    // Shared material: drive opacity from the brightest living spark.
+    wakeMat.opacity = any ? Math.max(0.2, maxFade * 0.95) : 0;
 
     if (!any && !flying) {
       wakeGroup.visible = false;
